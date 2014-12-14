@@ -96,6 +96,27 @@ job(type: BuildFlow) {
     }
 
     buildFlow(
+        '''
+        // Prepare virtualenv and set commit status
+        def shellOut = new StringBuffer()
+        def shellErr = new StringBuffer()
+        command = """''' +
+        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh')) + '''
+        ''' +
+        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh')) + '''
+        """.execute()
+        command.consumeProcessOutput(shellOut, shellErr)
+        command.waitForOrKill(1000)
+        if (shellOut) {
+            println 'Process STDOUT:'
+            println $shellOut
+        }
+        if (shellErr) {
+            println 'Commit Status Process STDERR:'
+            println $shellErr
+        }
+
+        ''' +
         readFileFromWorkspace('jenkins-seed', 'libnacl/scripts/master-main-build-flow.groovy')
     )
 
