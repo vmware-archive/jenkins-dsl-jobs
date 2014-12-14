@@ -116,6 +116,9 @@ job(type: BuildFlow) {
             // Set final commit status
             task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
         }
+
+        // Cleanup workspace
+        wsCleanup()
     }
 }
 
