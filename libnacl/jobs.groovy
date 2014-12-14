@@ -103,9 +103,9 @@ job(type: BuildFlow) {
         def shellOut = new StringBuffer()
         def shellErr = new StringBuffer()
         command = """''' +
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh')) + '''
+        readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh') + '''
         ''' +
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh')) + '''
+        readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh') + '''
         """.execute()
         command.consumeProcessOutput(shellOut, shellErr)
         command.waitForOrKill(1000)
