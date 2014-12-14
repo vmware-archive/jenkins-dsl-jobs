@@ -105,6 +105,8 @@ job(type: BuildFlow) {
         command = """''' +
         readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh') + '''
         ''' +
+        readFileFromWorkspace('jenkins-seed', 'scripts/activate-virtualenv.sh') + '''
+        ''' +
         readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh') + '''
         """.execute()
         command.consumeProcessOutput(shellOut, shellErr)
