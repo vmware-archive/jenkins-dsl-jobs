@@ -8,6 +8,27 @@ build.properties.each { out.println "$it.key -> $it.value" }
 out.println '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
 */
 
+// Set commit status
+def shellOut = new StringBuffer()
+def shellErr = new StringBuffer()
+command = """github-commit-status \
+    --auth-token=${build.environment.get('GITHUB_AUTH_TOKEN')} \
+    --repo=${build.environment.get('GITHUB_REPO')} \
+    --context=${build.environment.get('COMMIT_STATUS_CONTEXT')} \
+    --target-url=${build.environment.get('BUILD_URL')} \
+    ${build.environment.get('GIT_COMMIT')}
+""".execute()
+command.consumeProcessOutput(shellOut, shellErr)
+command.waitForOrKill(1000)
+if (shellOut) {
+    println 'Commit Status Process STDOUT:'
+    println $shellOut
+}
+if (shellErr) {
+    println 'Commit Status Process STDERR:'
+    println $shellErr
+}
+
 // Let's run Lint & Unit in parallel
 parallel (
   {

@@ -111,6 +111,11 @@ job(type: BuildFlow) {
 
         // Aggregate downstream results
         aggregateDownstreamTestResults('libnacl/master/unit', true)
+
+        postBuildTask {
+            // Set final commit status
+            task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+        }
     }
 }
 
