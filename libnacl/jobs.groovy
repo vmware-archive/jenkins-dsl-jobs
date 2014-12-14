@@ -111,7 +111,7 @@ job(type: BuildFlow) {
         githubCommitNotifier()
 
         // Store fingerprints
-        fingerprint('', recordBuildArtifacts = true)
+        fingerprint('lint/pylint-report*.xml,unit/*.xml', recordBuildArtifacts = true)
 
         // Cleanup workspace
         wsCleanup()
@@ -195,7 +195,7 @@ job {
 
         // Archive artifacts
         archiveArtifacts('pylint-report*.xml')
-        fingerprint('', recordBuildArtifacts = true)
+        fingerprint('pylint-report*.xml', recordBuildArtifacts = true)
 
         postBuildTask {
             // Set final commit status
@@ -281,7 +281,7 @@ job {
 
         // Archive artifacts
         archiveArtifacts('*.xml')
-        fingerprint('', recordBuildArtifacts = true)
+        fingerprint('*.xml', recordBuildArtifacts = true)
 
         postBuildTask {
             // Set final commit status
