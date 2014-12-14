@@ -46,6 +46,14 @@ job(type: BuildFlow) {
         env('COMMIT_STATUS_CONTEXT', 'default')
         env('VIRTUALENV_NAME', 'libnacl-master')
         env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.flow')
+        script('''
+            export GITHUB_REPO=saltstack/libnacl
+            export COMMIT_STATUS_CONTEXT=default
+            export VIRTUALENV_NAME=libnacl-master
+            export VIRTUALENV_SETUP_STATE_NAME=projects.libnacl.flow
+            ''' +
+            readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh')
+        )
     }
 
     configure {
@@ -111,22 +119,18 @@ job(type: BuildFlow) {
         // Prepare virtualenv and set commit status
         def shellOut = new StringBuffer()
         def shellErr = new StringBuffer()
-        command = """''' +
-        readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh') + '''
-        ''' +
-        readFileFromWorkspace('jenkins-seed', 'scripts/activate-virtualenv.sh') + '''
-        ''' +
-        readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh') + '''
-        """.execute()
+        command = "/srv/virtualenvs/${VIRTUALENV_NAME}/bin/''' +
+        readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh') +
+        '''".execute()
         command.consumeProcessOutput(shellOut, shellErr)
         command.waitForOrKill(1000)
         if (shellOut) {
             println 'Process STDOUT:'
-            println $shellOut
+            println "$shellOut"
         }
         if (shellErr) {
-            println 'Commit Status Process STDERR:'
-            println $shellErr
+            println 'Process STDERR:'
+            println "$shellErr"
         }
 
         ''' +
