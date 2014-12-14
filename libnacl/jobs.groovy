@@ -27,36 +27,12 @@ folder {
         name('master')
         displayName('Master Branch')
         description = project_description
-
-        folder {
-            name('lint')
-            displayName('Lint')
-            description = project_description
-        }
-
-        folder {
-            name('unit')
-            displayName('Unit Tests')
-            description = project_description
-        }
     }
 
     folder {
         name('pr')
         displayName('Pull Requests')
         description = project_description
-
-        folder {
-            name('lint')
-            displayName('Lint')
-            description = project_description
-        }
-
-        folder {
-            name('unit')
-            displayName('Unit Tests')
-            description = project_description
-        }
     }
 }
 
