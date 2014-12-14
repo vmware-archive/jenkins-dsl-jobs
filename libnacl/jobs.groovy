@@ -17,23 +17,20 @@ def default_timeout_minutes = 15
 
 
 // Define the folder structure
-
 folder {
     name('libnacl')
     displayName('libnacl')
     description = project_description
-
-    folder {
-        name('master')
-        displayName('Master Branch')
-        description = project_description
-    }
-
-    folder {
-        name('pr')
-        displayName('Pull Requests')
-        description = project_description
-    }
+}
+folder {
+    name('libnacl/master')
+    displayName('Master Branch')
+    description = project_description
+}
+folder {
+    name('libnacl/pr')
+    displayName('Pull Requests')
+    description = project_description
 }
 
 // Main master branch job
