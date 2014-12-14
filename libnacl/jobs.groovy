@@ -68,6 +68,7 @@ job(type: BuildFlow) {
                 numberOfBuilds = default_timeout_builds,
                 minutesDefault= default_timeout_minutes
             )
+            writeDescription('Build failed due to timeout after {0} minutes')
         }
     }
 
@@ -141,6 +142,7 @@ job {
                 numberOfBuilds = default_timeout_builds,
                 minutesDefault= default_timeout_minutes
             )
+            writeDescription('Build failed due to timeout after {0} minutes')
         }
     }
 
@@ -225,6 +227,7 @@ job {
                 numberOfBuilds = default_timeout_builds,
                 minutesDefault= default_timeout_minutes
             )
+            writeDescription('Build failed due to timeout after {0} minutes')
         }
 
     }
