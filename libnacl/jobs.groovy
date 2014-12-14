@@ -41,21 +41,6 @@ job(type: BuildFlow) {
     label('worker')
     concurrentBuild(allowConcurrentBuild = true)
 
-    environmentVariables {
-        env('GITHUB_REPO', github_repo)
-        env('COMMIT_STATUS_CONTEXT', 'default')
-        env('VIRTUALENV_NAME', 'libnacl-master')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.flow')
-        script('''
-            export GITHUB_REPO=saltstack/libnacl
-            export COMMIT_STATUS_CONTEXT=default
-            export VIRTUALENV_NAME=libnacl-master
-            export VIRTUALENV_SETUP_STATE_NAME=projects.libnacl.flow
-            ''' +
-            readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh')
-        )
-    }
-
     configure {
         def buildNeedsWorkspace = it / 'buildNeedsWorkspace'
         buildNeedsWorkspace.setValue('true')
@@ -106,34 +91,6 @@ job(type: BuildFlow) {
     }
 
     buildFlow(
-        '''
-        // define the required enviroment variables for the script to work
-        def GITHUB_REPO = build.environment.get('GITHUB_REPO')
-        def COMMIT_STATUS_CONTEXT = build.environment.get('COMMIT_STATUS_CONTEXT')
-        def VIRTUALENV_NAME = build.environment.get('VIRTUALENV_NAME')
-        def VIRTUALENV_SETUP_STATE_NAME = build.environment.get('VIRTUALENV_SETUP_STATE_NAME')
-        def GITHUB_AUTH_TOKEN = build.environment.get('GITHUB_AUTH_TOKEN')
-        def BUILD_URL = build.environment.get('BUILD_URL')
-        def GIT_COMMIT = build.environment.get('GIT_COMMIT')
-
-        // Prepare virtualenv and set commit status
-        def shellOut = new StringBuffer()
-        def shellErr = new StringBuffer()
-        command = "/srv/virtualenvs/${VIRTUALENV_NAME}/bin/''' +
-        readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh') +
-        '''".execute()
-        command.consumeProcessOutput(shellOut, shellErr)
-        command.waitForOrKill(1000)
-        if (shellOut) {
-            println 'Process STDOUT:'
-            println "$shellOut"
-        }
-        if (shellErr) {
-            println 'Process STDERR:'
-            println "$shellErr"
-        }
-
-        ''' +
         readFileFromWorkspace('jenkins-seed', 'libnacl/scripts/master-main-build-flow.groovy')
     )
 
@@ -150,10 +107,8 @@ job(type: BuildFlow) {
         // Aggregate downstream results
         aggregateDownstreamTestResults('libnacl/master/unit', true)
 
-        postBuildTask {
-            // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
-        }
+        // Set commit status
+        githubCommitNotifier()
 
         // Cleanup workspace
         wsCleanup()
