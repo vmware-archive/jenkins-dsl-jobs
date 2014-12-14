@@ -174,11 +174,11 @@ job {
 
     // Job Steps
     steps {
-        // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
-
         // Setup the required virtualenv
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+
+        // Set initial commit status
+        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
         // Run Lint Code
         shell(readFileFromWorkspace('jenkins-seed', 'libnacl/scripts/run-lint.sh'))
@@ -252,15 +252,13 @@ job {
 
     // Job Steps
     steps {
+        // Setup the required virtualenv
+        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
         // Set initial commit status
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
-        // Setup the required virtualenv
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
-
         // Run Unit Tests
         shell(readFileFromWorkspace('jenkins-seed', 'libnacl/scripts/run-unit.sh'))
-
     }
 
     publishers {
