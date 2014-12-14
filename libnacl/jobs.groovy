@@ -99,6 +99,15 @@ job(type: BuildFlow) {
 
     buildFlow(
         '''
+        // define the required enviroment variables for the script to work
+        def GITHUB_REPO = build.environment.get('GITHUB_REPO')
+        def COMMIT_STATUS_CONTEXT = build.environment.get('COMMIT_STATUS_CONTEXT')
+        def VIRTUALENV_NAME = build.environment.get('VIRTUALENV_NAME')
+        def VIRTUALENV_SETUP_STATE_NAME = build.environment.get('VIRTUALENV_SETUP_STATE_NAME')
+        def GITHUB_AUTH_TOKEN = build.environment.get('GITHUB_AUTH_TOKEN')
+        def BUILD_URL = build.environment.get('BUILD_URL')
+        def GIT_COMMIT = build.environment.get('GIT_COMMIT')
+
         // Prepare virtualenv and set commit status
         def shellOut = new StringBuffer()
         def shellErr = new StringBuffer()
