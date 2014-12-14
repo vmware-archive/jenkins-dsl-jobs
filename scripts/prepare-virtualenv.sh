@@ -7,7 +7,7 @@ if [ "$(pgrep -f 'salt-call state.sls')" != "" ]; then
         sleep 1
         printf "%s" "."
     done
-    printf "%s" "Done!\n"
+    printf "%s\n\n" "Done!"
 fi
 
 salt-call state.sls ${VIRTUALENV_SETUP_STATE_NAME} pillar="{virtualenv_name: ${VIRTUALENV_NAME}}"
