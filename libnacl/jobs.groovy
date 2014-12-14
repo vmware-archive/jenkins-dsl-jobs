@@ -180,11 +180,11 @@ folder {
 
                 // Archive artifacts
                 archiveArtifacts('pylint-report*.xml')
-            }
 
-            postBuildTask {
-                // Set final commit status
-                task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+                postBuildTask {
+                    // Set final commit status
+                    task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+                }
             }
         }
 
@@ -265,11 +265,11 @@ folder {
 
                 // Archive artifacts
                 archiveArtifacts('*.xml')
-            }
 
-            postBuildTask {
-                // Set final commit status
-                task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+                postBuildTask {
+                    // Set final commit status
+                    task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+                }
             }
         }
     }
