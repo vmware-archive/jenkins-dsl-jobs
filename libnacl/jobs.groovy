@@ -44,6 +44,8 @@ job(type: BuildFlow) {
     environmentVariables {
         env('GITHUB_REPO', github_repo)
         env('COMMIT_STATUS_CONTEXT', 'default')
+        env('VIRTUALENV_NAME', 'libnacl-master')
+        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.flow')
     }
 
     configure {
