@@ -13,7 +13,7 @@ def default_artifact_nr_of_jobs_to_keep = default_nr_of_jobs_to_keep
 // Job Timeout defauls
 def default_timeout_percent = 150
 def default_timeout_builds = 10
-def dafault_timeout_minutes = 15
+def default_timeout_minutes = 15
 
 
 folder {
