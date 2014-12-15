@@ -109,6 +109,8 @@ def common_main_job = job(type: BuildFlow) {
         // Cleanup workspace
         wsCleanup()
     }
+
+    it
 }
 
 def common_lint_job = job {
@@ -188,6 +190,8 @@ def common_lint_job = job {
             task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
         }
     }
+
+    it
 }
 
 def common_unit_job = job {
@@ -267,6 +271,8 @@ def common_unit_job = job {
             task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
         }
     }
+
+    it
 }
 
 // Main master branch job
@@ -298,3 +304,69 @@ def master_unit_job = common_unit_job.with {
     }
 }
 
+
+// PR Main Job
+def pr_main_job = common_main_job.with {
+    name = 'libnacl/pr-main-build'
+    displayName('Pull Requests Main Build')
+
+    scm {
+        git {
+            remote {
+                github(github_repo, protocol='https')
+                refspec('+refs/pull/*:refs/remotes/origin/pr/*')
+            }
+            branch('${sha1}')
+        }
+    }
+
+    triggers {
+        pullRequest {
+            //orgWhiteList('saltstack')
+            useGitHubHooks()
+            permitAll()
+        }
+    }
+
+    buildFlow(
+        readFileFromWorkspace('jenkins-seed', 'libnacl/scripts/pr-main-build-flow.groovy')
+    )
+}
+
+// PR lint job
+def pr_lint_job = common_lint_job.with {
+    name = 'libnacl/pr/lint'
+
+    scm {
+        git {
+            remote {
+                github(github_repo, protocol='https')
+                refspec('+refs/pull/*:refs/remotes/origin/pr/*')
+            }
+            branch('${sha1}')
+        }
+    }
+
+    environmentVariables {
+        env('VIRTUALENV_NAME', 'libnacl-pr')
+    }
+}
+
+// PR unit job
+def pr_unit_job = common_unit_job.with {
+    name = 'libnacl/pr/unit'
+
+    scm {
+        git {
+            remote {
+                github(github_repo, protocol='https')
+                refspec('+refs/pull/*:refs/remotes/origin/pr/*')
+            }
+            branch('${sha1}')
+        }
+    }
+
+    environmentVariables {
+        env('VIRTUALENV_NAME', 'libnacl-pr')
+    }
+}
