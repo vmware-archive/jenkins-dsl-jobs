@@ -33,8 +33,10 @@ folder {
     description = project_description
 }
 
-// Common Reusable Jobs
-def common_main_job = job(type: BuildFlow) {
+// Main master branch job
+def master_main_job = job(type: BuildFlow) {
+    name = 'libnacl/master-main-build'
+    displayName('Master Branch Main Build')
     description(project_description)
     label('worker')
     concurrentBuild(allowConcurrentBuild = true)
@@ -82,11 +84,23 @@ def common_main_job = job(type: BuildFlow) {
     }
     checkoutRetryCount(3)
 
+    // Job Triggers
+    triggers {
+        githubPush()
+    }
+
     buildFlow(
         readFileFromWorkspace('jenkins-seed', 'libnacl/scripts/master-main-build-flow.groovy')
     )
 
     publishers {
+        // Aggregate downstream unit tests
+        configure {
+            it.appendNode(
+                'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
+                [plugin: 'build-flow-test-aggregator']
+            )
+        }
         // Report Coverage
         cobertura('unit/coverage.xml') {
             failNoReports = false
@@ -99,21 +113,14 @@ def common_main_job = job(type: BuildFlow) {
         // Set commit status
         githubCommitNotifier()
 
-        configure {
-            it.appendNode(
-                'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
-                [plugin: 'build-flow-test-aggregator']
-            )
-        }
-
         // Cleanup workspace
         wsCleanup()
     }
-
-    it
 }
 
-def common_lint_job = job {
+// Lint Master Job
+def master_lint_job = job {
+    name = 'libnacl/master/lint'
     displayName('Lint')
     concurrentBuild(allowConcurrentBuild = true)
     description(project_description + ' - Code Lint')
@@ -164,6 +171,7 @@ def common_lint_job = job {
     environmentVariables {
         env('GITHUB_REPO', github_repo)
         env('COMMIT_STATUS_CONTEXT', 'ci/lint')
+        env('VIRTUALENV_NAME', 'libnacl-master')
         env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.lint')
     }
 
@@ -190,11 +198,11 @@ def common_lint_job = job {
             task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
         }
     }
-
-    it
 }
 
-def common_unit_job = job {
+// Master Unit Tests
+def master_unit_job = job {
+    name = 'libnacl/master/unit'
     displayName('Unit')
     concurrentBuild(allowConcurrentBuild = true)
     description(project_description + ' - Unit Tests')
@@ -222,6 +230,7 @@ def common_unit_job = job {
             )
             writeDescription('Build failed due to timeout after {0} minutes')
         }
+
     }
 
     // scm configuration
@@ -237,7 +246,8 @@ def common_unit_job = job {
     environmentVariables {
         env('GITHUB_REPO', github_repo)
         env('COMMIT_STATUS_CONTEXT', 'ci/unit')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.lint')
+        env('VIRTUALENV_NAME', 'libnacl-master')
+        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.unit')
     }
 
     // Job Steps
@@ -271,45 +281,50 @@ def common_unit_job = job {
             task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
         }
     }
-
-    it
 }
-
-// Main master branch job
-def master_main_job = common_main_job.with {
-    name = 'libnacl/master-main-build'
-    displayName('Master Branch Main Build')
-
-    // Job Triggers
-    triggers {
-        githubPush()
-    }
-}
-
-// Lint Master Job
-def master_lint_job = common_lint_job.with {
-    name = 'libnacl/master/lint'
-
-    environmentVariables {
-        env('VIRTUALENV_NAME', 'libnacl-master')
-    }
-}
-
-// Master Unit Tests
-def master_unit_job = common_unit_job.with {
-    name = 'libnacl/master/unit'
-
-    environmentVariables {
-        env('VIRTUALENV_NAME', 'libnacl-master')
-    }
-}
-
 
 // PR Main Job
-def pr_main_job = common_main_job.with {
+job(type: BuildFlow) {
     name = 'libnacl/pr-main-build'
     displayName('Pull Requests Main Build')
+    description(project_description)
+    label('worker')
+    concurrentBuild(allowConcurrentBuild = true)
 
+    configure {
+        it.appendNode('buildNeedsWorkspace').setValue(true)
+    }
+
+    wrappers {
+        // Inject global defined passwords in the environment
+        injectPasswords()
+
+        // Add timestamps to console log
+        timestamps()
+
+        // Color Support to console log
+        colorizeOutput('xterm')
+
+        // Build Timeout
+        timeout {
+            elastic(
+                percentage = default_timeout_percent,
+                numberOfBuilds = default_timeout_builds,
+                minutesDefault= default_timeout_minutes
+            )
+            writeDescription('Build failed due to timeout after {0} minutes')
+        }
+    }
+
+    // Delete old jobs
+    logRotator(
+        default_days_to_keep,
+        default_nr_of_jobs_to_keep,
+        default_artifact_days_to_keep,
+        default_artifact_nr_of_jobs_to_keep
+    )
+
+    // scm configuration
     scm {
         git {
             remote {
@@ -319,7 +334,9 @@ def pr_main_job = common_main_job.with {
             branch('${sha1}')
         }
     }
+    checkoutRetryCount(3)
 
+    // Job Triggers
     triggers {
         pullRequest {
             //orgWhiteList('saltstack')
@@ -331,12 +348,74 @@ def pr_main_job = common_main_job.with {
     buildFlow(
         readFileFromWorkspace('jenkins-seed', 'libnacl/scripts/pr-main-build-flow.groovy')
     )
+
+    publishers {
+        // Aggregate downstream unit tests
+        configure {
+            it.appendNode(
+                'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
+                [plugin: 'build-flow-test-aggregator']
+            )
+        }
+
+        // Report Coverage
+        cobertura('unit/coverage.xml') {
+            failNoReports = false
+        }
+        // Report Violations
+        violations {
+            pylint(10, 999, 999, 'lint/pylint-report*.xml')
+        }
+
+        // Set commit status
+        githubCommitNotifier()
+
+        // Cleanup workspace
+        wsCleanup()
+    }
 }
 
-// PR lint job
-def pr_lint_job = common_lint_job.with {
+// PR Lint Job
+job {
     name = 'libnacl/pr/lint'
+    displayName('Lint')
+    concurrentBuild(allowConcurrentBuild = true)
+    description(project_description + ' - Code Lint')
+    label('worker')
 
+    wrappers {
+        // Inject global defined passwords in the environment
+        injectPasswords()
+
+        // Cleanup the workspace before starting
+        preBuildCleanup()
+
+        // Add timestamps to console log
+        timestamps()
+
+        // Color Support to console log
+        colorizeOutput('xterm')
+
+        // Build Timeout
+        timeout {
+            elastic(
+                percentage = default_timeout_percent,
+                numberOfBuilds = default_timeout_builds,
+                minutesDefault= default_timeout_minutes
+            )
+            writeDescription('Build failed due to timeout after {0} minutes')
+        }
+    }
+
+    // Delete old jobs
+    logRotator(
+        default_days_to_keep,
+        default_nr_of_jobs_to_keep,
+        default_artifact_days_to_keep,
+        default_artifact_nr_of_jobs_to_keep
+    )
+
+    // scm configuration
     scm {
         git {
             remote {
@@ -346,16 +425,74 @@ def pr_lint_job = common_lint_job.with {
             branch('${sha1}')
         }
     }
+    checkoutRetryCount(3)
 
     environmentVariables {
+        env('GITHUB_REPO', github_repo)
+        env('COMMIT_STATUS_CONTEXT', 'ci/lint')
         env('VIRTUALENV_NAME', 'libnacl-pr')
+        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.lint')
+    }
+
+    // Job Steps
+    steps {
+        // Setup the required virtualenv
+        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+
+        // Set initial commit status
+        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+
+        // Run Lint Code
+        shell(readFileFromWorkspace('jenkins-seed', 'libnacl/scripts/run-lint.sh'))
+    }
+
+    publishers {
+        // Report Violations
+        violations {
+            pylint(10, 999, 999, 'pylint-report*.xml')
+        }
+
+        postBuildTask {
+            // Set final commit status
+            task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+        }
     }
 }
 
-// PR unit job
-def pr_unit_job = common_unit_job.with {
+// PR Unit Tests
+job {
     name = 'libnacl/pr/unit'
+    displayName('Unit')
+    concurrentBuild(allowConcurrentBuild = true)
+    description(project_description + ' - Unit Tests')
+    label('worker')
 
+    wrappers {
+        // Inject global defined passwords in the environment
+        injectPasswords()
+
+        // Cleanup the workspace before starting
+        preBuildCleanup()
+
+        // Add timestamps to console log
+        timestamps()
+
+        // Color Support to console log
+        colorizeOutput('xterm')
+
+        // Build Timeout
+        timeout {
+            elastic(
+                percentage = default_timeout_percent,
+                numberOfBuilds = default_timeout_builds,
+                minutesDefault= default_timeout_minutes
+            )
+            writeDescription('Build failed due to timeout after {0} minutes')
+        }
+
+    }
+
+    // scm configuration
     scm {
         git {
             remote {
@@ -365,16 +502,44 @@ def pr_unit_job = common_unit_job.with {
             branch('${sha1}')
         }
     }
+    checkoutRetryCount(3)
 
     environmentVariables {
+        env('GITHUB_REPO', github_repo)
+        env('COMMIT_STATUS_CONTEXT', 'ci/unit')
         env('VIRTUALENV_NAME', 'libnacl-pr')
+        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.unit')
+    }
+
+    // Job Steps
+    steps {
+        // Setup the required virtualenv
+        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+
+        // Set initial commit status
+        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+
+        // Run Unit Tests
+        shell(readFileFromWorkspace('jenkins-seed', 'libnacl/scripts/run-unit.sh'))
+    }
+
+    publishers {
+        // Report Coverage
+        cobertura('coverage.xml') {
+            failNoReports = false
+        }
+
+        // Junit Reports
+        archiveJunit('nosetests.xml') {
+            retainLongStdout(true)
+            testDataPublishers {
+                publishTestStabilityData()
+            }
+        }
+
+        postBuildTask {
+            // Set final commit status
+            task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+        }
     }
 }
-
-master_main_job.name = 'libnacl/master-main-build'
-master_lint_job.name = 'libnacl/master/lint'
-master_unit_job.name = 'libnacl/master/unit'
-
-pr_main_job.name = 'libnacl/pr-main-build'
-pr_lint_job.name = 'libnacl/pr/lint'
-pr_unit_job.name = 'libnacl/pr/unit'
