@@ -33,10 +33,8 @@ folder {
     description = project_description
 }
 
-// Main master branch job
-def master_main_job = job(type: BuildFlow) {
-    name = 'libnacl/master-main-build'
-    displayName('Master Branch Main Build')
+// Common Reusable Jobs
+def common_main_job = job(type: BuildFlow) {
     description(project_description)
     label('worker')
     concurrentBuild(allowConcurrentBuild = true)
@@ -88,11 +86,6 @@ def master_main_job = job(type: BuildFlow) {
     }
     checkoutRetryCount(3)
 
-    // Job Triggers
-    triggers {
-        githubPush()
-    }
-
     buildFlow(
         readFileFromWorkspace('jenkins-seed', 'libnacl/scripts/master-main-build-flow.groovy')
     )
@@ -110,14 +103,18 @@ def master_main_job = job(type: BuildFlow) {
         // Set commit status
         githubCommitNotifier()
 
+        configure {
+            it.appendNode(
+                'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
+                [plugin: 'build-flow-test-aggregator']
+            )
+
         // Cleanup workspace
         wsCleanup()
     }
 }
 
-// Lint Master Job
-def master_lint_job = job {
-    name = 'libnacl/master/lint'
+def common_lint_job = job {
     displayName('Lint')
     concurrentBuild(allowConcurrentBuild = true)
     description(project_description + ' - Code Lint')
@@ -168,7 +165,6 @@ def master_lint_job = job {
     environmentVariables {
         env('GITHUB_REPO', github_repo)
         env('COMMIT_STATUS_CONTEXT', 'ci/lint')
-        env('VIRTUALENV_NAME', 'libnacl-master')
         env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.lint')
     }
 
@@ -197,9 +193,7 @@ def master_lint_job = job {
     }
 }
 
-// Master Unit Tests
-def master_unit_job = job {
-    name = 'libnacl/master/unit'
+def common_unit_job = job {
     displayName('Unit')
     concurrentBuild(allowConcurrentBuild = true)
     description(project_description + ' - Unit Tests')
@@ -243,8 +237,7 @@ def master_unit_job = job {
     environmentVariables {
         env('GITHUB_REPO', github_repo)
         env('COMMIT_STATUS_CONTEXT', 'ci/unit')
-        env('VIRTUALENV_NAME', 'libnacl-master')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.unit')
+        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.lint')
     }
 
     // Job Steps
@@ -278,10 +271,42 @@ def master_unit_job = job {
             task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
         }
     }
+
+}
+
+// Main master branch job
+def master_main_job = common_main_job.with {
+    name = 'libnacl/master-main-build'
+    displayName('Master Branch Main Build')
+
+    // Job Triggers
+    triggers {
+        githubPush()
+    }
+}
+
+// Lint Master Job
+def master_lint_job = common_lint_job.with {
+    name = 'libnacl/master/lint'
+
+    environmentVariables {
+        env('VIRTUALENV_NAME', 'libnacl-master')
+        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.lint')
+    }
+}
+
+// Master Unit Tests
+def master_unit_job = common_unit_job.with {
+    name = 'libnacl/master/unit'
+
+    environmentVariables {
+        env('VIRTUALENV_NAME', 'libnacl-master')
+        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.unit')
+    }
 }
 
 // PR Main Job
-def pr_main_job = master_main_job.with {
+def pr_main_job = common_main_job.with {
     name = 'libnacl/pr-main-build'
     displayName('Pull Requests Main Build')
 
@@ -309,7 +334,7 @@ def pr_main_job = master_main_job.with {
 }
 
 // PR lint job
-def pr_lint_job = master_lint_job.with {
+def pr_lint_job = common_lint_job.with {
     name = 'libnacl/pr/lint'
 
     scm {
@@ -323,15 +348,12 @@ def pr_lint_job = master_lint_job.with {
     }
 
     environmentVariables {
-        env('GITHUB_REPO', github_repo)
-        env('COMMIT_STATUS_CONTEXT', 'ci/lint')
         env('VIRTUALENV_NAME', 'libnacl-pr')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.lint')
     }
 }
 
 // PR unit job
-def pr_unit_job = master_unit_job.with {
+def pr_unit_job = common_unit_job.with {
     name = 'libnacl/pr/unit'
 
     scm {
@@ -345,9 +367,6 @@ def pr_unit_job = master_unit_job.with {
     }
 
     environmentVariables {
-        env('GITHUB_REPO', github_repo)
-        env('COMMIT_STATUS_CONTEXT', 'ci/unit')
         env('VIRTUALENV_NAME', 'libnacl-pr')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.unit')
     }
 }
