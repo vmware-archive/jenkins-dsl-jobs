@@ -98,7 +98,7 @@ def master_main_job = job(type: BuildFlow) {
         configure {
             it.appendNode(
                 'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
-                [plugin: 'build-flow-test-aggregator']
+                [plugin: 'build-flow-test-aggregator@1.1-SNAPSHOT']
             )
         }
         // Report Coverage
@@ -354,7 +354,7 @@ job(type: BuildFlow) {
         configure {
             it.appendNode(
                 'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
-                [plugin: 'build-flow-test-aggregator']
+                [plugin: 'build-flow-test-aggregator@1.1-SNAPSHOT']
             )
         }
 
