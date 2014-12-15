@@ -42,10 +42,11 @@ def master_main_job = job(type: BuildFlow) {
     concurrentBuild(allowConcurrentBuild = true)
 
     configure {
-        def buildNeedsWorkspace = it / 'buildNeedsWorkspace'
-        buildNeedsWorkspace.setValue('true')
-        def flowTestAggregator = it / 'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator'
-        flowTestAggregator.setAttribute('plugin', 'build-flow-test-aggregator')
+        it.appendNode('buildNeedsWorkspace').setValue(true)
+        it.appendNode(
+            'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
+            [plugin: 'build-flow-test-aggregator']
+        )
     }
 
     wrappers {
