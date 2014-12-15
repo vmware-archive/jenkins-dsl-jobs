@@ -90,6 +90,8 @@ def master_main_job = job(type: BuildFlow) {
 
     // Job Triggers
     triggers {
+        // Make sure it runs once every Sunday to get coverage reports
+        cron('H * * * 0')
         githubPush()
     }
 
