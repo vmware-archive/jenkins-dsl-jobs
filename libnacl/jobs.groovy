@@ -43,7 +43,7 @@ def master_main_job = job(type: BuildFlow) {
 
     configure {
         it.appendNode('buildNeedsWorkspace').setValue(true)
-        it.get('publishers').appendNode(
+        it.get('publishers').get(0).appendNode(
             'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
             [plugin: 'build-flow-test-aggregator@']
         )
@@ -290,7 +290,7 @@ job(type: BuildFlow) {
 
     configure {
         it.appendNode('buildNeedsWorkspace').setValue(true)
-        it.get('publishers').appendNode(
+        it.get('publishers').get(0).appendNode(
             'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
             [plugin: 'build-flow-test-aggregator@']
         )
