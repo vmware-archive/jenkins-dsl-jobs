@@ -15,6 +15,6 @@ if [ "${RUN_COVERAGE}" = "true" ]; then
 else
     nosetests \
     --with-xunit \
-    --xunit-file=${WORKSPACE}/nosetests.xml
+    --xunit-file=${WORKSPACE}/nosetests.xml \
     -v tests
 fi
