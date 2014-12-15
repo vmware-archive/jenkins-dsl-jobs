@@ -11,10 +11,10 @@ out.println '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 // Let's run Lint & Unit in parallel
 parallel (
   {
-    lint = build('libnacl/master/lint')
+    lint = build('libnacl/pr/lint')
   },
   {
-    unit = build('libnacl/master/unit')
+    unit = build('libnacl/pr/unit')
   }
 )
 
