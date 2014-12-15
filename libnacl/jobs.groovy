@@ -34,7 +34,7 @@ folder {
 }
 
 // Main master branch job
-job(type: BuildFlow) {
+def master_main_job = job(type: BuildFlow) {
     name = 'libnacl/master-main-build'
     displayName('Master Branch Main Build')
     description(project_description)
@@ -44,6 +44,8 @@ job(type: BuildFlow) {
     configure {
         def buildNeedsWorkspace = it / 'buildNeedsWorkspace'
         buildNeedsWorkspace.setValue('true')
+        def flowTestAggregator = it / 'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator'
+        flowTestAggregator.setAttribute('plugin', 'build-flow-test-aggregator')
     }
 
     wrappers {
@@ -104,14 +106,8 @@ job(type: BuildFlow) {
             pylint(10, 999, 999, 'lint/pylint-report*.xml')
         }
 
-        // Aggregate downstream results
-        aggregateDownstreamTestResults('libnacl/master/unit', true)
-
         // Set commit status
         githubCommitNotifier()
-
-        // Store fingerprints
-        fingerprint('lint/pylint-report*.xml,unit/*.xml', recordBuildArtifacts = true)
 
         // Cleanup workspace
         wsCleanup()
@@ -119,7 +115,7 @@ job(type: BuildFlow) {
 }
 
 // Lint Master Job
-job {
+def master_lint_job = job {
     name = 'libnacl/master/lint'
     displayName('Lint')
     concurrentBuild(allowConcurrentBuild = true)
@@ -193,10 +189,6 @@ job {
             pylint(10, 999, 999, 'pylint-report*.xml')
         }
 
-        // Archive artifacts
-        archiveArtifacts('pylint-report*.xml')
-        fingerprint('pylint-report*.xml', recordBuildArtifacts = true)
-
         postBuildTask {
             // Set final commit status
             task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
@@ -205,7 +197,7 @@ job {
 }
 
 // Master Unit Tests
-job {
+def master_unit_job = job {
     name = 'libnacl/master/unit'
     displayName('Unit')
     concurrentBuild(allowConcurrentBuild = true)
@@ -258,6 +250,7 @@ job {
     steps {
         // Setup the required virtualenv
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+
         // Set initial commit status
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
@@ -279,13 +272,81 @@ job {
             }
         }
 
-        // Archive artifacts
-        archiveArtifacts('*.xml')
-        fingerprint('*.xml', recordBuildArtifacts = true)
-
         postBuildTask {
             // Set final commit status
             task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
         }
+    }
+}
+
+// PR Main Job
+def pr_main_job = master_main_job.with {
+    name = 'libnacl/pr-main-build'
+    displayName('Pull Requests Main Build')
+
+    scm {
+        git {
+            remote {
+                github(github_repo, protocol='https')
+                refspec('+refs/pull/*:refs/remotes/origin/pr/*')
+            }
+            branch('${sha1}')
+        }
+    }
+
+    triggers {
+        pullRequest {
+            orgWhiteList('saltstack')
+            useGitHubHooks()
+            permitAll()
+        }
+    }
+
+    buildFlow(
+        readFileFromWorkspace('jenkins-seed', 'libnacl/scripts/pr-main-build-flow.groovy')
+    )
+}
+
+// PR lint job
+def pr_lint_job = master_lint_job.with {
+    name = 'libnacl/pr/lint'
+
+    scm {
+        git {
+            remote {
+                github(github_repo, protocol='https')
+                refspec('+refs/pull/*:refs/remotes/origin/pr/*')
+            }
+            branch('${sha1}')
+        }
+    }
+
+    environmentVariables {
+        env('GITHUB_REPO', github_repo)
+        env('COMMIT_STATUS_CONTEXT', 'ci/lint')
+        env('VIRTUALENV_NAME', 'libnacl-pr')
+        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.lint')
+    }
+}
+
+// PR unit job
+def pr_unit_job = master_unit_job.with {
+    name = 'libnacl/pr/unit'
+
+    scm {
+        git {
+            remote {
+                github(github_repo, protocol='https')
+                refspec('+refs/pull/*:refs/remotes/origin/pr/*')
+            }
+            branch('${sha1}')
+        }
+    }
+
+    environmentVariables {
+        env('GITHUB_REPO', github_repo)
+        env('COMMIT_STATUS_CONTEXT', 'ci/unit')
+        env('VIRTUALENV_NAME', 'libnacl-pr')
+        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.unit')
     }
 }
