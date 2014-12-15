@@ -296,7 +296,7 @@ def pr_main_job = master_main_job.with {
 
     triggers {
         pullRequest {
-            orgWhiteList('saltstack')
+            orgWhiteList('saltstack', 'saltstack')
             useGitHubHooks()
             permitAll()
         }
