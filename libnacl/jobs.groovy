@@ -221,7 +221,6 @@ def common_unit_job = job {
             )
             writeDescription('Build failed due to timeout after {0} minutes')
         }
-
     }
 
     // scm configuration
@@ -271,7 +270,6 @@ def common_unit_job = job {
             task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
         }
     }
-
 }
 
 // Main master branch job
@@ -291,7 +289,6 @@ def master_lint_job = common_lint_job.with {
 
     environmentVariables {
         env('VIRTUALENV_NAME', 'libnacl-master')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.lint')
     }
 }
 
@@ -301,7 +298,6 @@ def master_unit_job = common_unit_job.with {
 
     environmentVariables {
         env('VIRTUALENV_NAME', 'libnacl-master')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.unit')
     }
 }
 
