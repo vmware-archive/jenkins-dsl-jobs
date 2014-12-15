@@ -370,3 +370,11 @@ def pr_unit_job = common_unit_job.with {
         env('VIRTUALENV_NAME', 'libnacl-pr')
     }
 }
+
+master_main_job.name = 'libnacl/master-main-build'
+master_lint_job.name = 'libnacl/master/lint'
+master_unit_job.name = 'libnacl/master/unit'
+
+pr_main_job.name = 'libnacl/pr-main-build'
+pr_lint_job.name = 'libnacl/pr/lint'
+pr_unit_job.name = 'libnacl/pr/unit'
