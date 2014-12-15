@@ -43,6 +43,10 @@ def master_main_job = job(type: BuildFlow) {
 
     configure {
         it.appendNode('buildNeedsWorkspace').setValue(true)
+        it.get('publishers').appendNode(
+            'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator'
+            [plugin: 'build-flow-test-aggregator@']
+        )
     }
 
     wrappers {
@@ -94,13 +98,6 @@ def master_main_job = job(type: BuildFlow) {
     )
 
     publishers {
-        // Aggregate downstream unit tests
-        configure {
-            it.appendNode(
-                'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
-                [plugin: 'build-flow-test-aggregator@1.1-SNAPSHOT']
-            )
-        }
         // Report Coverage
         cobertura('unit/coverage.xml') {
             failNoReports = false
@@ -293,6 +290,10 @@ job(type: BuildFlow) {
 
     configure {
         it.appendNode('buildNeedsWorkspace').setValue(true)
+        it.get('publishers').appendNode(
+            'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator'
+            [plugin: 'build-flow-test-aggregator@']
+        )
     }
 
     wrappers {
@@ -350,14 +351,6 @@ job(type: BuildFlow) {
     )
 
     publishers {
-        // Aggregate downstream unit tests
-        configure {
-            it.appendNode(
-                'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
-                [plugin: 'build-flow-test-aggregator@1.1-SNAPSHOT']
-            )
-        }
-
         // Report Coverage
         cobertura('unit/coverage.xml') {
             failNoReports = false
