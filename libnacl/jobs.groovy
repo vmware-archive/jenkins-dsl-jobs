@@ -41,10 +41,6 @@ def common_main_job = job(type: BuildFlow) {
 
     configure {
         it.appendNode('buildNeedsWorkspace').setValue(true)
-        it.appendNode(
-            'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
-            [plugin: 'build-flow-test-aggregator']
-        )
     }
 
     wrappers {
@@ -108,6 +104,7 @@ def common_main_job = job(type: BuildFlow) {
                 'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
                 [plugin: 'build-flow-test-aggregator']
             )
+        }
 
         // Cleanup workspace
         wsCleanup()
