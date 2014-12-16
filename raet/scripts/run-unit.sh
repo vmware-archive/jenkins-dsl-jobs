@@ -10,4 +10,4 @@ nosetests \
   --cover-package=raet \
   --cover-xml \
   --cover-xml-file=${WORKSPACE}/coverage.xml \
-  -v tests
+  -v raet
