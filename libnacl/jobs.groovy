@@ -2,7 +2,9 @@
 
 // Common variable Definitions
 def github_repo = 'saltstack/libnacl'
-def project_description = 'Python ctypes wrapper for libsodium'
+def repo_api = new URL("https://api.github.com/${github_repo}")
+def repo_data = new groovy.json.JsonSlurper().parse(repo_api)
+def project_description = repo_data['description']
 
 // Job rotation defaults
 def default_days_to_keep = 90
