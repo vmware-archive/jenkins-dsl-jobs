@@ -1,7 +1,7 @@
-// Sorbic Jenkins jobs seed script
+// raet Jenkins jobs seed script
 
 // Common variable Definitions
-def github_repo = 'thatch45/sorbic'
+def github_repo = 'saltstack/raet'
 def repo_api = new URL("https://api.github.com/repos/${github_repo}")
 def repo_data = new groovy.json.JsonSlurper().parse(repo_api.newReader())
 def project_description = repo_data['description']
@@ -20,24 +20,24 @@ def default_timeout_minutes = 15
 
 // Define the folder structure
 folder {
-    name('sorbic')
-    displayName('Sorbic')
+    name('raet')
+    displayName('RAET')
     description = project_description
 }
 folder {
-    name('sorbic/master')
+    name('raet/master')
     displayName('Master Branch')
     description = project_description
 }
 folder {
-    name('sorbic/pr')
+    name('raet/pr')
     displayName('Pull Requests')
     description = project_description
 }
 
 // Main master branch job
 def master_main_job = job(type: BuildFlow) {
-    name = 'sorbic/master-main-build'
+    name = 'raet/master-main-build'
     displayName('Master Branch Main Build')
     description(project_description)
     label('worker')
@@ -92,13 +92,11 @@ def master_main_job = job(type: BuildFlow) {
 
     // Job Triggers
     triggers {
-        // Make sure it runs once every Sunday to get coverage reports
-        cron('H * * * 0')
         githubPush()
     }
 
     buildFlow(
-        readFileFromWorkspace('jenkins-seed', 'sorbic/scripts/master-main-build-flow.groovy')
+        readFileFromWorkspace('jenkins-seed', 'raet/scripts/master-main-build-flow.groovy')
     )
 
     publishers {
@@ -121,7 +119,7 @@ def master_main_job = job(type: BuildFlow) {
 
 // Lint Master Job
 def master_lint_job = job {
-    name = 'sorbic/master/lint'
+    name = 'raet/master/lint'
     displayName('Lint')
     concurrentBuild(allowConcurrentBuild = true)
     description(project_description + ' - Code Lint')
@@ -172,8 +170,8 @@ def master_lint_job = job {
     environmentVariables {
         env('GITHUB_REPO', github_repo)
         env('COMMIT_STATUS_CONTEXT', 'ci/lint')
-        env('VIRTUALENV_NAME', 'sorbic-master')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.sorbic.lint')
+        env('VIRTUALENV_NAME', 'raet-master')
+        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.raet.lint')
     }
 
     // Job Steps
@@ -185,7 +183,7 @@ def master_lint_job = job {
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
         // Run Lint Code
-        shell(readFileFromWorkspace('jenkins-seed', 'sorbic/scripts/run-lint.sh'))
+        shell(readFileFromWorkspace('jenkins-seed', 'raet/scripts/run-lint.sh'))
     }
 
     publishers {
@@ -203,15 +201,11 @@ def master_lint_job = job {
 
 // Master Unit Tests
 def master_unit_job = job {
-    name = 'sorbic/master/unit'
+    name = 'raet/master/unit'
     displayName('Unit')
     concurrentBuild(allowConcurrentBuild = true)
     description(project_description + ' - Unit Tests')
     label('worker')
-
-    parameters {
-        booleanParam('RUN_COVERAGE', defaultValue=false, description='Run unit tests with code coverage')
-    }
 
     wrappers {
         // Inject global defined passwords in the environment
@@ -251,8 +245,8 @@ def master_unit_job = job {
     environmentVariables {
         env('GITHUB_REPO', github_repo)
         env('COMMIT_STATUS_CONTEXT', 'ci/unit')
-        env('VIRTUALENV_NAME', 'sorbic-master')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.sorbic.unit')
+        env('VIRTUALENV_NAME', 'raet-master')
+        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.raet.unit')
     }
 
     // Job Steps
@@ -264,7 +258,7 @@ def master_unit_job = job {
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
         // Run Unit Tests
-        shell(readFileFromWorkspace('jenkins-seed', 'sorbic/scripts/run-unit.sh'))
+        shell(readFileFromWorkspace('jenkins-seed', 'raet/scripts/run-unit.sh'))
     }
 
     publishers {
@@ -290,7 +284,7 @@ def master_unit_job = job {
 
 // PR Main Job
 job(type: BuildFlow) {
-    name = 'sorbic/pr-main-build'
+    name = 'raet/pr-main-build'
     displayName('Pull Requests Main Build')
     description(project_description)
     label('worker')
@@ -355,14 +349,14 @@ job(type: BuildFlow) {
     }
 
     buildFlow(
-        readFileFromWorkspace('jenkins-seed', 'sorbic/scripts/pr-main-build-flow.groovy')
+        readFileFromWorkspace('jenkins-seed', 'raet/scripts/pr-main-build-flow.groovy')
     )
 
     publishers {
         // Report Coverage
-        //cobertura('unit/coverage.xml') {
-        //    failNoReports = false
-        //}
+        cobertura('unit/coverage.xml') {
+            failNoReports = false
+        }
         // Report Violations
         violations {
             pylint(10, 999, 999, 'lint/pylint-report*.xml')
@@ -378,7 +372,7 @@ job(type: BuildFlow) {
 
 // PR Lint Job
 job {
-    name = 'sorbic/pr/lint'
+    name = 'raet/pr/lint'
     displayName('Lint')
     concurrentBuild(allowConcurrentBuild = true)
     description(project_description + ' - Code Lint')
@@ -431,8 +425,8 @@ job {
     environmentVariables {
         env('GITHUB_REPO', github_repo)
         env('COMMIT_STATUS_CONTEXT', 'ci/lint')
-        env('VIRTUALENV_NAME', 'sorbic-pr')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.sorbic.lint')
+        env('VIRTUALENV_NAME', 'raet-pr')
+        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.raet.lint')
     }
 
     // Job Steps
@@ -444,7 +438,7 @@ job {
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
         // Run Lint Code
-        shell(readFileFromWorkspace('jenkins-seed', 'sorbic/scripts/run-lint.sh'))
+        shell(readFileFromWorkspace('jenkins-seed', 'raet/scripts/run-lint.sh'))
     }
 
     publishers {
@@ -462,15 +456,11 @@ job {
 
 // PR Unit Tests
 job {
-    name = 'sorbic/pr/unit'
+    name = 'raet/pr/unit'
     displayName('Unit')
     concurrentBuild(allowConcurrentBuild = true)
     description(project_description + ' - Unit Tests')
     label('worker')
-
-    parameters {
-        booleanParam('RUN_COVERAGE', defaultValue=false, description='Run unit tests with code coverage')
-    }
 
     wrappers {
         // Inject global defined passwords in the environment
@@ -512,8 +502,8 @@ job {
     environmentVariables {
         env('GITHUB_REPO', github_repo)
         env('COMMIT_STATUS_CONTEXT', 'ci/unit')
-        env('VIRTUALENV_NAME', 'sorbic-pr')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.sorbic.unit')
+        env('VIRTUALENV_NAME', 'raet-pr')
+        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.raet.unit')
     }
 
     // Job Steps
@@ -525,14 +515,14 @@ job {
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
         // Run Unit Tests
-        shell(readFileFromWorkspace('jenkins-seed', 'sorbic/scripts/run-unit.sh'))
+        shell(readFileFromWorkspace('jenkins-seed', 'raet/scripts/run-unit.sh'))
     }
 
     publishers {
         // Report Coverage
-        //cobertura('coverage.xml') {
-        //    failNoReports = false
-        //}
+        cobertura('coverage.xml') {
+            failNoReports = false
+        }
 
         // Junit Reports
         archiveJunit('nosetests.xml') {
