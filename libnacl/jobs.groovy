@@ -129,6 +129,13 @@ def master_clone_job = job {
     description(project_description + ' - Clone Repository')
     label('worker')
 
+    configure {
+        job_properties = it.get('properties').get(0).appendNode(
+            'hudson.plugins.copyartifact.CopyArtifactPermissionProperty').appendNode(
+                'projectNameList').appendNode(
+                    'string').setValue('libnacl/master/*')
+    }
+
     wrappers {
         // Inject global defined passwords in the environment
         injectPasswords()
@@ -452,6 +459,13 @@ def pr_clone_job = job {
         stringParam('PR')
     }
 
+    configure {
+        job_properties = it.get('properties').get(0).appendNode(
+            'hudson.plugins.copyartifact.CopyArtifactPermissionProperty').appendNode(
+                'projectNameList').appendNode(
+                    'string').setValue('libnacl/pr/*')
+    }
+
     wrappers {
         // Inject global defined passwords in the environment
         injectPasswords()
@@ -596,7 +610,7 @@ job {
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
         // Copy the workspace artifact
-        copyArtifacts('libnacl/master/clone', 'workspace.cpio.xz') {
+        copyArtifacts('libnacl/pr/clone', 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
         }
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/decompress-workspace.sh'))
@@ -671,7 +685,7 @@ job {
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
         // Copy the workspace artifact
-        copyArtifacts('libnacl/master/clone', 'workspace.cpio.xz') {
+        copyArtifacts('libnacl/pr/clone', 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
         }
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/decompress-workspace.sh'))
