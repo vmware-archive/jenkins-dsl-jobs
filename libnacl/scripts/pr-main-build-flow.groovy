@@ -1,5 +1,5 @@
 retry(3) {
-    clone = job('libnacl/pr/clone', PR: params['ghprbPullId'])
+    clone = build('libnacl/pr/clone', PR: params['ghprbPullId'])
 }
 
 // Let's run Lint & Unit in parallel
