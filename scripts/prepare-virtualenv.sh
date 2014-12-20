@@ -1,13 +1,16 @@
 #!/bin/sh
 
+# Don't call 'salt-call' at the same time
+sleep $(($RANDOM % 6))
+
 # Wait for a running salt-call state.sls
 if [ "$(pgrep -f 'salt-call state.sls')" != "" ]; then
-    stdbuf -i0 -o0 -e0 printf "%s" "Waiting on running salt-call to finish "
+    printf "%s" "Waiting on running salt-call to finish "
     while [ "$(pgrep -f 'salt-call state.sls')" != "" ]; do
         sleep 1
-        stdbuf -i0 -o0 -e0 printf "%s" "."
+        printf "%s" "."
     done
-    stdbuf -i0 -o0 -e0 printf "%s\n\n" "Done!"
+    printf "%s\n\n" "Done!"
 fi
 
 salt-call state.sls ${VIRTUALENV_SETUP_STATE_NAME} pillar="{virtualenv_name: ${VIRTUALENV_NAME}}"
