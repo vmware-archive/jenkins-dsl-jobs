@@ -1,4 +1,7 @@
 // libnacl Jenkins jobs seed script
+package libnacl
+
+import lib.Admins
 
 // Common variable Definitions
 def github_repo = 'saltstack/libnacl'
@@ -406,9 +409,10 @@ job(type: BuildFlow) {
     // Job Triggers
     triggers {
         pullRequest {
-            //orgWhiteList('saltstack')
             useGitHubHooks()
             permitAll()
+            triggerPhrase('Go Go Jenkins!')
+            admins(Admins.usernames)
         }
     }
 
