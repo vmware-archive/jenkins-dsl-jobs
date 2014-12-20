@@ -1,6 +1,6 @@
 package lib
 
-static usernames = [
+List<String> usernames = [
     'thatch45',
     's0undt3ch',
     'UtahDave',
