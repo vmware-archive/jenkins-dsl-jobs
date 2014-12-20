@@ -486,7 +486,7 @@ def pr_clone_job = job {
             }
             branch('origin/pr/${PR}/merge')
             configure {
-                extensions = it.get('extensions').get(0)
+                extensions = it.get('extensions')
                 extension = extensions.appendNode('hudson.plugins.git.extensions.impl.ChangelogToBranch')
                 options = extension.appendNode('options')
                 options.appendNode('compareRemote').setValue('origin')
