@@ -375,6 +375,10 @@ job(type: BuildFlow) {
             'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
             [plugin: 'build-flow-test-aggregator@']
         )
+        properties = it.get('properties').get(0)
+        github_project_property = properties.appendNode(
+            'com.coravy.hudson.plugins.github.GithubProjectProperty')
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
     }
 
     wrappers {
@@ -540,6 +544,7 @@ job {
     // Parameters Definition
     parameters {
         stringParam('PR')
+        stringParam('GIT_COMMIT')
         stringParam('CLONE_BUILD_ID')
     }
 
@@ -624,6 +629,7 @@ job {
     // Parameters Definition
     parameters {
         stringParam('PR')
+        stringParam('GIT_COMMIT')
         stringParam('CLONE_BUILD_ID')
     }
 

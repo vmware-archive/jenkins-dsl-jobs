@@ -5,10 +5,16 @@ retry(3) {
 // Let's run Lint & Unit in parallel
 parallel (
   {
-    lint = build('libnacl/pr/lint', PR: params['ghprbPullId'], CLONE_BUILD_ID: clone.build.number)
+    lint = build('libnacl/pr/lint',
+                 PR: params['ghprbPullId'],
+                 GIT_COMMIT: params['ghprbActualCommit'],
+                 CLONE_BUILD_ID: clone.build.number)
   },
   {
-    unit = build('libnacl/pr/unit', PR: params['ghprbPullId'], CLONE_BUILD_ID: clone.build.number)
+    unit = build('libnacl/pr/unit',
+                 PR: params['ghprbPullId'],
+                 GIT_COMMIT: params['ghprbActualCommit'],
+                 CLONE_BUILD_ID: clone.build.number)
   }
 )
 
