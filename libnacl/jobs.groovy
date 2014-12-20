@@ -140,6 +140,9 @@ def master_clone_job = job {
         // Inject global defined passwords in the environment
         injectPasswords()
 
+        // Cleanup the workspace before starting
+        preBuildCleanup()
+
         // Add timestamps to console log
         timestamps()
 
@@ -225,6 +228,9 @@ def master_lint_job = job {
         // Inject global defined passwords in the environment
         injectPasswords()
 
+        // Cleanup the workspace before starting
+        preBuildCleanup()
+
         // Add timestamps to console log
         timestamps()
 
@@ -304,6 +310,9 @@ def master_unit_job = job {
     wrappers {
         // Inject global defined passwords in the environment
         injectPasswords()
+
+        // Cleanup the workspace before starting
+        preBuildCleanup()
 
         // Add timestamps to console log
         timestamps()
@@ -392,6 +401,9 @@ job(type: BuildFlow) {
         // Inject global defined passwords in the environment
         injectPasswords()
 
+        // Cleanup the workspace before starting
+        preBuildCleanup()
+
         // Add timestamps to console log
         timestamps()
 
@@ -469,6 +481,9 @@ def pr_clone_job = job {
     wrappers {
         // Inject global defined passwords in the environment
         injectPasswords()
+
+        // Cleanup the workspace before starting
+        preBuildCleanup()
 
         // Add timestamps to console log
         timestamps()
@@ -569,6 +584,9 @@ job {
         // Cleanup the workspace before starting
         preBuildCleanup()
 
+        // Cleanup the workspace before starting
+        preBuildCleanup()
+
         // Add timestamps to console log
         timestamps()
 
@@ -650,6 +668,9 @@ job {
     wrappers {
         // Inject global defined passwords in the environment
         injectPasswords()
+
+        // Cleanup the workspace before starting
+        preBuildCleanup()
 
         // Add timestamps to console log
         timestamps()
