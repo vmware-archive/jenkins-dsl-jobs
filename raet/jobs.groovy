@@ -128,9 +128,6 @@ def master_main_job = job(type: BuildFlow) {
             pylint(10, 999, 999, 'lint/pylint-report*.xml')
         }
 
-        // Set commit status
-        githubCommitNotifier()
-
         // Cleanup workspace
         wsCleanup()
     }
