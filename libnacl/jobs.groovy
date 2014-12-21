@@ -512,8 +512,8 @@ job(type: BuildFlow) {
                 recipientList: '$DEFAULT_RECIPIENTS',
                 sendToRecipientList: true
             )
-            configure {
-                it.get('presendScript').get(0).setValue(
+            configure { node ->
+                node.appendNode('presendScript').setValue(
                     readFileFromWorkspace('jenkins-seed', 'groovy/inject-submitter-email-address.groovy')
                 )
             }
