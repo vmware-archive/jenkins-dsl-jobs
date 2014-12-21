@@ -504,7 +504,7 @@ job(type: BuildFlow) {
             pylint(10, 999, 999, 'lint/pylint-report*.xml')
         }
 
-        extendedEmail {
+        extendedEmail('$DEFAULT_RECIPIENTS', '$DEFAULT_SUBJECT', '$DEFAULT_CONTENT') {
             trigger(
                 triggerName: 'Failure',
                 subject: '$DEFAULT_SUBJECT',
