@@ -509,7 +509,7 @@ job(type: BuildFlow) {
                 triggerName: 'Failure',
                 subject: '$DEFAULT_SUBJECT',
                 body: '$DEFAULT_CONTENT',
-                recipientList: '$DEFAULT_RECIPIENTS'
+                recipientList: '$DEFAULT_RECIPIENTS',
                 sendToRecipientList: true
             )
             configure {
