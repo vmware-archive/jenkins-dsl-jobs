@@ -504,8 +504,14 @@ job(type: BuildFlow) {
             pylint(10, 999, 999, 'lint/pylint-report*.xml')
         }
 
-        extendedEmail('$DEFAULT_RECIPIENTS', '$DEFAULT_SUBJECT', '$DEFAULT_CONTENT') {
-            trigger('Failure', sendToRecipientList: true)
+        extendedEmail {
+            trigger(
+                triggerName: 'Failure',
+                subject: '$DEFAULT_SUBJECT',
+                body: '$DEFAULT_CONTENT',
+                recipientList: '$DEFAULT_RECIPIENTS'
+                sendToRecipientList: true
+            )
             configure {
                 it.get('presendScript').setValue(
                     readFileFromWorkspace('jenkins-seed', 'groovy/inject-submitter-email-address.groovy')
