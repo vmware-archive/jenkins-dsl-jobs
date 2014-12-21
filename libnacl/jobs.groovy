@@ -48,9 +48,27 @@ def master_main_job = job(type: BuildFlow) {
 
     configure {
         it.appendNode('buildNeedsWorkspace').setValue(true)
-        it.get('publishers').get(0).appendNode(
+        job_publishers = it.get('publishers').get(0)
+        job_publishers.appendNode(
             'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
-            [plugin: 'build-flow-test-aggregator@']
+            [plugin: 'build-flow-test-aggregator']
+        )
+        job_properties = it.get('properties').get(0)
+        github_project_property = job_properties.appendNode(
+            'com.coravy.hudson.plugins.github.GithubProjectProperty')
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+        slack_notifications = job_properties.appendNode(
+            'jenkins.plugins.slack.SlackNotifier_-SlackJobProperty')
+        slack_notifications.appendNode('room').setValue('#jenkins')
+        slack_notifications.appendNode('startNotifications'.setValue(false)
+        slack_notifications.appendNode('notifySuccess').setValue(true)
+        slack_notifications.appendNode('notifyAborted').setValue(true)
+        slack_notifications.appendNode('notifyNotBuilt').setValue(true)
+        slack_notifications.appendNode('notifyFailure').setValue(true)
+        slack_notifications.appendNode('notifyBackToNormal').setValue(true)
+        job_publishers.appendNode(
+            'jenkins.plugins.slack.SlackNotifier',
+            [plugin: slack]
         )
     }
 
@@ -99,7 +117,7 @@ def master_main_job = job(type: BuildFlow) {
     }
 
     buildFlow(
-        readFileFromWorkspace('jenkins-seed', 'libnacl/scripts/master-main-build-flow.groovy')
+        readFileFromWorkspace('jenkins-seed', 'libnacl/groovy/master-main-build-flow.groovy')
     )
 
     publishers {
@@ -130,10 +148,15 @@ def master_clone_job = job {
     label('worker')
 
     configure {
-        job_properties = it.get('properties').get(0).appendNode(
+        job_properties = it.get('properties').get(0)
+        job_properties.appendNode(
             'hudson.plugins.copyartifact.CopyArtifactPermissionProperty').appendNode(
                 'projectNameList').appendNode(
                     'string').setValue('libnacl/master/*')
+        github_project_property = job_properties.appendNode(
+            'com.coravy.hudson.plugins.github.GithubProjectProperty')
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+
     }
 
     wrappers {
@@ -224,6 +247,13 @@ def master_lint_job = job {
         stringParam('CLONE_BUILD_ID')
     }
 
+    configure {
+        job_properties = it.get('properties').get(0)
+        github_project_property = job_properties.appendNode(
+            'com.coravy.hudson.plugins.github.GithubProjectProperty')
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+    }
+
     wrappers {
         // Inject global defined passwords in the environment
         injectPasswords()
@@ -307,6 +337,13 @@ def master_unit_job = job {
         stringParam('CLONE_BUILD_ID')
     }
 
+    configure {
+        job_properties = it.get('properties').get(0)
+        github_project_property = job_properties.appendNode(
+            'com.coravy.hudson.plugins.github.GithubProjectProperty')
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+    }
+
     wrappers {
         // Inject global defined passwords in the environment
         injectPasswords()
@@ -387,7 +424,8 @@ job(type: BuildFlow) {
 
     configure {
         it.appendNode('buildNeedsWorkspace').setValue(true)
-        it.get('publishers').get(0).appendNode(
+        job_publishers = it.get('publishers').get(0)
+        job_publishers.appendNode(
             'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
             [plugin: 'build-flow-test-aggregator@']
         )
@@ -395,6 +433,19 @@ job(type: BuildFlow) {
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
         github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+        slack_notifications = job_properties.appendNode(
+            'jenkins.plugins.slack.SlackNotifier_-SlackJobProperty')
+        slack_notifications.appendNode('room').setValue('#jenkins')
+        slack_notifications.appendNode('startNotifications'.setValue(false)
+        slack_notifications.appendNode('notifySuccess').setValue(true)
+        slack_notifications.appendNode('notifyAborted').setValue(true)
+        slack_notifications.appendNode('notifyNotBuilt').setValue(true)
+        slack_notifications.appendNode('notifyFailure').setValue(true)
+        slack_notifications.appendNode('notifyBackToNormal').setValue(true)
+        job_publishers.appendNode(
+            'jenkins.plugins.slack.SlackNotifier',
+            [plugin: slack]
+        )
     }
 
     wrappers {
@@ -440,7 +491,7 @@ job(type: BuildFlow) {
     }
 
     buildFlow(
-        readFileFromWorkspace('jenkins-seed', 'libnacl/scripts/pr-main-build-flow.groovy')
+        readFileFromWorkspace('jenkins-seed', 'libnacl/groovy/pr-main-build-flow.groovy')
     )
 
     publishers {
@@ -451,6 +502,15 @@ job(type: BuildFlow) {
         // Report Violations
         violations {
             pylint(10, 999, 999, 'lint/pylint-report*.xml')
+        }
+
+        extendedEmail {
+            trigger('Failure', sendToRecipientList: true)
+            configure {
+                it.get('presendScript').setValue(
+                    readFileFromWorkspace('jenkins-seed', 'groovy/inject-submitter-email-address.groovy')
+                )
+            }
         }
 
         // Cleanup workspace
@@ -472,10 +532,14 @@ def pr_clone_job = job {
     }
 
     configure {
-        job_properties = it.get('properties').get(0).appendNode(
+        job_properties = it.get('properties').get(0)
+        job_properties.appendNode(
             'hudson.plugins.copyartifact.CopyArtifactPermissionProperty').appendNode(
                 'projectNameList').appendNode(
                     'string').setValue('libnacl/pr/*')
+        github_project_property = job_properties.appendNode(
+            'com.coravy.hudson.plugins.github.GithubProjectProperty')
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
     }
 
     wrappers {
@@ -577,6 +641,13 @@ job {
         stringParam('CLONE_BUILD_ID')
     }
 
+    configure {
+        job_properties = it.get('properties').get(0)
+        github_project_property = job_properties.appendNode(
+            'com.coravy.hudson.plugins.github.GithubProjectProperty')
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+    }
+
     wrappers {
         // Inject global defined passwords in the environment
         injectPasswords()
@@ -663,6 +734,13 @@ job {
         stringParam('PR')
         stringParam('GIT_COMMIT')
         stringParam('CLONE_BUILD_ID')
+    }
+
+    configure {
+        job_properties = it.get('properties').get(0)
+        github_project_property = job_properties.appendNode(
+            'com.coravy.hudson.plugins.github.GithubProjectProperty')
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
     }
 
     wrappers {
