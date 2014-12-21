@@ -742,6 +742,7 @@ job {
         stringParam('PR')
         stringParam('GIT_COMMIT')
         stringParam('CLONE_BUILD_ID')
+        booleanParam('RUN_COVERAGE', defaultValue=false, description='Run unit tests with code coverage')
     }
 
     configure {
