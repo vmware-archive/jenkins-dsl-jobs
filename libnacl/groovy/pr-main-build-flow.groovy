@@ -23,7 +23,6 @@ guard {
 
 } rescue {
 
-
     // Let's instantiate the build flow toolbox
     def toolbox = extension.'build-flow-toolbox'
 
