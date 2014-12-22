@@ -443,7 +443,7 @@ salt_branches.each {
                             name = "salt/${salt_branch}/${build_type.toLowercase()}/${provider_name.toLowercase()}/${job_name}"
                             displayName(vm_name)
                             concurrentBuild(allowConcurrentBuild = true)
-                            description("${project_description} - ${build_type} - ${provider_name} - ${vm_name}')
+                            description("${project_description} - ${build_type} - ${provider_name} - ${vm_name}")
                             label('cloud')
 
                             // Parameters Definition
