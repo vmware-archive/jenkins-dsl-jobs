@@ -1,4 +1,5 @@
 // Salt Jenkins jobs seed script
+import groovy.text.*
 import lib.Admins
 
 // Common variable Definitions
@@ -48,6 +49,64 @@ def salt_cloud_providers = [
     'Linode',
     'Rackspace'
 ]
+
+
+FLOW_SCRIPT_TEMPLATE_TEXT = """\
+import hudson.FilePath
+
+guard {
+    retry(3) {
+        clone = build("salt/${branch_name}/clone")
+    }
+
+    // Let's run Lint & Unit in parallel
+    parallel (
+        {
+            lint = build(
+                "salt/${branch_name}/lint",
+                CLONE_BUILD_ID: clone.build.number
+            )
+        },
+        <% vm_names.each { name, job_name -> %>
+        {
+            ${name} = build(
+                salt/${branch}/${build_type}/<%
+                    if ( build_type.toLowerCase() == 'cloud') { %>\${PROVIDER}<% }
+                %>${job_name}",
+                GIT_COMMIT: params["GIT_COMMIT"]
+            )
+        },
+        <% } %>
+    )
+} rescue {
+    // Let's instantiate the build flow toolbox
+    def toolbox = extension.'build-flow-toolbox'
+
+    local_lint_workspace_copy = build.workspace.child('lint')
+    local_lint_workspace_copy.mkdirs()
+    toolbox.copyFiles(lint.workspace, local_lint_workspace_copy)
+
+    <% vm_names.each { name, job_name -> %>
+    local_${name}_workspace_copy = build.workspace.child('${job_name}')
+    local_${name}_workspace_copy.mkdirs()
+    toolbox.copyFiles(${name}.workspace, local_${name}_workspace_copy)
+
+    <% } %>
+   /*
+    *  Copy the clone build changelog.xml into this jobs root for proper changelog report
+    *  This does not currently work but is here for future reference
+    */
+    def clone_changelog = new FilePath(clone.getRootDir()).child('changelog.xml')
+    def build_changelog = new FilePath(build.getRootDir()).child('changelog.xml')
+    build_changelog.copyFrom(clone_changelog)
+
+    // Delete the child workspaces directory
+    lint.workspace.deleteRecursive()
+
+    <% vm_names.each { name, job_name -> %>
+    ${name}.workspace.deleteRecursive()
+    <% } %>
+"""
 
 // Define the folder structure
 folder {
@@ -346,89 +405,24 @@ salt_branches.each { branch_name ->
                 }
                 */
 
-                def build_flow_script = """\
-                    import hudson.FilePath
-
-                    guard {
-                        retry(3) {
-                            clone = build("salt/${branch_name}/clone")
-                        }
-
-                        // Let's run Lint & Unit in parallel
-                        parallel (
-                            {
-                                lint = build(
-                                    "salt/${branch_name}/lint",
-                                    CLONE_BUILD_ID: clone.build.number
-                                )
-                            },"""
-                if (build_type.toLowerCase() == 'cloud') {
-                    vm_names.each { vm_name ->
-                        def vm_name_nospc = vm_name.toLowerCase().replace(' ', '-')
-                        def vm_name_nodots = vm_name.toLowerCase().replace(' ', '_').replace('.', '_')
-                        build_flow_script = build_flow_script + """\
-
-                            {
-                                ${vm_name_nodots} = build(
-                                    salt/${branch_name}/${build_type.toLowerCase()}/\${PROVIDER}/${vm_name_nospc}",
-                                    GIT_COMMIT: params["GIT_COMMIT"]
-                                )
-                            },"""
-                    }
-                } else {
-                    vm_names.each { vm_name ->
-                        def vm_name_nospc = vm_name.toLowerCase().replace(' ', '-')
-                        def vm_name_nodots = vm_name.toLowerCase().replace(' ', '_').replace('.', '_')
-                        build_flow_script = build_flow_script + """\
-
-                            {
-                                ${vm_name_nodots} = build(
-                                    salt/${branch_name}/${build_type.toLowerCase()}/${vm_name_nospc}",
-                                    GIT_COMMIT: params["GIT_COMMIT"]
-                                )
-                            },"""
-                    }
-                }
-                build_flow_script = build_flow_script + """\
-                        )
-                    } rescue {
-                        // Let's instantiate the build flow toolbox
-                        def toolbox = extension.'build-flow-toolbox'
-
-                        local_lint_workspace_copy = build.workspace.child('lint')
-                        local_lint_workspace_copy.mkdirs()
-                        toolbox.copyFiles(lint.workspace, local_lint_workspace_copy)"""
+                template_vm_data = []
                 vm_names.each { vm_name ->
+                    def vm_name_nospc = vm_name.toLowerCase().replace(' ', '-')
                     def vm_name_nodots = vm_name.toLowerCase().replace(' ', '_').replace('.', '_')
-                    build_flow_script = build_flow_script + """\
-
-
-                        local_${vm_name_nodots}_workspace_copy = build.workspace.child('${vm_name_nodots}')
-                        local_$vm_name_nodots}_workspace_copy.mkdirs()
-                        toolbox.copyFiles(${vm_name_nodots}.workspace, local_${vm_name_nodots}_workspace_copy)"""
-                    }
-                build_flow_script = build_flow_script + """\
-                    /*
-                    *  Copy the clone build changelog.xml into this jobs root for proper changelog report
-                    *  This does not currently work but is here for future reference
-                    */
-                    def clone_changelog = new FilePath(clone.getRootDir()).child('changelog.xml')
-                    def build_changelog = new FilePath(build.getRootDir()).child('changelog.xml')
-                    build_changelog.copyFrom(clone_changelog)
-
-                    // Delete the child workspaces directory
-                    lint.workspace.deleteRecursive()"""
-                vm_names.each { vm_name ->
-                    def vm_name_nodots = vm_name.toLowerCase().replace(' ', '_').replace('.', '_')
-                    build_flow_script = build_flow_script + """\
-
-                    ${vm_name_nodots}.workspace.deleteRecursive()"""
+                    template_vm_data.add(
+                        [vm_name_nodots, vm_name_nospc]
+                    )
                 }
-                build_flow_script = build_flow_script + """\
-                }
-                """
+                template_context = [
+                    build_type: build_type,
+                    branch_name: branch_name,
+                    vm_names: template_vm_data
+                ]
+                template_engine = new SimpleTemplateEngine()
+                flow_script_template = template_engine.createTemplate(FLOW_SCRIPT_TEMPLATE_TEXT)
+                flow_script_template_text = flow_script_template.make(template_context)
 
-                buildFlow(build_flow_script.stripIndent())
+                buildFlow(flow_script_template_text)
 
                 publishers {
                     // Report Coverage
