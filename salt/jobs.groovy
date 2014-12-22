@@ -64,20 +64,21 @@ salt_branches.each {
         description = project_description
     }
 
-    salt_build_types.each { build_type, vm_names ->
-        def build_type_folder_name = "${branch_folder_name}/${build_type.toLowercase()}"
+    salt_build_types.each { salt_build_type, vm_names ->
+        def build_type_folder_name = "${branch_folder_name}/${salt_build_type.toLowercase()}"
         folder {
             name(build_type_folder_name)
-            displayName("${build_type} Builds")
+            displayName("${salt_build_type} Builds")
             description = project_description
         }
 
-        if (build_type.toLowercase() == 'cloud') {
+        if (salt_build_type.toLowercase() == 'cloud') {
             salt_cloud_providers.each {
-                cloud_provider_folder_name = "${build_type_folder_name}/${build_type.toLowercase()}"
+                provider_name = it
+                cloud_provider_folder_name = "${build_type_folder_name}/${provider_name.toLowercase()}"
                 folder {
                     name(cloud_provider_folder_name)
-                    displayName(build_type)
+                    displayName(provider_name)
                     description = project_description
                 }
             }
