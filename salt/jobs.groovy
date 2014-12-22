@@ -71,7 +71,7 @@ guard {
         {
             ${name} = build(
                 "salt/${branch_name}/${build_type}/<%
-                    if ( build_type.toLowerCase() == 'cloud') { %>\\${PROVIDER}/<% }
+                    if ( build_type.toLowerCase() == 'cloud') { %>params["PROVIDER"].toLowerCase()/<% }
                 %>${job_name}",
                 GIT_COMMIT: params["GIT_COMMIT"]
             )
@@ -341,6 +341,11 @@ salt_branches.each { branch_name ->
                 label('worker')
                 concurrentBuild(allowConcurrentBuild = true)
 
+                parameters {
+                    stringParam('GIT_COMMIT'),
+                    choiceParam('PROVIDER', salt_cloud_providers)
+                }
+
                 configure {
                     it.appendNode('buildNeedsWorkspace').setValue(true)
                     job_publishers = it.get('publishers').get(0)
@@ -441,6 +446,7 @@ salt_branches.each { branch_name ->
                 salt_cloud_providers.each { provider_name ->
                     vm_names.each { vm_name ->
                         def job_name = vm_name.toLowerCase().replace(' ', '-')
+                        def vm_name_nodots = vm_name.replace(' ', '_').replace('.', '_')
                         job {
                             name = "salt/${branch_name}/${build_type.toLowerCase()}/${provider_name.toLowerCase()}/${job_name}"
                             displayName(vm_name)
@@ -489,7 +495,7 @@ salt_branches.each { branch_name ->
                                 env('COMMIT_STATUS_CONTEXT', "ci/${job_name}")
                                 env('VIRTUALENV_NAME', "salt-${branch_name}")
                                 env('VIRTUALENV_SETUP_STATE_NAME', 'projects.salt.unit')
-                                env('VM_NAME', vm_name.replace(' ', '_').replace('.', '_'))
+                                env('VM_NAME', "${provider_name.toLowerCase()}_${vm_name.replace(' ', '_').replace('.', '_')}")
                             }
 
                             // Job Steps
@@ -500,8 +506,18 @@ salt_branches.each { branch_name ->
                                 // Set initial commit status
                                 shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
+                                // Generate the required environment variables
+                                environmentVariables {
+                                    script(
+                                        readFileFromWorkspace(
+                                            'jenkins-seed',
+                                            'salt/scripts/branches-environment-variables.sh'
+                                        )
+                                    )
+                                }
+
                                 // Run Unit Tests
-                                shell(readFileFromWorkspace('jenkins-seed', 'libnacl/scripts/run-unit.sh'))
+                                shell(readFileFromWorkspace('jenkins-seed', 'salt/scripts/branches-run-tests.sh'))
                             }
 
                             publishers {
@@ -521,6 +537,10 @@ salt_branches.each { branch_name ->
                                 }
 
                                 postBuildTask {
+                                    // Download remote files
+                                    task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/download-remote-files.sh'))
+                                    // Shutdown VM
+                                    task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/shutdown-cloud-vm.sh'))
                                     // Set final commit status
                                     task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
                                 }
@@ -590,8 +610,18 @@ salt_branches.each { branch_name ->
                             // Set initial commit status
                             shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
+                            // Generate the required environment variables
+                            environmentVariables {
+                                script(
+                                    readFileFromWorkspace(
+                                        'jenkins-seed',
+                                        'salt/scripts/branches-environment-variables.sh'
+                                    )
+                                )
+                            }
+
                             // Run Unit Tests
-                            shell(readFileFromWorkspace('jenkins-seed', 'libnacl/scripts/run-unit.sh'))
+                            shell(readFileFromWorkspace('jenkins-seed', 'salt/scripts/branches-run-tests.sh'))
                         }
 
                         publishers {
@@ -612,6 +642,10 @@ salt_branches.each { branch_name ->
                             }
 
                             postBuildTask {
+                                // Download remote files
+                                task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/download-remote-files.sh'))
+                                // Shutdown VM
+                                task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/shutdown-cloud-vm.sh'))
                                 // Set final commit status
                                 task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
                             }
