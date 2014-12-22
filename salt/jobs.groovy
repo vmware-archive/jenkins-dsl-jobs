@@ -70,13 +70,12 @@ guard {
         <% vm_names.each { name, job_name -> %>
         {
             ${name} = build(
-                salt/${branch_name}/${build_type}/<%
-                    if ( build_type.toLowerCase() == 'cloud') { %>\\${PROVIDER}<% }
+                "salt/${branch_name}/${build_type}/<%
+                    if ( build_type.toLowerCase() == 'cloud') { %>\\${PROVIDER}/<% }
                 %>${job_name}",
                 GIT_COMMIT: params["GIT_COMMIT"]
             )
-        },
-        <% } %>
+        },<% } %>
     )
 } rescue {
     // Let's instantiate the build flow toolbox
@@ -90,7 +89,6 @@ guard {
     local_${name}_workspace_copy = build.workspace.child('${job_name}')
     local_${name}_workspace_copy.mkdirs()
     toolbox.copyFiles(${name}.workspace, local_${name}_workspace_copy)
-
     <% } %>
    /*
     *  Copy the clone build changelog.xml into this jobs root for proper changelog report
@@ -104,8 +102,7 @@ guard {
     lint.workspace.deleteRecursive()
 
     <% vm_names.each { name, job_name -> %>
-    ${name}.workspace.deleteRecursive()
-    <% } %>
+    ${name}.workspace.deleteRecursive()<% } %>
 '''
 
 // Define the folder structure
@@ -414,7 +411,7 @@ salt_branches.each { branch_name ->
                     )
                 }
                 template_context = [
-                    build_type: build_type,
+                    build_type: build_type.toLowerCase(),
                     branch_name: branch_name,
                     vm_names: template_vm_data
                 ]
@@ -422,7 +419,7 @@ salt_branches.each { branch_name ->
                 flow_script_template = template_engine.createTemplate(FLOW_SCRIPT_TEMPLATE_TEXT)
                 flow_script_template_text = flow_script_template.make(template_context)
 
-                buildFlow(flow_script_template_text)
+                buildFlow(flow_script_template_text.toString())
 
                 publishers {
                     // Report Coverage
