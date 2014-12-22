@@ -55,7 +55,7 @@ salt_branches.each {
     def branch_folder_name = "salt/${it.name.toLowerCase()}"
     folder {
         name(branch_folder_name)
-        displayName("${branch_folder_name.capitalize()} Branch')
+        displayName("${branch_folder_name.capitalize()} Branch")
         description = project_description
     }
 
