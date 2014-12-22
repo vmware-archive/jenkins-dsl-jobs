@@ -278,7 +278,7 @@ salt_branches.each { branch_name ->
 
         if ( vm_names != [] ) {
             job(type: BuildFlow) {
-                name = "salt/${branch_name}/${build_type.toLowerCase()}-main-build"
+                name = "salt/${build_type.toLowerCase()}-main-build"
                 displayName("${branch_name.capitalize()} Branch ${build_type} Main Build")
                 description(project_description)
                 label('worker')
