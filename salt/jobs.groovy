@@ -494,7 +494,7 @@ salt_branches.each { branch_name ->
                                 env('COMMIT_STATUS_CONTEXT', "ci/${job_name}")
                                 env('VIRTUALENV_NAME', "salt-${branch_name}")
                                 env('VIRTUALENV_SETUP_STATE_NAME', 'projects.salt.unit')
-                                env('VM_NAME', "${provider_name.toLowerCase()}_${vm_name.replace(' ', '_').replace('.', '_')}")
+                                env('BUILD_VM_NAME', "${provider_name.toLowerCase()}_${vm_name.replace(' ', '_').replace('.', '_')}")
                             }
 
                             // Job Steps
@@ -598,7 +598,7 @@ salt_branches.each { branch_name ->
                             env('COMMIT_STATUS_CONTEXT', "ci/${job_name}")
                             env('VIRTUALENV_NAME', "salt-${branch_name}")
                             env('VIRTUALENV_SETUP_STATE_NAME', 'projects.salt.unit')
-                            env('VM_NAME', vm_name.replace(' ', '_').replace('.', '_'))
+                            env('BUILD_VM_NAME', vm_name.replace(' ', '_').replace('.', '_'))
                         }
 
                         // Job Steps

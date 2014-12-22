@@ -1,1 +1,1 @@
-salt-jenkins-build --vm-source $VM_NAME --echo-parseable-output
+salt-jenkins-build --vm-source ${BUILD_VM_NAME} --echo-parseable-output
