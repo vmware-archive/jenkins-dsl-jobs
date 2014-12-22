@@ -71,7 +71,7 @@ guard {
         {
             ${name} = build(
                 salt/${branch_name}/${build_type}/<%
-                    if ( build_type.toLowerCase() == 'cloud') { %>\${PROVIDER}<% }
+                    if ( build_type.toLowerCase() == 'cloud') { %>\\${PROVIDER}<% }
                 %>${job_name}",
                 GIT_COMMIT: params["GIT_COMMIT"]
             )
