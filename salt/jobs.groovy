@@ -23,7 +23,7 @@ def branches_api = new URL("https://api.github.com/repos/${github_repo}/branches
 def salt_branches_data = new groovy.json.JsonSlurper().parse(branches_api.newReader())
 def salt_branches = []
 salt_branches_data.each {
-  salt_branches.add(it["name"])
+  salt_branches.add(it.name)
 }
 salt_branches = salt_branches.grep(~/(develop|([\d]{4}.[\d]{1,2}))/)
 
@@ -57,7 +57,7 @@ folder {
 }
 
 salt_branches.each {
-    def branch_folder_name = "salt/${it.name.toLowerCase()}"
+    def branch_folder_name = "salt/${it.toLowerCase()}"
     folder {
         name(branch_folder_name)
         displayName("${branch_folder_name.capitalize()} Branch")
@@ -65,7 +65,7 @@ salt_branches.each {
     }
 
     salt_build_types.each {
-        def build_type_folder_name = "${branch_folder_name}/${it.name.toLowercase()}"
+        def build_type_folder_name = "${branch_folder_name}/${it.toLowercase()}"
         folder {
             name(build_type_folder_name)
             displayName("${build_type} Builds")
@@ -74,7 +74,7 @@ salt_branches.each {
 
         if (it.name == 'cloud') {
             salt_cloud_providers.each {
-                cloud_provider_folder_name = "${build_type_folder_name}/${it.name.toLowercase()}"
+                cloud_provider_folder_name = "${build_type_folder_name}/${it.toLowercase()}"
                 folder {
                     name(cloud_provider_folder_name)
                     displayName(it.name)
@@ -87,7 +87,7 @@ salt_branches.each {
 
 
 salt_branches.each {
-    def salt_branch = it.name
+    def salt_branch = it
 
     // Clone Job
     job {
@@ -361,7 +361,7 @@ salt_branches.each {
                 """
                 if (build_type.toLowercase() == 'cloud') {
                     vm_names.each {
-                        def c_vm_name = it.name.toLowercase().replace(' ', '-')
+                        def c_vm_name = it.toLowercase().replace(' ', '-')
                         build_flow_script = build_flow_script + """\
                             {
                                 ${c_vm_name} = build(salt/${salt_branch}/${build_type.toLowercase()}/\${PROVIDER}/${c_vm_name}",
@@ -371,7 +371,7 @@ salt_branches.each {
                     }
                 } else {
                     vm_names.each {
-                        def c_vm_name = it.name.toLowercase().replace(' ', '-')
+                        def c_vm_name = it.toLowercase().replace(' ', '-')
                         build_flow_script = build_flow_script + """\
                             {
                                 ${c_vm_name} = build(salt/${salt_branch}/${build_type.toLowercase()}/${c_vm_name}",
@@ -392,7 +392,7 @@ salt_branches.each {
 
                 """
                 vm_names.each {
-                    def c_vm_name = it.name.toLowercase().replace(' ', '-')
+                    def c_vm_name = it.toLowercase().replace(' ', '-')
                     build_flow_script = build_flow_script + """\
                         local_${c_vm_name}_workspace_copy = build.workspace.child('${c_vm_name}')
                         local_$c_vm_name}_workspace_copy.mkdirs()
@@ -413,7 +413,7 @@ salt_branches.each {
                     lint.workspace.deleteRecursive()
                 """
                 vm_names.each {
-                    def c_vm_name = it.name.toLowercase().replace(' ', '-')
+                    def c_vm_name = it.toLowercase().replace(' ', '-')
                     build_flow_script = build_flow_script + """\
                     ${c_vm_name}.workspace.deleteRecursive()
                     """
@@ -441,7 +441,7 @@ salt_branches.each {
 
             if (build_type.toLowercase() == 'cloud') {
                 salt_cloud_providers.each {
-                    def provider_name = it.name
+                    def provider_name = it
                     vm_names.each {
                         def job_name = vm_name.toLowercase().replace(' ', '-')
                         job {
