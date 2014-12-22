@@ -103,6 +103,7 @@ guard {
 
     <% vm_names.each { name, job_name -> %>
     ${name}.workspace.deleteRecursive()<% } %>
+}
 '''
 
 // Define the folder structure
