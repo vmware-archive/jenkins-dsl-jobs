@@ -51,13 +51,13 @@ def salt_cloud_providers = [
 
 // Define the folder structure
 folder {
-    name('Salt')
-    displayName('salt')
+    name('salt')
+    displayName('Salt')
     description = project_description
 }
 
-salt_branches.each {
-    def branch_folder_name = "salt/${it.toLowerCase()}"
+salt_branches.each { branch_name ->
+    def branch_folder_name = "salt/${branch_name.toLowerCase()}"
     folder {
         name(branch_folder_name)
         displayName("${branch_folder_name.capitalize()} Branch")
@@ -65,21 +65,22 @@ salt_branches.each {
     }
 
     salt_build_types.each { salt_build_type, vm_names ->
-        def build_type_folder_name = "${branch_folder_name}/${salt_build_type.toLowercase()}"
-        folder {
-            name(build_type_folder_name)
-            displayName("${salt_build_type} Builds")
-            description = project_description
-        }
+        if ( vm_names != [] ) {
+            def build_type_folder_name = "${branch_folder_name}/${salt_build_type.toLowercase()}"
+            folder {
+                name(build_type_folder_name)
+                displayName("${salt_build_type} Builds")
+                description = project_description
+            }
 
-        if (salt_build_type.toLowercase() == 'cloud') {
-            salt_cloud_providers.each {
-                provider_name = it
-                cloud_provider_folder_name = "${build_type_folder_name}/${provider_name.toLowercase()}"
-                folder {
-                    name(cloud_provider_folder_name)
-                    displayName(provider_name)
-                    description = project_description
+            if (salt_build_type.toLowercase() == 'cloud') {
+                salt_cloud_providers.each { provider_name ->
+                    cloud_provider_folder_name = "${build_type_folder_name}/${provider_name.toLowercase()}"
+                    folder {
+                        name(cloud_provider_folder_name)
+                        displayName(provider_name)
+                        description = project_description
+                    }
                 }
             }
         }
