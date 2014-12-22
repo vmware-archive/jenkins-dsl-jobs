@@ -591,6 +591,16 @@ salt_branches.each { branch_name ->
                                 )
                                 writeDescription('Build failed due to timeout after {0} minutes')
                             }
+
+                            // Generate the required environment variables
+                            environmentVariables {
+                                script(
+                                    readFileFromWorkspace(
+                                        'jenkins-seed',
+                                        'salt/scripts/branches-environment-variables.sh'
+                                    )
+                                )
+                            }
                         }
 
                         environmentVariables {
@@ -599,12 +609,6 @@ salt_branches.each { branch_name ->
                             env('VIRTUALENV_NAME', "salt-${branch_name}")
                             env('VIRTUALENV_SETUP_STATE_NAME', 'projects.salt.unit')
                             env('BUILD_VM_NAME', vm_name.replace(' ', '_').replace('.', '_'))
-                            script(
-                                readFileFromWorkspace(
-                                    'jenkins-seed',
-                                    'salt/scripts/branches-environment-variables.sh'
-                                )
-                            )
                         }
 
                         // Job Steps
