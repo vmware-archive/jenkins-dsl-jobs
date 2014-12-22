@@ -70,7 +70,7 @@ guard {
         <% vm_names.each { name, job_name -> %>
         {
             ${name} = build(
-                salt/${branch}/${build_type}/<%
+                salt/${branch_name}/${build_type}/<%
                     if ( build_type.toLowerCase() == 'cloud') { %>\${PROVIDER}<% }
                 %>${job_name}",
                 GIT_COMMIT: params["GIT_COMMIT"]
