@@ -88,10 +88,10 @@ salt_branches.each { branch_name ->
 }
 
 
-salt_branches.each { salt_branch ->
+salt_branches.each { branch_name ->
     // Clone Job
     job {
-        name = "salt/${salt_branch}/clone"
+        name = "salt/${branch_name}/clone"
         displayName('Clone Repository')
 
         concurrentBuild(allowConcurrentBuild = true)
@@ -103,7 +103,7 @@ salt_branches.each { salt_branch ->
             job_properties.appendNode(
                 'hudson.plugins.copyartifact.CopyArtifactPermissionProperty').appendNode(
                     'projectNameList').appendNode(
-                        'string').setValue("salt/${salt_branch}/*")
+                        'string').setValue("salt/${branch_name}/*")
             github_project_property = job_properties.appendNode(
                 'com.coravy.hudson.plugins.github.GithubProjectProperty')
             github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
@@ -149,7 +149,7 @@ salt_branches.each { salt_branch ->
         scm {
             github(
                 github_repo,
-                branch = "*/${salt_branch}",
+                branch = "*/${branch_name}",
                 protocol = 'https'
             )
         }
@@ -158,7 +158,7 @@ salt_branches.each { salt_branch ->
         environmentVariables {
             env('GITHUB_REPO', github_repo)
             env('COMMIT_STATUS_CONTEXT', 'ci/clone')
-            env('VIRTUALENV_NAME', "salt-${salt_branch}")
+            env('VIRTUALENV_NAME', "salt-${branch_name}")
             env('VIRTUALENV_SETUP_STATE_NAME', 'projects.clone')
         }
 
@@ -186,7 +186,7 @@ salt_branches.each { salt_branch ->
 
     // Lint Job
     job {
-        name = "salt/${salt_branch}/lint"
+        name = "salt/${branch_name}/lint"
         displayName('Lint')
         concurrentBuild(allowConcurrentBuild = true)
         description(project_description + ' - Code Lint')
@@ -239,7 +239,7 @@ salt_branches.each { salt_branch ->
         environmentVariables {
             env('GITHUB_REPO', github_repo)
             env('COMMIT_STATUS_CONTEXT', 'ci/lint')
-            env('VIRTUALENV_NAME', "salt-${salt_branch}")
+            env('VIRTUALENV_NAME', "salt-${branch_name}")
             env('VIRTUALENV_SETUP_STATE_NAME', 'projects.salt.lint')
         }
 
@@ -278,8 +278,8 @@ salt_branches.each { salt_branch ->
 
         if ( vm_names != [] ) {
             job(type: BuildFlow) {
-                name = "salt/${salt_branch}/${build_type.toLowerCase()}-main-build"
-                displayName("${salt_branch.capitalize()} Branch ${build_type} Main Build")
+                name = "salt/${branch_name}/${build_type.toLowerCase()}-main-build"
+                displayName("${branch_name.capitalize()} Branch ${build_type} Main Build")
                 description(project_description)
                 label('worker')
                 concurrentBuild(allowConcurrentBuild = true)
@@ -349,13 +349,13 @@ salt_branches.each { salt_branch ->
 
                     guard {
                         retry(3) {
-                            clone = build("salt/${salt_branch}/clone")
+                            clone = build("salt/${branch_name}/clone")
                         }
 
                         // Let's run Lint & Unit in parallel
                         parallel (
                             {
-                                lint = build("salt/${salt_branch}/lint",
+                                lint = build("salt/${branch_name}/lint",
                                              CLONE_BUILD_ID: clone.build.number)
                             },
                 """
@@ -364,7 +364,7 @@ salt_branches.each { salt_branch ->
                         def c_vm_name = vm_name.toLowerCase().replace(' ', '-')
                         build_flow_script = build_flow_script + """\
                             {
-                                ${c_vm_name} = build(salt/${salt_branch}/${build_type.toLowerCase()}/\${PROVIDER}/${c_vm_name}",
+                                ${c_vm_name} = build(salt/${branch_name}/${build_type.toLowerCase()}/\${PROVIDER}/${c_vm_name}",
                                                      GIT_COMMIT: params["GIT_COMMIT"])
                             },
                         """
@@ -374,7 +374,7 @@ salt_branches.each { salt_branch ->
                         def c_vm_name = vm_name.toLowerCase().replace(' ', '-')
                         build_flow_script = build_flow_script + """\
                             {
-                                ${c_vm_name} = build(salt/${salt_branch}/${build_type.toLowerCase()}/${c_vm_name}",
+                                ${c_vm_name} = build(salt/${branch_name}/${build_type.toLowerCase()}/${c_vm_name}",
                                                      GIT_COMMIT: params["GIT_COMMIT"])
                             },
                         """
@@ -444,7 +444,7 @@ salt_branches.each { salt_branch ->
                     vm_names.each { vm_name ->
                         def job_name = vm_name.toLowerCase().replace(' ', '-')
                         job {
-                            name = "salt/${salt_branch}/${build_type.toLowerCase()}/${provider_name.toLowerCase()}/${job_name}"
+                            name = "salt/${branch_name}/${build_type.toLowerCase()}/${provider_name.toLowerCase()}/${job_name}"
                             displayName(vm_name)
                             concurrentBuild(allowConcurrentBuild = true)
                             description("${project_description} - ${build_type} - ${provider_name} - ${vm_name}")
@@ -534,7 +534,7 @@ salt_branches.each { salt_branch ->
                 vm_names.each { vm_name ->
                     def job_name = vm_name.toLowerCase().replace(' ', '-')
                     job {
-                        name = "salt/${salt_branch}/${build_type.toLowerCase()}/${job_name}"
+                        name = "salt/${branch_name}/${build_type.toLowerCase()}/${job_name}"
                         displayName(vm_name)
                         concurrentBuild(allowConcurrentBuild = true)
                         description("${project_description} - ${build_type} - ${vm_name}")
