@@ -599,6 +599,12 @@ salt_branches.each { branch_name ->
                             env('VIRTUALENV_NAME', "salt-${branch_name}")
                             env('VIRTUALENV_SETUP_STATE_NAME', 'projects.salt.unit')
                             env('BUILD_VM_NAME', vm_name.replace(' ', '_').replace('.', '_'))
+                            script(
+                                readFileFromWorkspace(
+                                    'jenkins-seed',
+                                    'salt/scripts/branches-environment-variables.sh'
+                                )
+                            )
                         }
 
                         // Job Steps
@@ -608,16 +614,6 @@ salt_branches.each { branch_name ->
 
                             // Set initial commit status
                             shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
-
-                            // Generate the required environment variables
-                            environmentVariables {
-                                script(
-                                    readFileFromWorkspace(
-                                        'jenkins-seed',
-                                        'salt/scripts/branches-environment-variables.sh'
-                                    )
-                                )
-                            }
 
                             // Run Unit Tests
                             shell(readFileFromWorkspace('jenkins-seed', 'salt/scripts/branches-run-tests.sh'))
