@@ -66,16 +66,16 @@ salt_branches.each { branch_name ->
 
     salt_build_types.each { salt_build_type, vm_names ->
         if ( vm_names != [] ) {
-            def build_type_folder_name = "${branch_folder_name}/${salt_build_type.toLowercase()}"
+            def build_type_folder_name = "${branch_folder_name}/${salt_build_type.toLowerCase()}"
             folder {
                 name(build_type_folder_name)
                 displayName("${salt_build_type} Builds")
                 description = project_description
             }
 
-            if (salt_build_type.toLowercase() == 'cloud') {
+            if (salt_build_type.toLowerCase() == 'cloud') {
                 salt_cloud_providers.each { provider_name ->
-                    cloud_provider_folder_name = "${build_type_folder_name}/${provider_name.toLowercase()}"
+                    cloud_provider_folder_name = "${build_type_folder_name}/${provider_name.toLowerCase()}"
                     folder {
                         name(cloud_provider_folder_name)
                         displayName(provider_name)
