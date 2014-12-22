@@ -508,7 +508,10 @@ salt_branches.each { branch_name ->
                                 // Generate the required environment variables
                                 environmentVariables {
                                     script(
-                                        'salt-jenkins-build --vm-source ${VM_NAME} --echo-parseable-output'
+                                        readFileFromWorkspace(
+                                            'jenkins-seed',
+                                            'salt/scripts/branches-environment-variables.sh'
+                                        )
                                     )
                                 }
 
