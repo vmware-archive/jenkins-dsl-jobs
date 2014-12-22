@@ -365,7 +365,7 @@ salt_branches.each { branch_name ->
                 if (build_type.toLowerCase() == 'cloud') {
                     vm_names.each { vm_name ->
                         def vm_name_nospc = vm_name.toLowerCase().replace(' ', '-')
-                        def vm_name_nodots = vm_name_nospc.replace('.', '_')
+                        def vm_name_nodots = vm_name.toLowerCase().replace(' ', '_').replace('.', '_')
                         build_flow_script = build_flow_script + """\
                             {
                                 ${vm_name_nodots} = build(
@@ -377,7 +377,7 @@ salt_branches.each { branch_name ->
                 } else {
                     vm_names.each { vm_name ->
                         def vm_name_nospc = vm_name.toLowerCase().replace(' ', '-')
-                        def vm_name_nodots = vm_name_nospc.replace('.', '_')
+                        def vm_name_nodots = vm_name.toLowerCase().replace(' ', '_').replace('.', '_')
                         build_flow_script = build_flow_script + """\
                             {
                                 ${vm_name_nodots} = build(
@@ -397,7 +397,7 @@ salt_branches.each { branch_name ->
                         local_lint_workspace_copy.mkdirs()
                         toolbox.copyFiles(lint.workspace, local_lint_workspace_copy)"""
                 vm_names.each { vm_name ->
-                    def vm_name_nodots = vm_name.toLowerCase().replace(' ', '-').replace('.', '_')
+                    def vm_name_nodots = vm_name.toLowerCase().replace(' ', '_').replace('.', '_')
                     build_flow_script = build_flow_script + """\
 
                         local_${vm_name_nodots}_workspace_copy = build.workspace.child('${vm_name_nodots}')
@@ -417,8 +417,9 @@ salt_branches.each { branch_name ->
                     lint.workspace.deleteRecursive()
                 """
                 vm_names.each { vm_name ->
-                    def vm_name_nodots = vm_name.toLowerCase().replace(' ', '-').replace('.', '_')
+                    def vm_name_nodots = vm_name.toLowerCase().replace(' ', '_').replace('.', '_')
                     build_flow_script = build_flow_script + """\
+
                     ${vm_name_nodots}.workspace.deleteRecursive()"""
                 }
                 build_flow_script = build_flow_script + """\
