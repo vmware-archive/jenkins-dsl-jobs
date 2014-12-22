@@ -367,6 +367,7 @@ salt_branches.each { branch_name ->
                         def vm_name_nospc = vm_name.toLowerCase().replace(' ', '-')
                         def vm_name_nodots = vm_name.toLowerCase().replace(' ', '_').replace('.', '_')
                         build_flow_script = build_flow_script + """\
+
                             {
                                 ${vm_name_nodots} = build(
                                     salt/${branch_name}/${build_type.toLowerCase()}/\${PROVIDER}/${vm_name_nospc}",
@@ -379,6 +380,7 @@ salt_branches.each { branch_name ->
                         def vm_name_nospc = vm_name.toLowerCase().replace(' ', '-')
                         def vm_name_nodots = vm_name.toLowerCase().replace(' ', '_').replace('.', '_')
                         build_flow_script = build_flow_script + """\
+
                             {
                                 ${vm_name_nodots} = build(
                                     salt/${branch_name}/${build_type.toLowerCase()}/${vm_name_nospc}",
@@ -400,6 +402,7 @@ salt_branches.each { branch_name ->
                     def vm_name_nodots = vm_name.toLowerCase().replace(' ', '_').replace('.', '_')
                     build_flow_script = build_flow_script + """\
 
+
                         local_${vm_name_nodots}_workspace_copy = build.workspace.child('${vm_name_nodots}')
                         local_$vm_name_nodots}_workspace_copy.mkdirs()
                         toolbox.copyFiles(${vm_name_nodots}.workspace, local_${vm_name_nodots}_workspace_copy)"""
@@ -414,8 +417,7 @@ salt_branches.each { branch_name ->
                     build_changelog.copyFrom(clone_changelog)
 
                     // Delete the child workspaces directory
-                    lint.workspace.deleteRecursive()
-                """
+                    lint.workspace.deleteRecursive()"""
                 vm_names.each { vm_name ->
                     def vm_name_nodots = vm_name.toLowerCase().replace(' ', '_').replace('.', '_')
                     build_flow_script = build_flow_script + """\
