@@ -23,7 +23,7 @@ def branches_api = new URL("https://api.github.com/repos/${github_repo}/branches
 def salt_branches_data = new groovy.json.JsonSlurper().parse(branches_api.newReader())
 def salt_branches = []
 salt_branches_data.each {
-  salt_branches.add(it.name)
+  salt_branches.add(it["name"])
 }
 salt_branches = salt_branches.grep(~/(develop|([\d]{4}.[\d]{1,2}))/)
 
