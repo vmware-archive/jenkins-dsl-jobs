@@ -60,7 +60,7 @@ salt_branches.each { branch_name ->
     def branch_folder_name = "salt/${branch_name.toLowerCase()}"
     folder {
         name(branch_folder_name)
-        displayName("${branch_folder_name.capitalize()} Branch")
+        displayName("${branch_name.capitalize()} Branch")
         description = project_description
     }
 
@@ -340,9 +340,11 @@ salt_branches.each { branch_name ->
                 )
 
                 // Job Triggers
+                /* triggers disabled for now
                 triggers {
                     githubPush()
                 }
+                */
 
                 def build_flow_script = """\
                     import hudson.FilePath
@@ -355,29 +357,34 @@ salt_branches.each { branch_name ->
                         // Let's run Lint & Unit in parallel
                         parallel (
                             {
-                                lint = build("salt/${branch_name}/lint",
-                                             CLONE_BUILD_ID: clone.build.number)
-                            },
-                """
+                                lint = build(
+                                    "salt/${branch_name}/lint",
+                                    CLONE_BUILD_ID: clone.build.number
+                                )
+                            },"""
                 if (build_type.toLowerCase() == 'cloud') {
                     vm_names.each { vm_name ->
-                        def c_vm_name = vm_name.toLowerCase().replace(' ', '-')
+                        def vm_name_nospc = vm_name.toLowerCase().replace(' ', '-')
+                        def vm_name_nodots = vm_name_nospc.replace('.', '_')
                         build_flow_script = build_flow_script + """\
                             {
-                                ${c_vm_name} = build(salt/${branch_name}/${build_type.toLowerCase()}/\${PROVIDER}/${c_vm_name}",
-                                                     GIT_COMMIT: params["GIT_COMMIT"])
-                            },
-                        """
+                                ${vm_name_nodots} = build(
+                                    salt/${branch_name}/${build_type.toLowerCase()}/\${PROVIDER}/${vm_name_nospc}",
+                                    GIT_COMMIT: params["GIT_COMMIT"]
+                                )
+                            },"""
                     }
                 } else {
                     vm_names.each { vm_name ->
-                        def c_vm_name = vm_name.toLowerCase().replace(' ', '-')
+                        def vm_name_nospc = vm_name.toLowerCase().replace(' ', '-')
+                        def vm_name_nodots = vm_name_nospc.replace('.', '_')
                         build_flow_script = build_flow_script + """\
                             {
-                                ${c_vm_name} = build(salt/${branch_name}/${build_type.toLowerCase()}/${c_vm_name}",
-                                                     GIT_COMMIT: params["GIT_COMMIT"])
-                            },
-                        """
+                                ${vm_name_nodots} = build(
+                                    salt/${branch_name}/${build_type.toLowerCase()}/${vm_name_nospc}",
+                                    GIT_COMMIT: params["GIT_COMMIT"]
+                                )
+                            },"""
                     }
                 }
                 build_flow_script = build_flow_script + """\
@@ -388,17 +395,14 @@ salt_branches.each { branch_name ->
 
                         local_lint_workspace_copy = build.workspace.child('lint')
                         local_lint_workspace_copy.mkdirs()
-                        toolbox.copyFiles(lint.workspace, local_lint_workspace_copy)
-
-                """
+                        toolbox.copyFiles(lint.workspace, local_lint_workspace_copy)"""
                 vm_names.each { vm_name ->
-                    def c_vm_name = vm_name.toLowerCase().replace(' ', '-')
+                    def vm_name_nodots = vm_name.toLowerCase().replace(' ', '-').replace('.', '_')
                     build_flow_script = build_flow_script + """\
-                        local_${c_vm_name}_workspace_copy = build.workspace.child('${c_vm_name}')
-                        local_$c_vm_name}_workspace_copy.mkdirs()
-                        toolbox.copyFiles(${c_vm_name}.workspace, local_${c_vm_name}_workspace_copy)
 
-                    """
+                        local_${vm_name_nodots}_workspace_copy = build.workspace.child('${vm_name_nodots}')
+                        local_$vm_name_nodots}_workspace_copy.mkdirs()
+                        toolbox.copyFiles(${vm_name_nodots}.workspace, local_${vm_name_nodots}_workspace_copy)"""
                     }
                 build_flow_script = build_flow_script + """\
                     /*
@@ -413,10 +417,9 @@ salt_branches.each { branch_name ->
                     lint.workspace.deleteRecursive()
                 """
                 vm_names.each { vm_name ->
-                    def c_vm_name = vm_name.toLowerCase().replace(' ', '-')
+                    def vm_name_nodots = vm_name.toLowerCase().replace(' ', '-').replace('.', '_')
                     build_flow_script = build_flow_script + """\
-                    ${c_vm_name}.workspace.deleteRecursive()
-                    """
+                    ${vm_name_nodots}.workspace.deleteRecursive()"""
                 }
                 build_flow_script = build_flow_script + """\
                 }
