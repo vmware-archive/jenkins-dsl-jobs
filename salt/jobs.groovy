@@ -342,7 +342,6 @@ salt_branches.each { branch_name ->
                 concurrentBuild(allowConcurrentBuild = true)
 
                 parameters {
-                    stringParam('GIT_COMMIT'),
                     choiceParam('PROVIDER', salt_cloud_providers)
                 }
 
@@ -456,7 +455,7 @@ salt_branches.each { branch_name ->
 
                             // Parameters Definition
                             parameters {
-                                stringParam('CLONE_BUILD_ID')
+                                stringParam('GIT_COMMIT')
                             }
 
                             configure {
