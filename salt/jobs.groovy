@@ -497,6 +497,19 @@ salt_branches.each { branch_name ->
                                 env('BUILD_VM_NAME', "${provider_name.toLowerCase()}_${vm_name.replace(' ', '_').replace('.', '_')}")
                             }
 
+
+                            configure {
+                                it.get('buildWrappers').get(0).appendNode(
+                                    'com.lookout.jenkins.EnvironmentScript',
+                                    [plugin: 'environment-script']
+                                ).appendNode('script').setValue(
+                                    readFileFromWorkspace(
+                                        'jenkins-seed',
+                                        'salt/scripts/branches-environment-variables.sh'
+                                    )
+                                )
+                            }
+
                             // Job Steps
                             steps {
                                 // Setup the required virtualenv
@@ -504,16 +517,6 @@ salt_branches.each { branch_name ->
 
                                 // Set initial commit status
                                 shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
-
-                                // Generate the required environment variables
-                                environmentVariables {
-                                    script(
-                                        readFileFromWorkspace(
-                                            'jenkins-seed',
-                                            'salt/scripts/branches-environment-variables.sh'
-                                        )
-                                    )
-                                }
 
                                 // Run Unit Tests
                                 shell(readFileFromWorkspace('jenkins-seed', 'salt/scripts/branches-run-tests.sh'))
