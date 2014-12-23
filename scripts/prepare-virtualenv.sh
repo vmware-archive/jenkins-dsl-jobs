@@ -13,5 +13,5 @@ if [ "$(pgrep -f 'salt-call state.sls')" != "" ]; then
     printf "%s\n\n" "Done!"
 fi
 
-salt-call state.sls ${VIRTUALENV_SETUP_STATE_NAME} pillar="{virtualenv_name: ${VIRTUALENV_NAME}}"
+salt-call state.sls ${VIRTUALENV_SETUP_STATE_NAME} pillar="{virtualenv_name: ${VIRTUALENV_NAME}, system_site_packages: ${SYSTEM_SITE_PACKAGES:-false}"
 echo '<<<<<<<<<<<<<< Prepare Virtualenv <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
