@@ -591,16 +591,18 @@ salt_branches.each { branch_name ->
                                 )
                                 writeDescription('Build failed due to timeout after {0} minutes')
                             }
+                        }
 
-                            // Generate the required environment variables
-                            environmentVariables {
-                                script(
-                                    readFileFromWorkspace(
-                                        'jenkins-seed',
-                                        'salt/scripts/branches-environment-variables.sh'
-                                    )
+                        configure {
+                            it.get('buildWrappers').get(0).appendNode(
+                                'com.lookout.jenkins.EnvironmentScript',
+                                [plugin: 'environment-script']
+                            ).appendNode('script').setValue(
+                                readFileFromWorkspace(
+                                    'jenkins-seed',
+                                    'salt/scripts/branches-environment-variables.sh'
                                 )
-                            }
+                            )
                         }
 
                         environmentVariables {
