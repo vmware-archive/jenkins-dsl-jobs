@@ -297,7 +297,7 @@ salt_branches.each { branch_name ->
             env('GITHUB_REPO', github_repo)
             env('COMMIT_STATUS_CONTEXT', 'ci/lint')
             env('VIRTUALENV_NAME', "salt-${branch_name}")
-            env('VIRTUALENV_SETUP_STATE_NAME', 'projects.salt.lint')
+            env('VIRTUALENV_SETUP_STATE_NAME', "projects.salt.${branch_name}.lint")
         }
 
         // Job Steps
@@ -493,7 +493,7 @@ salt_branches.each { branch_name ->
                                 env('GITHUB_REPO', github_repo)
                                 env('COMMIT_STATUS_CONTEXT', "ci/${job_name}")
                                 env('VIRTUALENV_NAME', "salt-${branch_name}")
-                                env('VIRTUALENV_SETUP_STATE_NAME', 'projects.salt.unit')
+                                env('VIRTUALENV_SETUP_STATE_NAME', "projects.salt.${build_type.toLowerCase()}-testrun")
                                 env('BUILD_VM_NAME', "${provider_name.toLowerCase()}_${vm_name.replace(' ', '_').replace('.', '_')}")
                             }
 
@@ -612,7 +612,7 @@ salt_branches.each { branch_name ->
                             env('GITHUB_REPO', github_repo)
                             env('COMMIT_STATUS_CONTEXT', "ci/${job_name}")
                             env('VIRTUALENV_NAME', "salt-${branch_name}")
-                            env('VIRTUALENV_SETUP_STATE_NAME', 'projects.salt.unit')
+                            env('VIRTUALENV_SETUP_STATE_NAME', "projects.salt.${build_type.toLowerCase()}-testrunt")
                             env('BUILD_VM_NAME', vm_name.replace(' ', '_').replace('.', '_'))
                         }
 

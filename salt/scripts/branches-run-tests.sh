@@ -5,7 +5,7 @@ salt-jenkins-build \
   --output-columns=160 \
   --vm-source ${JENKINS_VM_SOURCE} \
   --cloud-deploy \
-  --test-prep-sls=git.salt \
+  --test-prep-sls=projects.salt.${BRANCH_NAME}.unit \
   --test-git-commit ${GIT_COMMIT} \
   --bootstrap-salt-commit ${SALT_MINION_BOOTSTRAP_RELEASE} \
   --test-default-command \
