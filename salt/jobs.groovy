@@ -504,6 +504,7 @@ salt_branches.each { branch_name ->
                                     'com.lookout.jenkins.EnvironmentScript',
                                     [plugin: 'environment-script']
                                 ).appendNode('script').setValue(
+                                    readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh') + '\n' +
                                     readFileFromWorkspace(
                                         'jenkins-seed',
                                         'salt/scripts/branches-environment-variables.sh'
@@ -513,9 +514,6 @@ salt_branches.each { branch_name ->
 
                             // Job Steps
                             steps {
-                                // Setup the required virtualenv
-                                shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
-
                                 // Set initial commit status
                                 shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
