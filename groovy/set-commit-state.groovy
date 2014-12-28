@@ -19,16 +19,15 @@ if (result == null) { // Build is ongoing
 }
 
 def project = build.getProject()
-def sha1 = ObjectId.toString(BuildDataHelper.getCommitSHA1(build));
+
+try {
+  def sha1 = ObjectId.toString(BuildDataHelper.getCommitSHA1(build));
+} catch(IOException e) {
+  def sha1 = build.getEnvVars()['GIT_COMMIT']
+}
 
 GitHubRepositoryNameContributor.parseAssociatedNames(project).each {
   it.resolve().each {
-    //println it
-    //println "foo"
-    //println(it.getUrl() + "/commit/" + sha1);
-    // public GHCommitStatus createCommitStatus(String sha1, GHCommitState state, String targetUrl, String description, String context)
-    def status_result = it.createCommitStatus(sha1, state, build.getAbsoluteUrl(), build.getFullDisplayName(), project.getFullName())
-    println status_result
-    //println "bar"
+    def status_result = it.createCommitStatus(sha1, state, build.getAbsoluteUrl(), build.getFullDisplayName(), "ci/${project.getFullName()}")
   }
 }
