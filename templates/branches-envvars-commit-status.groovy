@@ -23,7 +23,7 @@ def project = currentBuild.getProject()
 try {
     def sha1 = ObjectId.toString(BuildDataHelper.getCommitSHA1(currentBuild));
 } catch(IOException e) {
-    def sha1 = build_env_vars['GIT_COMMIT']
+    def sha1 = currentBuild.getBuildVariables()['GIT_COMMIT']
 }
 
 GitHubRepositoryNameContributor.parseAssociatedNames(project).each {
