@@ -1,6 +1,5 @@
 // libnacl Jenkins jobs seed script
-package libnacl
-
+import groovy.text.*
 import lib.Admins
 
 // Common variable Definitions
@@ -73,9 +72,6 @@ def master_main_job = job(type: BuildFlow) {
     }
 
     wrappers {
-        // Inject global defined passwords in the environment
-        injectPasswords()
-
         // Add timestamps to console log
         timestamps()
 
@@ -130,6 +126,16 @@ def master_main_job = job(type: BuildFlow) {
             pylint(10, 999, 999, 'lint/pylint-report*.xml')
         }
 
+        template_context = [
+            commit_status_context: "default"
+        ]
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+        )
+        rendered_script_template = script_template.make(template_context)
+
+        groovyPostBuild(rendered_script_template.toString())
+
         // Cleanup workspace
         wsCleanup()
     }
@@ -157,9 +163,6 @@ def master_clone_job = job {
     }
 
     wrappers {
-        // Inject global defined passwords in the environment
-        injectPasswords()
-
         // Cleanup the workspace before starting
         preBuildCleanup()
 
@@ -202,20 +205,25 @@ def master_clone_job = job {
     }
     checkoutRetryCount(3)
 
+    template_context = [
+        commit_status_context: 'ci/clone',
+        github_repo: github_repo,
+        virtualenv_name: 'libnacl-master'
+        virtualenv_setup_state_name: 'projects.clone'
+    ]
+    script_template = template_engine.createTemplate(
+        readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+    )
+    rendered_script_template = script_template.make(template_context)
+
     environmentVariables {
-        env('GITHUB_REPO', github_repo)
-        env('COMMIT_STATUS_CONTEXT', 'ci/clone')
-        env('VIRTUALENV_NAME', 'libnacl-master')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.clone')
+        groovy(rendered_script_template.toString())
     }
 
     // Job Steps
     steps {
         // Setup the required virtualenv
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
-
-        // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
         // Compress the checked out workspace
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/compress-workspace.sh'))
@@ -224,10 +232,12 @@ def master_clone_job = job {
     publishers {
         archiveArtifacts('workspace.cpio.xz')
 
-        postBuildTask {
-            // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
-        }
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+        )
+        rendered_script_template = script_template.make(template_context)
+
+        groovyPostBuild(rendered_script_template.toString())
     }
 }
 
@@ -252,9 +262,6 @@ def master_lint_job = job {
     }
 
     wrappers {
-        // Inject global defined passwords in the environment
-        injectPasswords()
-
         // Cleanup the workspace before starting
         preBuildCleanup()
 
@@ -283,20 +290,25 @@ def master_lint_job = job {
         default_artifact_nr_of_jobs_to_keep
     )
 
+    template_context = [
+        commit_status_context: 'ci/lint',
+        github_repo: github_repo,
+        virtualenv_name: 'libnacl-master'
+        virtualenv_setup_state_name: 'projects.libnacl.lint'
+    ]
+    script_template = template_engine.createTemplate(
+        readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+    )
+    rendered_script_template = script_template.make(template_context)
+
     environmentVariables {
-        env('GITHUB_REPO', github_repo)
-        env('COMMIT_STATUS_CONTEXT', 'ci/lint')
-        env('VIRTUALENV_NAME', 'libnacl-master')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.lint')
+        groovy(rendered_script_template.toString())
     }
 
     // Job Steps
     steps {
         // Setup the required virtualenv
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
-
-        // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
         // Copy the workspace artifact
         copyArtifacts('libnacl/master/clone', 'workspace.cpio.xz') {
@@ -314,10 +326,12 @@ def master_lint_job = job {
             pylint(10, 999, 999, 'pylint-report*.xml')
         }
 
-        postBuildTask {
-            // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
-        }
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+        )
+        rendered_script_template = script_template.make(template_context)
+
+        groovyPostBuild(rendered_script_template.toString())
     }
 }
 
@@ -342,9 +356,6 @@ def master_unit_job = job {
     }
 
     wrappers {
-        // Inject global defined passwords in the environment
-        injectPasswords()
-
         // Cleanup the workspace before starting
         preBuildCleanup()
 
@@ -365,20 +376,25 @@ def master_unit_job = job {
         }
     }
 
+    template_context = [
+        commit_status_context: 'ci/unit',
+        github_repo: github_repo,
+        virtualenv_name: 'libnacl-master'
+        virtualenv_setup_state_name: 'projects.libnacl.unit'
+    ]
+    script_template = template_engine.createTemplate(
+        readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+    )
+    rendered_script_template = script_template.make(template_context)
+
     environmentVariables {
-        env('GITHUB_REPO', github_repo)
-        env('COMMIT_STATUS_CONTEXT', 'ci/unit')
-        env('VIRTUALENV_NAME', 'libnacl-master')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.unit')
+        groovy(rendered_script_template.toString())
     }
 
     // Job Steps
     steps {
         // Setup the required virtualenv
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
-
-        // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
         // Copy the workspace artifact
         copyArtifacts('libnacl/master/clone', 'workspace.cpio.xz') {
@@ -404,10 +420,12 @@ def master_unit_job = job {
             }
         }
 
-        postBuildTask {
-            // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
-        }
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+        )
+        rendered_script_template = script_template.make(template_context)
+
+        groovyPostBuild(rendered_script_template.toString())
     }
 }
 
@@ -446,9 +464,6 @@ job(type: BuildFlow) {
     }
 
     wrappers {
-        // Inject global defined passwords in the environment
-        injectPasswords()
-
         // Cleanup the workspace before starting
         preBuildCleanup()
 
@@ -516,6 +531,16 @@ job(type: BuildFlow) {
             }
         }
 
+        template_context = [
+            commit_status_context: "default"
+        ]
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+        )
+        rendered_script_template = script_template.make(template_context)
+
+        groovyPostBuild(rendered_script_template.toString())
+
         // Cleanup workspace
         wsCleanup()
     }
@@ -546,9 +571,6 @@ def pr_clone_job = job {
     }
 
     wrappers {
-        // Inject global defined passwords in the environment
-        injectPasswords()
-
         // Cleanup the workspace before starting
         preBuildCleanup()
 
@@ -600,20 +622,25 @@ def pr_clone_job = job {
     }
     checkoutRetryCount(3)
 
+    template_context = [
+        commit_status_context: 'ci/clone',
+        github_repo: github_repo,
+        virtualenv_name: 'libnacl-pr'
+        virtualenv_setup_state_name: 'projects.clone'
+    ]
+    script_template = template_engine.createTemplate(
+        readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+    )
+    rendered_script_template = script_template.make(template_context)
+
     environmentVariables {
-        env('GITHUB_REPO', github_repo)
-        env('COMMIT_STATUS_CONTEXT', 'ci/clone')
-        env('VIRTUALENV_NAME', 'libnacl-pr')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.clone')
+        groovy(rendered_script_template.toString())
     }
 
     // Job Steps
     steps {
         // Setup the required virtualenv
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
-
-        // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
         // Compress the checked out workspace
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/compress-workspace.sh'))
@@ -622,10 +649,12 @@ def pr_clone_job = job {
     publishers {
         archiveArtifacts('workspace.cpio.xz')
 
-        postBuildTask {
-            // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
-        }
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+        )
+        rendered_script_template = script_template.make(template_context)
+
+        groovyPostBuild(rendered_script_template.toString())
     }
 }
 
@@ -652,9 +681,6 @@ job {
     }
 
     wrappers {
-        // Inject global defined passwords in the environment
-        injectPasswords()
-
         // Cleanup the workspace before starting
         preBuildCleanup()
 
@@ -686,20 +712,25 @@ job {
         default_artifact_nr_of_jobs_to_keep
     )
 
+    template_context = [
+        commit_status_context: 'ci/lint',
+        github_repo: github_repo,
+        virtualenv_name: 'libnacl-pr'
+        virtualenv_setup_state_name: 'projects.libnacl.lint'
+    ]
+    script_template = template_engine.createTemplate(
+        readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+    )
+    rendered_script_template = script_template.make(template_context)
+
     environmentVariables {
-        env('GITHUB_REPO', github_repo)
-        env('COMMIT_STATUS_CONTEXT', 'ci/lint')
-        env('VIRTUALENV_NAME', 'libnacl-pr')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.lint')
+        groovy(rendered_script_template.toString())
     }
 
     // Job Steps
     steps {
         // Setup the required virtualenv
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
-
-        // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
         // Copy the workspace artifact
         copyArtifacts('libnacl/pr/clone', 'workspace.cpio.xz') {
@@ -717,10 +748,12 @@ job {
             pylint(10, 999, 999, 'pylint-report*.xml')
         }
 
-        postBuildTask {
-            // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
-        }
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+        )
+        rendered_script_template = script_template.make(template_context)
+
+        groovyPostBuild(rendered_script_template.toString())
     }
 }
 
@@ -747,9 +780,6 @@ job {
     }
 
     wrappers {
-        // Inject global defined passwords in the environment
-        injectPasswords()
-
         // Cleanup the workspace before starting
         preBuildCleanup()
 
@@ -771,20 +801,25 @@ job {
 
     }
 
+    template_context = [
+        commit_status_context: 'ci/unit',
+        github_repo: github_repo,
+        virtualenv_name: 'libnacl-pr'
+        virtualenv_setup_state_name: 'projects.libnacl.unit'
+    ]
+    script_template = template_engine.createTemplate(
+        readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+    )
+    rendered_script_template = script_template.make(template_context)
+
     environmentVariables {
-        env('GITHUB_REPO', github_repo)
-        env('COMMIT_STATUS_CONTEXT', 'ci/unit')
-        env('VIRTUALENV_NAME', 'libnacl-pr')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.libnacl.unit')
+        groovy(rendered_script_template.toString())
     }
 
     // Job Steps
     steps {
         // Setup the required virtualenv
         shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
-
-        // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
         // Copy the workspace artifact
         copyArtifacts('libnacl/pr/clone', 'workspace.cpio.xz') {
@@ -810,9 +845,9 @@ job {
             }
         }
 
-        postBuildTask {
-            // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
-        }
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+        )
+        rendered_script_template = script_template.make(template_context)
     }
 }
