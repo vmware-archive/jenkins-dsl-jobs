@@ -53,5 +53,5 @@ return [
     VIRTUALENV_SETUP_STATE_NAME: '$virtualenv_setup_state_name',
     BRANCH_NAME: '$branch_name',<% if (build_vm_name != null) { %>
     BUILD_VM_NAME: '$build_vm_name',<% } %><% if (vm_name_nodots != null) { %>
-    JENKINS_VM_NAME: build_env_vars['JENKINS_VM_NAME_PREFIX'] + '_$vm_name_nodots_' + build_number<% } %>
+    JENKINS_VM_NAME: build_env_vars['JENKINS_VM_NAME_PREFIX'] + '_' + '$vm_name_nodots' + '_' + build_number<% } %>
 ]
