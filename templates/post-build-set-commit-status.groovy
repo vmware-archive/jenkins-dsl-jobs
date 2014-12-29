@@ -8,9 +8,9 @@ def result = manager.getResult()
 
 if (result == null) { // Build is ongoing
     def state = GHCommitState.PENDING;
-} else if (result.isBetterOrEqualTo(SUCCESS)) {
+} else if (result.isBetterOrEqualTo(Result.SUCCESS)) {
     def state = GHCommitState.SUCCESS;
-} else if (result.isBetterOrEqualTo(UNSTABLE)) {
+} else if (result.isBetterOrEqualTo(Result.UNSTABLE)) {
     def state = GHCommitState.FAILURE;
 } else {
     def state = GHCommitState.ERROR;
