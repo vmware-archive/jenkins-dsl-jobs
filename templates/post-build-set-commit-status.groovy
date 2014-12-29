@@ -6,6 +6,12 @@ import com.cloudbees.jenkins.GitHubRepositoryNameContributor;
 
 def result = manager.build.getResult()
 
+try {
+    def commit_status_context = manager.envVars['COMMIT_STATUS_CONTEXT']
+} catch(e) {
+    def commit_status_context = 'default'
+}
+
 if (result == null) { // Build is ongoing
     def state = GHCommitState.PENDING;
 } else if (result.isBetterOrEqualTo(Result.SUCCESS)) {
@@ -31,7 +37,7 @@ GitHubRepositoryNameContributor.parseAssociatedNames(project).each {
             state,
             manager.build.getAbsoluteUrl(),
             manager.build.getFullDisplayName(),
-            '$commit_status_context'
+            commit_status_context
         )
     }
 }
