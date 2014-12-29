@@ -169,15 +169,13 @@ salt_branches.each { branch_name ->
             github_repo: github_repo,
             branch_name: branch_name,
             branch_name_l: branch_name_l,
-            build_vm_name: null,
-            vm_name_nodots: null,
             virtualenv_name: "salt-${branch_name_l}",
             virtualenv_setup_state_name: 'projects.clone'
         ]
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
         )
-        rendered_script_template = script_template.make(template_context)
+        rendered_script_template = script_template.make(template_context.withDefault{ null })
 
         environmentVariables {
             groovy(rendered_script_template.toString())
@@ -198,7 +196,7 @@ salt_branches.each { branch_name ->
             script_template = template_engine.createTemplate(
                 readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
             )
-            rendered_script_template = script_template.make(template_context)
+            rendered_script_template = script_template.make(template_context.withDefault{ null })
 
             groovyPostBuild(rendered_script_template.toString())
         }
@@ -258,15 +256,13 @@ salt_branches.each { branch_name ->
             github_repo: github_repo,
             branch_name: branch_name,
             branch_name_l: branch_name_l,
-            build_vm_name: null,
-            vm_name_nodots: null,
             virtualenv_name: "salt-${branch_name_l}",
             virtualenv_setup_state_name: "projects.salt.${branch_name_l}.lint"
         ]
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
         )
-        rendered_script_template = script_template.make(template_context)
+        rendered_script_template = script_template.make(template_context.withDefault{ null })
 
         environmentVariables {
             groovy(rendered_script_template.toString())
@@ -299,7 +295,7 @@ salt_branches.each { branch_name ->
             script_template = template_engine.createTemplate(
                 readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
             )
-            rendered_script_template = script_template.make(template_context)
+            rendered_script_template = script_template.make(template_context.withDefault{ null })
 
             groovyPostBuild(rendered_script_template.toString())
        }
@@ -396,7 +392,7 @@ salt_branches.each { branch_name ->
                 flow_script_template = template_engine.createTemplate(
                     readFileFromWorkspace('jenkins-seed', 'salt/templates/flow-script.groovy')
                 )
-                flow_script_template_text = flow_script_template.make(template_context)
+                flow_script_template_text = flow_script_template.make(template_context.withDefault{ null })
 
                 buildFlow(flow_script_template_text.toString())
 
@@ -416,7 +412,7 @@ salt_branches.each { branch_name ->
                     script_template = template_engine.createTemplate(
                         readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                     )
-                    rendered_script_template = script_template.make(template_context)
+                    rendered_script_template = script_template.make(template_context.withDefault{ null })
 
                     groovyPostBuild(rendered_script_template.toString())
 
@@ -485,7 +481,7 @@ salt_branches.each { branch_name ->
                             script_template = template_engine.createTemplate(
                                 readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
                             )
-                            rendered_script_template = script_template.make(template_context)
+                            rendered_script_template = script_template.make(template_context.withDefault{ null })
 
                             environmentVariables {
                                 groovy(rendered_script_template.toString())
@@ -523,7 +519,7 @@ salt_branches.each { branch_name ->
                                 script_template = template_engine.createTemplate(
                                     readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                                 )
-                                rendered_script_template = script_template.make(template_context)
+                                rendered_script_template = script_template.make(template_context.withDefault{ null })
 
                                 groovyPostBuild(rendered_script_template.toString())
                             }
@@ -581,7 +577,7 @@ salt_branches.each { branch_name ->
                         script_template = template_engine.createTemplate(
                             readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
                         )
-                        rendered_script_template = script_template.make(template_context)
+                        rendered_script_template = script_template.make(template_context.withDefault{ null })
 
                         environmentVariables {
                             groovy(rendered_script_template.toString())
@@ -620,7 +616,7 @@ salt_branches.each { branch_name ->
                             script_template = template_engine.createTemplate(
                                 readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                             )
-                            rendered_script_template = script_template.make(template_context)
+                            rendered_script_template = script_template.make(template_context.withDefault{ null })
 
                             groovyPostBuild(rendered_script_template.toString())
                         }
