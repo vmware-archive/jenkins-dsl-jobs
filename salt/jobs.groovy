@@ -257,8 +257,8 @@ salt_branches.each { branch_name ->
             github_repo: github_repo,
             branch_name: branch_name,
             branch_name_l: branch_name_l,
-            build_vm_name: "${provider_name_l}_${vm_name_nodots}",
-            vm_name_nodots: vm_name_nodots,
+            build_vm_name: null,
+            vm_name_nodots: null,
             virtualenv_setup_state_name: "projects.salt.${branch_name_l}.lint"
         ]
         script_template = template_engine.createTemplate(
