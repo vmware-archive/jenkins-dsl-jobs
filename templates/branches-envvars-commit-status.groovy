@@ -3,6 +3,7 @@ import org.kohsuke.github.GHCommitState;
 import org.jenkinsci.plugins.github.util.BuildDataHelper;
 import com.cloudbees.jenkins.GitHubRepositoryNameContributor;
 
+
 def build_env_vars = currentBuild.getEnvVars()
 def result = currentBuild.getResult()
 
@@ -46,7 +47,10 @@ GitHubRepositoryNameContributor.parseAssociatedNames(project).each {
     }
 }
 
+<% if ( vm_name_nodots != null ) { %>
 def build_number = build_env_vars['BUILD_NUMBER'].padLeft(4, '0')
+<% } %>
+
 return [<%
     if ( github_repo != null ) { %>
     GITHUB_REPO: '$github_repo',<% } %><%
