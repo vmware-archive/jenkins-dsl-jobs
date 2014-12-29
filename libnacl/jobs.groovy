@@ -208,7 +208,7 @@ def master_clone_job = job {
     template_context = [
         commit_status_context: 'ci/clone',
         github_repo: github_repo,
-        virtualenv_name: 'libnacl-master'
+        virtualenv_name: 'libnacl-master',
         virtualenv_setup_state_name: 'projects.clone'
     ]
     script_template = template_engine.createTemplate(
@@ -293,7 +293,7 @@ def master_lint_job = job {
     template_context = [
         commit_status_context: 'ci/lint',
         github_repo: github_repo,
-        virtualenv_name: 'libnacl-master'
+        virtualenv_name: 'libnacl-master',
         virtualenv_setup_state_name: 'projects.libnacl.lint'
     ]
     script_template = template_engine.createTemplate(
@@ -379,7 +379,7 @@ def master_unit_job = job {
     template_context = [
         commit_status_context: 'ci/unit',
         github_repo: github_repo,
-        virtualenv_name: 'libnacl-master'
+        virtualenv_name: 'libnacl-master',
         virtualenv_setup_state_name: 'projects.libnacl.unit'
     ]
     script_template = template_engine.createTemplate(
@@ -625,7 +625,7 @@ def pr_clone_job = job {
     template_context = [
         commit_status_context: 'ci/clone',
         github_repo: github_repo,
-        virtualenv_name: 'libnacl-pr'
+        virtualenv_name: 'libnacl-pr',
         virtualenv_setup_state_name: 'projects.clone'
     ]
     script_template = template_engine.createTemplate(
@@ -715,7 +715,7 @@ job {
     template_context = [
         commit_status_context: 'ci/lint',
         github_repo: github_repo,
-        virtualenv_name: 'libnacl-pr'
+        virtualenv_name: 'libnacl-pr',
         virtualenv_setup_state_name: 'projects.libnacl.lint'
     ]
     script_template = template_engine.createTemplate(
@@ -804,7 +804,7 @@ job {
     template_context = [
         commit_status_context: 'ci/unit',
         github_repo: github_repo,
-        virtualenv_name: 'libnacl-pr'
+        virtualenv_name: 'libnacl-pr',
         virtualenv_setup_state_name: 'projects.libnacl.unit'
     ]
     script_template = template_engine.createTemplate(
