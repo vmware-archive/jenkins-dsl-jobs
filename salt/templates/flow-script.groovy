@@ -16,7 +16,7 @@ guard {
         <% vm_names.each { name, job_name -> %>
         {
             ${name} = build(
-                "salt/${branch_name}/${build_type}/<%
+                "salt/${branch_name}/${build_type_l}/<%
                     if ( build_type_l == 'cloud') { %>params["PROVIDER"].toLowerCase()/<% }
                 %>${job_name}",
                 GIT_COMMIT: params["GIT_COMMIT"]

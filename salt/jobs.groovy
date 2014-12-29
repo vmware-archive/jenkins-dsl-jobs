@@ -387,7 +387,7 @@ salt_branches.each { branch_name ->
                     )
                 }
                 template_context = [
-                    build_type: build_type_l,
+                    build_type_l: build_type_l,
                     branch_name: branch_name,
                     vm_names: template_vm_data
                 ]
