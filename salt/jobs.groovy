@@ -162,7 +162,7 @@ salt_branches.each { branch_name ->
         checkoutRetryCount(3)
 
         def template_context = [
-            commit_status_context: 'default'
+            commit_status_context: 'default',
             github_repo: github_repo,
             branch_name: branch_name,
             branch_name_l: branch_name_l,
@@ -183,9 +183,6 @@ salt_branches.each { branch_name ->
         steps {
             // Setup the required virtualenv
             shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
-
-            // Set initial commit status
-            shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
             // Compress the checked out workspace
             shell(readFileFromWorkspace('jenkins-seed', 'scripts/compress-workspace.sh'))
