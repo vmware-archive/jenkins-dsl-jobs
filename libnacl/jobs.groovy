@@ -19,6 +19,7 @@ def default_timeout_percent = 150
 def default_timeout_builds = 10
 def default_timeout_minutes = 15
 
+def template_engine = new SimpleTemplateEngine()
 
 // Define the folder structure
 folder {
