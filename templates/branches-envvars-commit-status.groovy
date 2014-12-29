@@ -26,16 +26,6 @@ try {
     def sha1 = build_env_vars['GIT_COMMIT']
 }
 
-try {
-    def commit_status_context = '$commit_status_context'
-} catch(e) {
-    try {
-        def commit_status_context = 'ci/' + project.getFullName()
-    } catch(e) {
-        def commit_status_context = "default"
-    }
-}
-
 GitHubRepositoryNameContributor.parseAssociatedNames(project).each {
     it.resolve().each {
         def status_result = it.createCommitStatus(
@@ -43,7 +33,7 @@ GitHubRepositoryNameContributor.parseAssociatedNames(project).each {
             state,
             currentBuild.getAbsoluteUrl(),
             currentBuild.getFullDisplayName(),
-            commit_status_context
+            '$commit_status_context'
         )
     }
 }

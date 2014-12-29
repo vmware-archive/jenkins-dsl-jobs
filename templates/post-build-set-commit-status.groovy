@@ -4,7 +4,7 @@ import org.kohsuke.github.GHCommitState;
 import org.jenkinsci.plugins.github.util.BuildDataHelper;
 import com.cloudbees.jenkins.GitHubRepositoryNameContributor;
 
-def result = manager.getResult()
+def result = manager.build.getResult()
 
 if (result == null) { // Build is ongoing
     def state = GHCommitState.PENDING;
