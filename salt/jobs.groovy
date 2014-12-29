@@ -50,8 +50,6 @@ def salt_cloud_providers = [
     'Rackspace'
 ]
 
-def template_engine = new SimpleTemplateEngine()
-
 // Define the folder structure
 folder {
     name('salt')
@@ -164,6 +162,7 @@ salt_branches.each { branch_name ->
         }
         checkoutRetryCount(3)
 
+        template_engine = new SimpleTemplateEngine()
         template_context = [
             commit_status_context: 'default',
             github_repo: github_repo,
@@ -252,6 +251,7 @@ salt_branches.each { branch_name ->
             default_artifact_nr_of_jobs_to_keep
         )
 
+        template_engine = new SimpleTemplateEngine()
         template_context = [
             commit_status_context: 'ci/lint',
             github_repo: github_repo,
@@ -386,6 +386,7 @@ salt_branches.each { branch_name ->
                         [vm_name_nodots, vm_name_nospc]
                     )
                 }
+                template_engine = new SimpleTemplateEngine()
                 template_context = [
                     build_type_l: build_type_l,
                     branch_name: branch_name,
@@ -408,6 +409,7 @@ salt_branches.each { branch_name ->
                         pylint(10, 999, 999, 'lint/pylint-report*.xml')
                     }
 
+                    template_engine = new SimpleTemplateEngine()
                     template_context = [
                         commit_status_context: "default"
                     ]
@@ -470,6 +472,7 @@ salt_branches.each { branch_name ->
                                     writeDescription('Build failed due to timeout after {0} minutes')
                                 }
                             }
+                            template_engine = new SimpleTemplateEngine()
                             template_context = [
                                 commit_status_context: "ci/${job_name}",
                                 github_repo: github_repo,
@@ -565,6 +568,7 @@ salt_branches.each { branch_name ->
                             }
                         }
 
+                        template_engine = new SimpleTemplateEngine()
                         template_context = [
                             commit_status_context: "ci/${job_name}",
                             github_repo: github_repo,
