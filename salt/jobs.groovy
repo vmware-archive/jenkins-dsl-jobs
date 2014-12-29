@@ -50,61 +50,7 @@ def salt_cloud_providers = [
     'Rackspace'
 ]
 
-
-FLOW_SCRIPT_TEMPLATE_TEXT = '''\
-import hudson.FilePath
-
-guard {
-    retry(3) {
-        clone = build("salt/${branch_name}/clone")
-    }
-
-    // Let's run Lint & Unit in parallel
-    parallel (
-        {
-            lint = build(
-                "salt/${branch_name}/lint",
-                CLONE_BUILD_ID: clone.build.number
-            )
-        },
-        <% vm_names.each { name, job_name -> %>
-        {
-            ${name} = build(
-                "salt/${branch_name}/${build_type}/<%
-                    if ( build_type.toLowerCase() == 'cloud') { %>params["PROVIDER"].toLowerCase()/<% }
-                %>${job_name}",
-                GIT_COMMIT: params["GIT_COMMIT"]
-            )
-        },<% } %>
-    )
-} rescue {
-    // Let's instantiate the build flow toolbox
-    def toolbox = extension.'build-flow-toolbox'
-
-    local_lint_workspace_copy = build.workspace.child('lint')
-    local_lint_workspace_copy.mkdirs()
-    toolbox.copyFiles(lint.workspace, local_lint_workspace_copy)
-
-    <% vm_names.each { name, job_name -> %>
-    local_${name}_workspace_copy = build.workspace.child('${job_name}')
-    local_${name}_workspace_copy.mkdirs()
-    toolbox.copyFiles(${name}.workspace, local_${name}_workspace_copy)
-    <% } %>
-   /*
-    *  Copy the clone build changelog.xml into this jobs root for proper changelog report
-    *  This does not currently work but is here for future reference
-    */
-    def clone_changelog = new FilePath(clone.getRootDir()).child('changelog.xml')
-    def build_changelog = new FilePath(build.getRootDir()).child('changelog.xml')
-    build_changelog.copyFrom(clone_changelog)
-
-    // Delete the child workspaces directory
-    lint.workspace.deleteRecursive()
-
-    <% vm_names.each { name, job_name -> %>
-    ${name}.workspace.deleteRecursive()<% } %>
-}
-'''
+def template_engine = new SimpleTemplateEngine()
 
 // Define the folder structure
 folder {
@@ -122,17 +68,20 @@ salt_branches.each { branch_name ->
     }
 
     salt_build_types.each { build_type, vm_names ->
+
+        def build_type_l = build_type.toLowerCase()
+
         if ( vm_names != [] ) {
-            def build_type_folder_name = "${branch_folder_name}/${build_type.toLowerCase()}"
+            def build_type_folder_name = "${branch_folder_name}/${build_type_l}"
             folder {
                 name(build_type_folder_name)
                 displayName("${build_type} Builds")
                 description = project_description
             }
 
-            if (build_type.toLowerCase() == 'cloud') {
+            if (build_type_l == 'cloud') {
                 salt_cloud_providers.each { provider_name ->
-                    cloud_provider_folder_name = "${build_type_folder_name}/${provider_name.toLowerCase()}"
+                    cloud_provider_folder_name = "${build_type_folder_name}/${provider_name_l}"
                     folder {
                         name(cloud_provider_folder_name)
                         displayName(provider_name)
@@ -146,9 +95,12 @@ salt_branches.each { branch_name ->
 
 
 salt_branches.each { branch_name ->
+
+    def branch_name_l = branch_name.toLowerCase()
+
     // Clone Job
     job {
-        name = "salt/${branch_name}/clone"
+        name = "salt/${branch_name_l}/clone"
         displayName('Clone Repository')
 
         concurrentBuild(allowConcurrentBuild = true)
@@ -160,16 +112,13 @@ salt_branches.each { branch_name ->
             job_properties.appendNode(
                 'hudson.plugins.copyartifact.CopyArtifactPermissionProperty').appendNode(
                     'projectNameList').appendNode(
-                        'string').setValue("salt/${branch_name}/*")
+                        'string').setValue("salt/${branch_name_l}/*")
             github_project_property = job_properties.appendNode(
                 'com.coravy.hudson.plugins.github.GithubProjectProperty')
             github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
         }
 
         wrappers {
-            // Inject global defined passwords in the environment
-            injectPasswords()
-
             // Cleanup the workspace before starting
             preBuildCleanup()
 
@@ -212,11 +161,22 @@ salt_branches.each { branch_name ->
         }
         checkoutRetryCount(3)
 
+        def template_context = [
+            commit_status_context: 'default'
+            github_repo: github_repo,
+            branch_name: branch_name,
+            branch_name_l: branch_name_l,
+            build_vm_name: "${provider_name_l}_${vm_name_nodots}",
+            vm_name_nodots: vm_name_nodots,
+            virtualenv_setup_state_name: 'projects.clone'
+        ]
+        def script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy'
+        )
+        def rendered_script_template = script_template.make(template_context)
+
         environmentVariables {
-            env('GITHUB_REPO', github_repo)
-            env('COMMIT_STATUS_CONTEXT', 'ci/clone')
-            env('VIRTUALENV_NAME', "salt-${branch_name}")
-            env('VIRTUALENV_SETUP_STATE_NAME', 'projects.clone')
+            groovy(rendered_script_template.toString())
         }
 
         // Job Steps
@@ -234,16 +194,21 @@ salt_branches.each { branch_name ->
         publishers {
             archiveArtifacts('workspace.cpio.xz')
 
-            postBuildTask {
-                // Set final commit status
-                task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
-            }
+            def template_context = [
+                commit_status_context: "ci/${job_name}"
+            ]
+            def script_template = template_engine.createTemplate(
+                readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy'
+            )
+            def rendered_script_template = script_template.make(template_context)
+
+            groovyPostBuild(rendered_script_template.toString())
         }
     }
 
     // Lint Job
     job {
-        name = "salt/${branch_name}/lint"
+        name = "salt/${branch_name_l}/lint"
         displayName('Lint')
         concurrentBuild(allowConcurrentBuild = true)
         description(project_description + ' - Code Lint')
@@ -262,9 +227,6 @@ salt_branches.each { branch_name ->
         }
 
         wrappers {
-            // Inject global defined passwords in the environment
-            injectPasswords()
-
             // Cleanup the workspace before starting
             preBuildCleanup()
 
@@ -293,11 +255,22 @@ salt_branches.each { branch_name ->
             default_artifact_nr_of_jobs_to_keep
         )
 
+        def template_context = [
+            commit_status_context: 'ci/lint'
+            github_repo: github_repo,
+            branch_name: branch_name,
+            branch_name_l: branch_name_l,
+            build_vm_name: "${provider_name_l}_${vm_name_nodots}",
+            vm_name_nodots: vm_name_nodots,
+            virtualenv_setup_state_name: "projects.salt.${branch_name_l}.lint"
+        ]
+        def script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy'
+        )
+        def rendered_script_template = script_template.make(template_context)
+
         environmentVariables {
-            env('GITHUB_REPO', github_repo)
-            env('COMMIT_STATUS_CONTEXT', 'ci/lint')
-            env('VIRTUALENV_NAME', "salt-${branch_name}")
-            env('VIRTUALENV_SETUP_STATE_NAME', "projects.salt.${branch_name}.lint")
+            groovy(rendered_script_template.toString())
         }
 
         // Job Steps
@@ -309,7 +282,7 @@ salt_branches.each { branch_name ->
             shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
             // Copy the workspace artifact
-            copyArtifacts("salt/${branch_name}/clone", 'workspace.cpio.xz') {
+            copyArtifacts("salt/${branch_name_l}/clone", 'workspace.cpio.xz') {
                 buildNumber('${CLONE_BUILD_ID}')
             }
             shell(readFileFromWorkspace('jenkins-seed', 'scripts/decompress-workspace.sh'))
@@ -324,18 +297,25 @@ salt_branches.each { branch_name ->
                 pylint(10, 999, 999, 'pylint-report*.xml')
             }
 
-            postBuildTask {
-                // Set final commit status
-                task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
-            }
+            def template_context = [
+                commit_status_context: "ci/${job_name}"
+            ]
+            def script_template = template_engine.createTemplate(
+                readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy'
+            )
+            def rendered_script_template = script_template.make(template_context)
+
+            groovyPostBuild(rendered_script_template.toString())
        }
     }
 
     salt_build_types.each { build_type, vm_names ->
 
+        def build_type_l = build_type.toLowerCase()
+
         if ( vm_names != [] ) {
             job(type: BuildFlow) {
-                name = "salt/${branch_name.toLowerCase()}-${build_type.toLowerCase()}-main-build"
+                name = "salt/${branch_name.toLowerCase()}-${build_type_l}-main-build"
                 displayName("${branch_name.capitalize()} Branch ${build_type} Main Build")
                 description(project_description)
                 label('worker')
@@ -372,9 +352,6 @@ salt_branches.each { branch_name ->
                 }
 
                 wrappers {
-                    // Inject global defined passwords in the environment
-                    injectPasswords()
-
                     // Add timestamps to console log
                     timestamps()
 
@@ -416,12 +393,13 @@ salt_branches.each { branch_name ->
                     )
                 }
                 template_context = [
-                    build_type: build_type.toLowerCase(),
+                    build_type: build_type_l,
                     branch_name: branch_name,
                     vm_names: template_vm_data
                 ]
-                template_engine = new SimpleTemplateEngine()
-                flow_script_template = template_engine.createTemplate(FLOW_SCRIPT_TEMPLATE_TEXT)
+                flow_script_template = template_engine.createTemplate(
+                    readFileFromWorkspace('jenkins-seed', 'salt/templates/flow-script.groovy'
+                )
                 flow_script_template_text = flow_script_template.make(template_context)
 
                 buildFlow(flow_script_template_text.toString())
@@ -436,18 +414,31 @@ salt_branches.each { branch_name ->
                         pylint(10, 999, 999, 'lint/pylint-report*.xml')
                     }
 
+                    def template_context = [
+                        commit_status_context: "default"
+                    ]
+                    def script_template = template_engine.createTemplate(
+                        readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy'
+                    )
+                    def rendered_script_template = script_template.make(template_context)
+
+                    groovyPostBuild(rendered_script_template.toString())
+
                     // Cleanup workspace
                     wsCleanup()
                 }
             }
 
-            if (build_type.toLowerCase() == 'cloud') {
+            if (build_type_l == 'cloud') {
                 salt_cloud_providers.each { provider_name ->
+
+                    def provider_name_l = provider_name_l
+
                     vm_names.each { vm_name ->
                         def job_name = vm_name.toLowerCase().replace(' ', '-')
-                        def vm_name_nodots = vm_name.replace(' ', '_').replace('.', '_')
+                        def vm_name_nodots = vm_name.replace(' ', '_').replace('.', '_').toLowerCase()
                         job {
-                            name = "salt/${branch_name}/${build_type.toLowerCase()}/${provider_name.toLowerCase()}/${job_name}"
+                            name = "salt/${branch_name_l}/${build_type_l}/${provider_name_l}/${job_name}"
                             displayName(vm_name)
                             concurrentBuild(allowConcurrentBuild = true)
                             description("${project_description} - ${build_type} - ${provider_name} - ${vm_name}")
@@ -466,9 +457,6 @@ salt_branches.each { branch_name ->
                             }
 
                             wrappers {
-                                // Inject global defined passwords in the environment
-                                injectPasswords()
-
                                 // Cleanup the workspace before starting
                                 preBuildCleanup()
 
@@ -488,36 +476,26 @@ salt_branches.each { branch_name ->
                                     writeDescription('Build failed due to timeout after {0} minutes')
                                 }
                             }
+                            def template_context = [
+                                commit_status_context: "ci/${job_name}"
+                                github_repo: github_repo,
+                                branch_name: branch_name,
+                                branch_name_l: branch_name_l,
+                                build_vm_name: "${provider_name_l}_${vm_name_nodots}",
+                                vm_name_nodots: vm_name_nodots,
+                                virtualenv_setup_state_name: "projects.salt.${branch_name_l}.lint"
+                            ]
+                            def script_template = template_engine.createTemplate(
+                                readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy'
+                            )
+                            def rendered_script_template = script_template.make(template_context)
 
                             environmentVariables {
-                                env('GITHUB_REPO', github_repo)
-                                env('BRANCH_NAME', branch_name)
-                                env('COMMIT_STATUS_CONTEXT', "ci/${job_name}")
-                                env('VIRTUALENV_NAME', "salt-${branch_name}")
-                                env('VIRTUALENV_SETUP_STATE_NAME', "projects.salt.${build_type.toLowerCase()}-testrun")
-                                env('SYSTEM_SITE_PACKAGES', 'true')
-                                env('BUILD_VM_NAME', "${provider_name.toLowerCase()}_${vm_name.replace(' ', '_').replace('.', '_')}")
-                            }
-
-
-                            configure {
-                                it.get('buildWrappers').get(0).appendNode(
-                                    'com.lookout.jenkins.EnvironmentScript',
-                                    [plugin: 'environment-script']
-                                ).appendNode('script').setValue(
-                                    readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh') + '\n' +
-                                    readFileFromWorkspace(
-                                        'jenkins-seed',
-                                        'salt/scripts/branches-environment-variables.sh'
-                                    )
-                                )
+                                groovy(rendered_script_template.toString())
                             }
 
                             // Job Steps
                             steps {
-                                // Set initial commit status
-                                shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
-
                                 // Run Unit Tests
                                 shell(readFileFromWorkspace('jenkins-seed', 'salt/scripts/branches-run-tests.sh'))
                             }
@@ -543,9 +521,17 @@ salt_branches.each { branch_name ->
                                     task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/download-remote-files.sh'))
                                     // Shutdown VM
                                     task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/shutdown-cloud-vm.sh'))
-                                    // Set final commit status
-                                    task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
                                 }
+
+                                def template_context = [
+                                    commit_status_context: "ci/${job_name}"
+                                ]
+                                def script_template = template_engine.createTemplate(
+                                    readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy'
+                                )
+                                def rendered_script_template = script_template.make(template_context)
+
+                                groovyPostBuild(rendered_script_template.toString())
                             }
                         }
                     }
@@ -554,16 +540,11 @@ salt_branches.each { branch_name ->
                 vm_names.each { vm_name ->
                     def job_name = vm_name.toLowerCase().replace(' ', '-')
                     job {
-                        name = "salt/${branch_name}/${build_type.toLowerCase()}/${job_name}"
+                        name = "salt/${branch_name}/${build_type_l}/${job_name}"
                         displayName(vm_name)
                         concurrentBuild(allowConcurrentBuild = true)
                         description("${project_description} - ${build_type} - ${vm_name}")
                         label('container')
-
-                        // Parameters Definition
-                        parameters {
-                            stringParam('CLONE_BUILD_ID')
-                        }
 
                         configure {
                             job_properties = it.get('properties').get(0)
@@ -573,9 +554,6 @@ salt_branches.each { branch_name ->
                         }
 
                         wrappers {
-                            // Inject global defined passwords in the environment
-                            injectPasswords()
-
                             // Cleanup the workspace before starting
                             preBuildCleanup()
 
@@ -596,35 +574,26 @@ salt_branches.each { branch_name ->
                             }
                         }
 
-                        configure {
-                            it.get('buildWrappers').get(0).appendNode(
-                                'com.lookout.jenkins.EnvironmentScript',
-                                [plugin: 'environment-script']
-                            ).appendNode('script').setValue(
-                                readFileFromWorkspace(
-                                    'jenkins-seed',
-                                    'salt/scripts/branches-environment-variables.sh'
-                                )
-                            )
-                        }
+                        def template_context = [
+                            commit_status_context: "ci/${job_name}"
+                            github_repo: github_repo,
+                            branch_name: branch_name,
+                            branch_name_l: branch_name_l,
+                            build_vm_name: "${provider_name_l}_${vm_name_nodots}",
+                            vm_name_nodots: vm_name_nodots,
+                            virtualenv_setup_state_name: "projects.salt.${branch_name_l}.lint"
+                        ]
+                        def script_template = template_engine.createTemplate(
+                            readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy'
+                        )
+                        def rendered_script_template = script_template.make(template_context)
 
                         environmentVariables {
-                            env('GITHUB_REPO', github_repo)
-                            env('BRANCH_NAME', branch_name)
-                            env('COMMIT_STATUS_CONTEXT', "ci/${job_name}")
-                            env('VIRTUALENV_NAME', "salt-${branch_name}")
-                            env('VIRTUALENV_SETUP_STATE_NAME', "projects.salt.${build_type.toLowerCase()}-testrunt")
-                            env('BUILD_VM_NAME', vm_name.replace(' ', '_').replace('.', '_'))
+                            groovy(rendered_script_template.toString())
                         }
 
                         // Job Steps
                         steps {
-                            // Setup the required virtualenv
-                            shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
-
-                            // Set initial commit status
-                            shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
-
                             // Run Unit Tests
                             shell(readFileFromWorkspace('jenkins-seed', 'salt/scripts/branches-run-tests.sh'))
                         }
@@ -651,9 +620,17 @@ salt_branches.each { branch_name ->
                                 task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/download-remote-files.sh'))
                                 // Shutdown VM
                                 task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/shutdown-cloud-vm.sh'))
-                                // Set final commit status
-                                task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
                             }
+
+                            def template_context = [
+                                commit_status_context: "ci/${job_name}"
+                            ]
+                            def script_template = template_engine.createTemplate(
+                                readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy'
+                            )
+                            def rendered_script_template = script_template.make(template_context)
+
+                            groovyPostBuild(rendered_script_template.toString())
                         }
                     }
                 }
