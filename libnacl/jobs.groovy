@@ -133,7 +133,7 @@ def master_main_job = job(type: BuildFlow) {
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
-        rendered_script_template = script_template.make(template_context)
+        rendered_script_template = script_template.make(template_context.withDefault(null))
 
         groovyPostBuild(rendered_script_template.toString())
 
@@ -215,7 +215,7 @@ def master_clone_job = job {
     script_template = template_engine.createTemplate(
         readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
     )
-    rendered_script_template = script_template.make(template_context)
+    rendered_script_template = script_template.make(template_context.withDefault(null))
 
     environmentVariables {
         groovy(rendered_script_template.toString())
@@ -236,7 +236,7 @@ def master_clone_job = job {
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
-        rendered_script_template = script_template.make(template_context)
+        rendered_script_template = script_template.make(template_context.withDefault(null))
 
         groovyPostBuild(rendered_script_template.toString())
     }
@@ -300,7 +300,7 @@ def master_lint_job = job {
     script_template = template_engine.createTemplate(
         readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
     )
-    rendered_script_template = script_template.make(template_context)
+    rendered_script_template = script_template.make(template_context.withDefault(null))
 
     environmentVariables {
         groovy(rendered_script_template.toString())
@@ -330,7 +330,7 @@ def master_lint_job = job {
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
-        rendered_script_template = script_template.make(template_context)
+        rendered_script_template = script_template.make(template_context.withDefault(null))
 
         groovyPostBuild(rendered_script_template.toString())
     }
@@ -386,7 +386,7 @@ def master_unit_job = job {
     script_template = template_engine.createTemplate(
         readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
     )
-    rendered_script_template = script_template.make(template_context)
+    rendered_script_template = script_template.make(template_context.withDefault(null))
 
     environmentVariables {
         groovy(rendered_script_template.toString())
@@ -424,7 +424,7 @@ def master_unit_job = job {
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
-        rendered_script_template = script_template.make(template_context)
+        rendered_script_template = script_template.make(template_context.withDefault(null))
 
         groovyPostBuild(rendered_script_template.toString())
     }
@@ -538,7 +538,7 @@ job(type: BuildFlow) {
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
-        rendered_script_template = script_template.make(template_context)
+        rendered_script_template = script_template.make(template_context.withDefault(null))
 
         groovyPostBuild(rendered_script_template.toString())
 
@@ -632,7 +632,7 @@ def pr_clone_job = job {
     script_template = template_engine.createTemplate(
         readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
     )
-    rendered_script_template = script_template.make(template_context)
+    rendered_script_template = script_template.make(template_context.withDefault(null))
 
     environmentVariables {
         groovy(rendered_script_template.toString())
@@ -653,7 +653,7 @@ def pr_clone_job = job {
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
-        rendered_script_template = script_template.make(template_context)
+        rendered_script_template = script_template.make(template_context.withDefault(null))
 
         groovyPostBuild(rendered_script_template.toString())
     }
@@ -722,7 +722,7 @@ job {
     script_template = template_engine.createTemplate(
         readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
     )
-    rendered_script_template = script_template.make(template_context)
+    rendered_script_template = script_template.make(template_context.withDefault(null))
 
     environmentVariables {
         groovy(rendered_script_template.toString())
@@ -752,7 +752,7 @@ job {
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
-        rendered_script_template = script_template.make(template_context)
+        rendered_script_template = script_template.make(template_context.withDefault(null))
 
         groovyPostBuild(rendered_script_template.toString())
     }
@@ -811,7 +811,7 @@ job {
     script_template = template_engine.createTemplate(
         readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
     )
-    rendered_script_template = script_template.make(template_context)
+    rendered_script_template = script_template.make(template_context.withDefault(null))
 
     environmentVariables {
         groovy(rendered_script_template.toString())
@@ -849,6 +849,6 @@ job {
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
-        rendered_script_template = script_template.make(template_context)
+        rendered_script_template = script_template.make(template_context.withDefault(null))
     }
 }
