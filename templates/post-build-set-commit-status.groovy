@@ -10,14 +10,14 @@ try {
     def commit_status_context = 'default'
 }
 
+def state = GHCommitState.ERROR;
+
 if (result == null) { // Build is ongoing
     def state = GHCommitState.PENDING;
 } else if (result.isBetterOrEqualTo(Result.SUCCESS)) {
     def state = GHCommitState.SUCCESS;
 } else if (result.isBetterOrEqualTo(Result.UNSTABLE)) {
     def state = GHCommitState.FAILURE;
-} else {
-    def state = GHCommitState.ERROR;
 }
 
 def project = manager.build.getProject()
