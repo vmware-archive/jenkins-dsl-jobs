@@ -426,7 +426,7 @@ salt_branches.each { branch_name ->
             if (build_type_l == 'cloud') {
                 salt_cloud_providers.each { provider_name ->
 
-                    def provider_name_l = provider_name_l
+                    def provider_name_l = provider_name
 
                     vm_names.each { vm_name ->
                         def job_name = vm_name.toLowerCase().replace(' ', '-')
