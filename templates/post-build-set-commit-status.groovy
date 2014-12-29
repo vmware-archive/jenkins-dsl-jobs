@@ -1,7 +1,5 @@
 import hudson.model.Result;
-import org.eclipse.jgit.lib.ObjectId;
 import org.kohsuke.github.GHCommitState;
-import org.jenkinsci.plugins.github.util.BuildDataHelper;
 import com.cloudbees.jenkins.GitHubRepositoryNameContributor;
 
 def result = manager.build.getResult()
@@ -24,16 +22,10 @@ if (result == null) { // Build is ongoing
 
 def project = manager.build.getProject()
 
-try {
-    def sha1 = ObjectId.toString(BuildDataHelper.getCommitSHA1(manager.build));
-} catch(IOException e) {
-    def sha1 = manager.build.getBuildVariables()['GIT_COMMIT']
-}
-
 GitHubRepositoryNameContributor.parseAssociatedNames(project).each {
     it.resolve().each {
         def status_result = it.createCommitStatus(
-            sha1,
+            manager.build.getBuildVariables()['GIT_COMMIT'],
             state,
             manager.build.getAbsoluteUrl(),
             manager.build.getFullDisplayName(),
