@@ -253,7 +253,7 @@ salt_branches.each { branch_name ->
         )
 
         def template_context = [
-            commit_status_context: 'ci/lint'
+            commit_status_context: 'ci/lint',
             github_repo: github_repo,
             branch_name: branch_name,
             branch_name_l: branch_name_l,
@@ -474,7 +474,7 @@ salt_branches.each { branch_name ->
                                 }
                             }
                             def template_context = [
-                                commit_status_context: "ci/${job_name}"
+                                commit_status_context: "ci/${job_name}",
                                 github_repo: github_repo,
                                 branch_name: branch_name,
                                 branch_name_l: branch_name_l,
@@ -572,7 +572,7 @@ salt_branches.each { branch_name ->
                         }
 
                         def template_context = [
-                            commit_status_context: "ci/${job_name}"
+                            commit_status_context: "ci/${job_name}",
                             github_repo: github_repo,
                             branch_name: branch_name,
                             branch_name_l: branch_name_l,
