@@ -558,6 +558,7 @@ def pr_clone_job = job {
 
     parameters {
         stringParam('PR')
+        stringParam('GIT_COMMIT')
     }
 
     configure {
