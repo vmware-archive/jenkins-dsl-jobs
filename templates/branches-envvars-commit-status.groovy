@@ -25,7 +25,7 @@ try {
 }
 
 try {
-    def commit_status_context = "$commit_status_context"
+    def commit_status_context = '$commit_status_context'
 } catch(e) {
     try {
         def commit_status_context = 'ci/' + project.getFullName()
@@ -48,10 +48,10 @@ GitHubRepositoryNameContributor.parseAssociatedNames(project).each {
 
 def build_number = build_env_vars['BUILD_NUMBER'].padLeft(4, '0')
 return [
-    GITHUB_REPO: "$github_repo",
-    VIRTUALENV_NAME: "salt-$branch_name_l",
-    VIRTUALENV_SETUP_STATE_NAME: "$virtualenv_setup_state_name",
-    BRANCH_NAME: "$branch_name",<% if (build_vm_name != null) { %>
-    BUILD_VM_NAME: "$build_vm_name",<% } %><% if (vm_name_nodots != null) { %>
-    JENKINS_VM_NAME: build_env_vars['JENKINS_VM_NAME_PREFIX'] + "_$vm_name_nodots_" + build_number<% } %>
+    GITHUB_REPO: '$github_repo',
+    VIRTUALENV_NAME: 'salt-$branch_name_l',
+    VIRTUALENV_SETUP_STATE_NAME: '$virtualenv_setup_state_name',
+    BRANCH_NAME: '$branch_name',<% if (build_vm_name != null) { %>
+    BUILD_VM_NAME: '$build_vm_name',<% } %><% if (vm_name_nodots != null) { %>
+    JENKINS_VM_NAME: build_env_vars['JENKINS_VM_NAME_PREFIX'] + '_$vm_name_nodots_' + build_number<% } %>
 ]

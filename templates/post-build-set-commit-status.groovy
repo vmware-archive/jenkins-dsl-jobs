@@ -31,7 +31,7 @@ GitHubRepositoryNameContributor.parseAssociatedNames(project).each {
             state,
             build.getAbsoluteUrl(),
             build.getFullDisplayName(),
-            "$commit_status_context"
+            '$commit_status_context'
         )
     }
 }
