@@ -13,11 +13,11 @@ try {
 def state = GHCommitState.ERROR;
 
 if (result == null) { // Build is ongoing
-    def state = GHCommitState.PENDING;
+    state = GHCommitState.PENDING;
 } else if (result.isBetterOrEqualTo(Result.SUCCESS)) {
-    def state = GHCommitState.SUCCESS;
+    state = GHCommitState.SUCCESS;
 } else if (result.isBetterOrEqualTo(Result.UNSTABLE)) {
-    def state = GHCommitState.FAILURE;
+    state = GHCommitState.FAILURE;
 }
 
 def project = manager.build.getProject()
