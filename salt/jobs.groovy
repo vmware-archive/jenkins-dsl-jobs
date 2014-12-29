@@ -194,9 +194,6 @@ salt_branches.each { branch_name ->
         publishers {
             archiveArtifacts('workspace.cpio.xz')
 
-            template_context = [
-                commit_status_context: "ci/${job_name}"
-            ]
             script_template = template_engine.createTemplate(
                 readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
             )
@@ -297,9 +294,6 @@ salt_branches.each { branch_name ->
                 pylint(10, 999, 999, 'pylint-report*.xml')
             }
 
-            template_context = [
-                commit_status_context: "ci/${job_name}"
-            ]
             script_template = template_engine.createTemplate(
                 readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
             )
@@ -523,9 +517,6 @@ salt_branches.each { branch_name ->
                                     task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/shutdown-cloud-vm.sh'))
                                 }
 
-                                template_context = [
-                                    commit_status_context: "ci/${job_name}"
-                                ]
                                 script_template = template_engine.createTemplate(
                                     readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                                 )
@@ -622,9 +613,6 @@ salt_branches.each { branch_name ->
                                 task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/shutdown-cloud-vm.sh'))
                             }
 
-                            template_context = [
-                                commit_status_context: "ci/${job_name}"
-                            ]
                             script_template = template_engine.createTemplate(
                                 readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                             )
