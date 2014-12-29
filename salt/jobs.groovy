@@ -170,7 +170,7 @@ salt_branches.each { branch_name ->
             branch_name: branch_name,
             branch_name_l: branch_name_l,
             build_vm_name: null,
-            vm_name_nodots: vm_name_nodots,
+            vm_name_nodots: null,
             virtualenv_setup_state_name: 'projects.clone'
         ]
         script_template = template_engine.createTemplate(
