@@ -28,7 +28,7 @@ try {
     def commit_status_context = "<% commit_status_context %>"
 } catch(e) {
     try {
-        def commit_status_context = "ci/${project.getFullName()}"
+        def commit_status_context = 'ci/' + project.getFullName()
     } catch(e) {
         def commit_status_context = "default"
     }
