@@ -1,4 +1,4 @@
-import hudson.model.Result.*;
+import hudson.model.Result;
 import org.eclipse.jgit.lib.ObjectId;
 import org.kohsuke.github.GHCommitState;
 import org.jenkinsci.plugins.github.util.BuildDataHelper;
