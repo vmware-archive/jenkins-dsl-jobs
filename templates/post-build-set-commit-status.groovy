@@ -3,8 +3,7 @@ import org.kohsuke.github.GHCommitState;
 import org.jenkinsci.plugins.github.util.BuildDataHelper;
 import com.cloudbees.jenkins.GitHubRepositoryNameContributor;
 
-def build_env_vars = build.getEnvVars()
-def result = build.getResult()
+def result = manager.getResult()
 
 if (result == null) { // Build is ongoing
     def state = GHCommitState.PENDING;
@@ -16,12 +15,12 @@ if (result == null) { // Build is ongoing
     def state = GHCommitState.ERROR;
 }
 
-def project = build.getProject()
+def project = manager.build.getProject()
 
 try {
-    def sha1 = ObjectId.toString(BuildDataHelper.getCommitSHA1(build));
+    def sha1 = ObjectId.toString(BuildDataHelper.getCommitSHA1(manager.build));
 } catch(IOException e) {
-    def sha1 = build_env_vars['GIT_COMMIT']
+    def sha1 = manager.envVars['GIT_COMMIT']
 }
 
 GitHubRepositoryNameContributor.parseAssociatedNames(project).each {
@@ -29,8 +28,8 @@ GitHubRepositoryNameContributor.parseAssociatedNames(project).each {
         def status_result = it.createCommitStatus(
             sha1,
             state,
-            build.getAbsoluteUrl(),
-            build.getFullDisplayName(),
+            manager.build.getAbsoluteUrl(),
+            manager.build.getFullDisplayName(),
             '$commit_status_context'
         )
     }
