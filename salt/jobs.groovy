@@ -161,7 +161,7 @@ salt_branches.each { branch_name ->
         }
         checkoutRetryCount(3)
 
-        def template_context = [
+        template_context = [
             commit_status_context: 'default',
             github_repo: github_repo,
             branch_name: branch_name,
@@ -170,10 +170,10 @@ salt_branches.each { branch_name ->
             vm_name_nodots: vm_name_nodots,
             virtualenv_setup_state_name: 'projects.clone'
         ]
-        def script_template = template_engine.createTemplate(
+        script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
         )
-        def rendered_script_template = script_template.make(template_context)
+        rendered_script_template = script_template.make(template_context)
 
         environmentVariables {
             groovy(rendered_script_template.toString())
@@ -191,13 +191,13 @@ salt_branches.each { branch_name ->
         publishers {
             archiveArtifacts('workspace.cpio.xz')
 
-            def template_context = [
+            template_context = [
                 commit_status_context: "ci/${job_name}"
             ]
-            def script_template = template_engine.createTemplate(
+            script_template = template_engine.createTemplate(
                 readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
             )
-            def rendered_script_template = script_template.make(template_context)
+            rendered_script_template = script_template.make(template_context)
 
             groovyPostBuild(rendered_script_template.toString())
         }
@@ -252,7 +252,7 @@ salt_branches.each { branch_name ->
             default_artifact_nr_of_jobs_to_keep
         )
 
-        def template_context = [
+        template_context = [
             commit_status_context: 'ci/lint',
             github_repo: github_repo,
             branch_name: branch_name,
@@ -261,10 +261,10 @@ salt_branches.each { branch_name ->
             vm_name_nodots: vm_name_nodots,
             virtualenv_setup_state_name: "projects.salt.${branch_name_l}.lint"
         ]
-        def script_template = template_engine.createTemplate(
+        script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
         )
-        def rendered_script_template = script_template.make(template_context)
+        rendered_script_template = script_template.make(template_context)
 
         environmentVariables {
             groovy(rendered_script_template.toString())
@@ -294,13 +294,13 @@ salt_branches.each { branch_name ->
                 pylint(10, 999, 999, 'pylint-report*.xml')
             }
 
-            def template_context = [
+            template_context = [
                 commit_status_context: "ci/${job_name}"
             ]
-            def script_template = template_engine.createTemplate(
+            script_template = template_engine.createTemplate(
                 readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
             )
-            def rendered_script_template = script_template.make(template_context)
+            rendered_script_template = script_template.make(template_context)
 
             groovyPostBuild(rendered_script_template.toString())
        }
@@ -411,13 +411,13 @@ salt_branches.each { branch_name ->
                         pylint(10, 999, 999, 'lint/pylint-report*.xml')
                     }
 
-                    def template_context = [
+                    template_context = [
                         commit_status_context: "default"
                     ]
-                    def script_template = template_engine.createTemplate(
+                    script_template = template_engine.createTemplate(
                         readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                     )
-                    def rendered_script_template = script_template.make(template_context)
+                    rendered_script_template = script_template.make(template_context)
 
                     groovyPostBuild(rendered_script_template.toString())
 
@@ -473,7 +473,7 @@ salt_branches.each { branch_name ->
                                     writeDescription('Build failed due to timeout after {0} minutes')
                                 }
                             }
-                            def template_context = [
+                            template_context = [
                                 commit_status_context: "ci/${job_name}",
                                 github_repo: github_repo,
                                 branch_name: branch_name,
@@ -482,10 +482,10 @@ salt_branches.each { branch_name ->
                                 vm_name_nodots: vm_name_nodots,
                                 virtualenv_setup_state_name: "projects.salt.${branch_name_l}.lint"
                             ]
-                            def script_template = template_engine.createTemplate(
+                            script_template = template_engine.createTemplate(
                                 readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
                             )
-                            def rendered_script_template = script_template.make(template_context)
+                            rendered_script_template = script_template.make(template_context)
 
                             environmentVariables {
                                 groovy(rendered_script_template.toString())
@@ -520,13 +520,13 @@ salt_branches.each { branch_name ->
                                     task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/shutdown-cloud-vm.sh'))
                                 }
 
-                                def template_context = [
+                                template_context = [
                                     commit_status_context: "ci/${job_name}"
                                 ]
-                                def script_template = template_engine.createTemplate(
+                                script_template = template_engine.createTemplate(
                                     readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                                 )
-                                def rendered_script_template = script_template.make(template_context)
+                                rendered_script_template = script_template.make(template_context)
 
                                 groovyPostBuild(rendered_script_template.toString())
                             }
@@ -571,7 +571,7 @@ salt_branches.each { branch_name ->
                             }
                         }
 
-                        def template_context = [
+                        template_context = [
                             commit_status_context: "ci/${job_name}",
                             github_repo: github_repo,
                             branch_name: branch_name,
@@ -580,10 +580,10 @@ salt_branches.each { branch_name ->
                             vm_name_nodots: vm_name_nodots,
                             virtualenv_setup_state_name: "projects.salt.${branch_name_l}.lint"
                         ]
-                        def script_template = template_engine.createTemplate(
+                        script_template = template_engine.createTemplate(
                             readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
                         )
-                        def rendered_script_template = script_template.make(template_context)
+                        rendered_script_template = script_template.make(template_context)
 
                         environmentVariables {
                             groovy(rendered_script_template.toString())
@@ -619,13 +619,13 @@ salt_branches.each { branch_name ->
                                 task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/shutdown-cloud-vm.sh'))
                             }
 
-                            def template_context = [
+                            template_context = [
                                 commit_status_context: "ci/${job_name}"
                             ]
-                            def script_template = template_engine.createTemplate(
+                            script_template = template_engine.createTemplate(
                                 readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                             )
-                            def rendered_script_template = script_template.make(template_context)
+                            rendered_script_template = script_template.make(template_context)
 
                             groovyPostBuild(rendered_script_template.toString())
                         }
