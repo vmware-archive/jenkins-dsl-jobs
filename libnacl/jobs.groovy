@@ -60,7 +60,7 @@ def master_main_job = job(type: BuildFlow) {
         slack_notifications = job_properties.appendNode(
             'jenkins.plugins.slack.SlackNotifier_-SlackJobProperty')
         slack_notifications.appendNode('room').setValue('#jenkins')
-        slack_notifications.appendNode('startNotifications').setValue(false)
+        slack_notifications.appendNode('startNotification').setValue(false)
         slack_notifications.appendNode('notifySuccess').setValue(true)
         slack_notifications.appendNode('notifyAborted').setValue(true)
         slack_notifications.appendNode('notifyNotBuilt').setValue(true)
@@ -433,7 +433,7 @@ job(type: BuildFlow) {
         slack_notifications = job_properties.appendNode(
             'jenkins.plugins.slack.SlackNotifier_-SlackJobProperty')
         slack_notifications.appendNode('room').setValue('#jenkins')
-        slack_notifications.appendNode('startNotifications').setValue(false)
+        slack_notifications.appendNode('startNotification').setValue(false)
         slack_notifications.appendNode('notifySuccess').setValue(true)
         slack_notifications.appendNode('notifyAborted').setValue(true)
         slack_notifications.appendNode('notifyNotBuilt').setValue(true)
