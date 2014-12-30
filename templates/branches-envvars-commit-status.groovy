@@ -1,6 +1,6 @@
 import hudson.model.Result;
 import org.kohsuke.github.GHCommitState;
-import com.cloudbees.jenkins.GitHubRepositoryNameContributor;
+import com.cloudbees.jenkins.GitHubRepositoryName;
 
 
 def build_env_vars = currentBuild.getEnvVars()
@@ -16,18 +16,15 @@ if (result == null) { // Build is ongoing
     state = GHCommitState.FAILURE;
 }
 
-def project = currentBuild.getProject()
-
-GitHubRepositoryNameContributor.parseAssociatedNames(project).each {
-    it.resolve().each {
-        def status_result = it.createCommitStatus(
-            currentBuild.getBuildVariables()['GIT_COMMIT'],
-            state,
-            currentBuild.getAbsoluteUrl(),
-            currentBuild.getFullDisplayName(),
-            '$commit_status_context'
-        )
-    }
+def repo = GitHubRepositoryName.create('$github_repo')
+repo.resolve().each {
+    def status_result = it.createCommitStatus(
+        currentBuild.getBuildVariables()['GIT_COMMIT'],
+        state,
+        currentBuild.getAbsoluteUrl(),
+        currentBuild.getFullDisplayName(),
+        '$commit_status_context'
+    )
 }
 
 <% if ( vm_name_nodots != null ) { %>
