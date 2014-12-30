@@ -21,7 +21,16 @@ if (result == null) { // Build is ongoing
     state = GHCommitState.FAILURE;
 }
 
-def repo = GitHubRepositoryName.create('https://github.com/' + manager.envVars['GITHUB_REPO'] + '.git')
+def github_repo = ""
+try {
+    github_repo = manager.envVars['GITHUB_REPO']
+} catch(e) {
+    def github_repo_regex = /https:\/\/github.com\/(.*)\/pull\/(.*?)/
+    def regex_match = (manager.build.getBuildVariables()['ghprbPullLink'] =~ github_repo_regex)
+    github_repo = regex_match[0][1]
+}
+
+repo = GitHubRepositoryName.create('https://github.com/' + github_repo + '.git')
 repo.resolve().each {
     def status_result = it.createCommitStatus(
         manager.build.getBuildVariables()['GIT_COMMIT'],
