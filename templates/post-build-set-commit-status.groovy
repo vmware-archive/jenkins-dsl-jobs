@@ -21,7 +21,7 @@ if (result == null) { // Build is ongoing
     state = GHCommitState.FAILURE;
 }
 
-def repo = GitHubRepositoryName.create(manager.envVars['GITHUB_REPO'])
+def repo = GitHubRepositoryName.create('https://github.com/' + manager.envVars['GITHUB_REPO'] + '.git')
 repo.resolve().each {
     def status_result = it.createCommitStatus(
         currentBuild.getBuildVariables()['GIT_COMMIT'],
