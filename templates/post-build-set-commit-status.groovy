@@ -25,9 +25,9 @@ def github_repo = ""
 try {
     github_repo = manager.envVars['GITHUB_REPO']
 } catch(e) {
-    def github_repo_regex = /(.*)github.com\/(.*)\/pull\/(.*)/
-    def regex_match = (manager.build.getBuildVariables()['ghprbPullLink'] =~ github_repo_regex)
-    github_repo = regex_match[0][2]
+    def github_repo_pattern = 'https://github.com/(.*)/pull/(.*?)'
+    def regex_match = (manager.build.getBuildVariables()['ghprbPullLink'] =~ ~github_repo_pattern)
+    github_repo = regex_match[0][1]
 }
 
 repo = GitHubRepositoryName.create('https://github.com/' + github_repo + '.git')
