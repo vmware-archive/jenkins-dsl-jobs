@@ -24,10 +24,10 @@ if (result == null) { // Build is ongoing
 def repo = GitHubRepositoryName.create('https://github.com/' + manager.envVars['GITHUB_REPO'] + '.git')
 repo.resolve().each {
     def status_result = it.createCommitStatus(
-        currentBuild.getBuildVariables()['GIT_COMMIT'],
+        manager.build.getBuildVariables()['GIT_COMMIT'],
         state,
-        currentBuild.getAbsoluteUrl(),
-        currentBuild.getFullDisplayName(),
+        manager.build.getAbsoluteUrl(),
+        manager.build.getFullDisplayName(),
         commit_status_context
     )
 }
