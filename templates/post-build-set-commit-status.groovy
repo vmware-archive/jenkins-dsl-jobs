@@ -31,12 +31,16 @@ try {
 }
 
 repo = GitHubRepositoryName.create('https://github.com/' + github_repo + '.git')
-repo.resolve().each {
-    def status_result = it.createCommitStatus(
-        manager.build.getBuildVariables()['GIT_COMMIT'],
-        state,
-        manager.build.getAbsoluteUrl(),
-        manager.build.getFullDisplayName(),
-        commit_status_context
-    )
+if ( repo != null ) {
+    repo.resolve().each {
+        def status_result = it.createCommitStatus(
+            manager.build.getBuildVariables()['GIT_COMMIT'],
+            state,
+            manager.build.getAbsoluteUrl(),
+            manager.build.getFullDisplayName(),
+            commit_status_context
+        )
+    }
+} else {
+    println "Failed to resolve the github repo: " + 'https://github.com/' + github_repo + '.git'
 }
