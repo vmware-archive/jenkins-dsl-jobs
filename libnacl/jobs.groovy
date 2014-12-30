@@ -851,5 +851,7 @@ job {
             readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
+
+        groovyPostBuild(rendered_script_template.toString())
     }
 }
