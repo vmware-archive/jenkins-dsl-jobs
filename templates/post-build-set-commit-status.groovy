@@ -4,10 +4,11 @@ import com.cloudbees.jenkins.GitHubRepositoryNameContributor;
 
 def result = manager.build.getResult()
 
+def commit_status_context = 'default'
 try {
-    def commit_status_context = manager.envVars['COMMIT_STATUS_CONTEXT']
+    commit_status_context = manager.envVars['COMMIT_STATUS_CONTEXT']
 } catch(e) {
-    def commit_status_context = 'default'
+    println 'Defaulting to the "default" commit status context'
 }
 
 def state = GHCommitState.ERROR;
