@@ -127,6 +127,7 @@ def master_main_job = job(type: BuildFlow) {
             pylint(10, 999, 999, 'lint/pylint-report*.xml')
         }
 
+        /*
         template_context = [
             commit_status_context: "default"
         ]
@@ -136,6 +137,7 @@ def master_main_job = job(type: BuildFlow) {
         rendered_script_template = script_template.make(template_context.withDefault{ null })
 
         groovyPostBuild(rendered_script_template.toString())
+        */
 
         // Cleanup workspace
         wsCleanup()
@@ -291,6 +293,16 @@ def master_lint_job = job {
         default_artifact_nr_of_jobs_to_keep
     )
 
+    // scm configuration
+    // We need this set so we can properly set commit status
+    scm {
+        github(
+            github_repo,
+            branch = '*/master',
+            protocol = 'https'
+        )
+    }
+
     template_context = [
         commit_status_context: 'ci/lint',
         github_repo: github_repo,
@@ -375,6 +387,16 @@ def master_unit_job = job {
             )
             writeDescription('Build failed due to timeout after {0} minutes')
         }
+    }
+
+    // scm configuration
+    // We need this set so we can properly set commit status
+    scm {
+        github(
+            github_repo,
+            branch = '*/master',
+            protocol = 'https'
+        )
     }
 
     template_context = [
@@ -532,6 +554,7 @@ job(type: BuildFlow) {
             }
         }
 
+        /*
         template_context = [
             commit_status_context: "default"
         ]
@@ -541,6 +564,7 @@ job(type: BuildFlow) {
         rendered_script_template = script_template.make(template_context.withDefault{ null })
 
         groovyPostBuild(rendered_script_template.toString())
+        */
 
         // Cleanup workspace
         wsCleanup()
@@ -714,6 +738,25 @@ job {
         default_artifact_nr_of_jobs_to_keep
     )
 
+    // scm configuration
+    // We need this set in order to set commit status
+    scm {
+        git {
+            remote {
+                github(github_repo, protocol='https')
+                refspec('+refs/pull/*:refs/remotes/origin/pr/*')
+            }
+            branch('origin/pr/${PR}/merge')
+            configure {
+                git_extensions = it.appendNode('extensions')
+                extension = git_extensions.appendNode('hudson.plugins.git.extensions.impl.ChangelogToBranch')
+                options = extension.appendNode('options')
+                options.appendNode('compareRemote').setValue('origin')
+                options.appendNode('compareTarget').setValue('pr/${PR}/head')
+            }
+        }
+    }
+
     template_context = [
         commit_status_context: 'ci/lint',
         github_repo: github_repo,
@@ -801,6 +844,25 @@ job {
             writeDescription('Build failed due to timeout after {0} minutes')
         }
 
+    }
+
+    // scm configuration
+    // We need this set in order to set commit status
+    scm {
+        git {
+            remote {
+                github(github_repo, protocol='https')
+                refspec('+refs/pull/*:refs/remotes/origin/pr/*')
+            }
+            branch('origin/pr/${PR}/merge')
+            configure {
+                git_extensions = it.appendNode('extensions')
+                extension = git_extensions.appendNode('hudson.plugins.git.extensions.impl.ChangelogToBranch')
+                options = extension.appendNode('options')
+                options.appendNode('compareRemote').setValue('origin')
+                options.appendNode('compareTarget').setValue('pr/${PR}/head')
+            }
+        }
     }
 
     template_context = [
