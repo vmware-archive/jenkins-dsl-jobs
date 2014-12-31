@@ -37,22 +37,18 @@ if ( github_repo_url != null ) {
             )
             if ( ! status_result ) {
                 msg = 'Failed to set commit status on GitHub'
-                manager.createSummary('warning.gif').appendText(msg)
                 out.println msg
             } else {
                 msg = "GitHub commit status successfuly set"
-                manager.createSummary('info.gif').appendText(msg)
                 out.println(msg)
             }
         }
     } else {
         msg = "Failed to resolve the github GIT repo URL from " + github_repo_url
-        manager.createSummary('warning.gif').appendText(msg)
         out.println msg
     }
 } else {
     msg = "Unable to find the GitHub project URL from the build's properties"
-    manager.createSummary('warning.gif').appendText(msg)
     out.println msg
 }
 
