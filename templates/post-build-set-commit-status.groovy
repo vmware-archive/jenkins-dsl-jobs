@@ -37,34 +37,41 @@ try {
     github_repo = manager.envVars['GITHUB_REPO']
 } catch(e) {
     def github_repo_pattern = 'https://github.com/(.*)/pull/(.*?)'
-    def regex_match = (manager.build.getBuildVariables()['ghprbPullLink'] =~ ~github_repo_pattern)
+    def regex_match = (manager.envVars['ghprbPullLink'] =~ ~github_repo_pattern)
     github_repo = regex_match[0][1]
 }
 
-def github_repo_url = 'https://github.com/' + github_repo + '.git'
-manager.listener.logger.println 'GitHub Repository URL: ' + github_repo_url
+if ( github_repo != null ) {
+    def github_repo_url = 'https://github.com/' + github_repo + '.git'
+    manager.listener.logger.println 'GitHub Repository URL: ' + github_repo_url
 
-repo = GitHubRepositoryName.create(github_repo_url)
-if ( repo != null ) {
-    def git_commit = manager.build.getBuildVariables()['GIT_COMMIT']
-    repo.resolve().each {
-        def status_result = it.createCommitStatus(
-            git_commit,
-            state,
-            manager.build.getAbsoluteUrl(),
-            manager.build.getFullDisplayName(),
-            commit_status_context
-        )
-        if ( ! status_result ) {
-            msg = 'Failed to set commit status on GitHub'
-            manager.createSummary('warning.gif').appendText(msg)
-            manager.listener.logger.println msg
-        } else {
-            manager.listener.logger.println "GitHub commit status successfuly set"
+    repo = GitHubRepositoryName.create(github_repo_url)
+    if ( repo != null ) {
+        def git_commit = manager.build.getBuildVariables()['GIT_COMMIT']
+        repo.resolve().each {
+            def status_result = it.createCommitStatus(
+                git_commit,
+                state,
+                manager.build.getAbsoluteUrl(),
+                manager.build.getFullDisplayName(),
+                commit_status_context
+            )
+            if ( ! status_result ) {
+                msg = 'Failed to set commit status on GitHub'
+                manager.createSummary('warning.gif').appendText(msg)
+                manager.listener.logger.println msg
+            } else {
+                manager.listener.logger.println "GitHub commit status successfuly set"
+            }
         }
+    } else {
+        msg = "Failed to resolve the github repo: " + 'https://github.com/' + github_repo + '.git'
+        manager.createSummary('warning.gif').appendText(msg)
+        manager.listener.logger.println msg
     }
 } else {
-    msg = "Failed to resolve the github repo: " + 'https://github.com/' + github_repo + '.git'
-    manager.createSummary('warning.gif').appendText(msg)
-    manager.listener.logger.println msg
+    manager.listener.logger.println(
+        'Unable to find the GitHub repo either by looing at "GITHUB_REPO" or ' + \
+        '"ghprbPullLink" in the build environment'
+    )
 }
