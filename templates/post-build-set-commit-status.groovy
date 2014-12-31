@@ -43,24 +43,20 @@ if ( github_repo_url != null ) {
             if ( ! status_result ) {
                 msg = 'Failed to set commit status on GitHub'
                 manager.addWarningBadge(msg)
-                //manager.createSummary('warning.gif').appendText(msg, false)
                 manager.listener.logger.println msg
             } else {
                 msg = "GitHub commit status successfuly set"
                 manager.addInfoBadge(msg)
-                //manager.createSummary('info.gif').appendText(msg, false)
                 manager.listener.logger.println(msg)
             }
         }
     } else {
         msg = "Failed to resolve the github GIT repo URL from " + github_repo_url
         manager.addWarningBadge(msg)
-        //manager.createSummary('warning.gif').appendText(msg, false)
         manager.listener.logger.println msg
     }
 } else {
     msg = "Unable to find the GitHub project URL from the build's properties"
     manager.addWarningBadge(msg)
-    //manager.createSummary('warning.gif').appendText(msg, false)
     manager.listener.logger.println msg
 }
