@@ -29,7 +29,7 @@ def github_repo_url = manager.build.getProject().getProperty(GithubProjectProper
 
 if ( github_repo_url != null ) {
     manager.listener.logger.println 'GitHub Repository URL: ' + github_repo_url
-    repo = GitHubRepositoryName.create(github_repo_url)
+    repo = GitHubRepositoryName.create(github_repo_url.toString())
     if ( repo != null ) {
         def git_commit = manager.build.getBuildVariables()['GIT_COMMIT']
         repo.resolve().each {

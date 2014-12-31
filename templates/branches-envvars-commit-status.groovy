@@ -24,7 +24,7 @@ def github_repo_url = currentBuild.getProject().getProperty(GithubProjectPropert
 
 if ( github_repo_url != null ) {
     out.println 'GitHub Repository URL: ' + github_repo_url
-    repo = GitHubRepositoryName.create(github_repo_url)
+    repo = GitHubRepositoryName.create(github_repo_url.toString())
     if ( repo != null ) {
         def git_commit = currentBuild.buildVariableResolver.resolve('GIT_COMMIT')
         repo.resolve().each {
