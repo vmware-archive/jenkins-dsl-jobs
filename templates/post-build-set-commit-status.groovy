@@ -1,20 +1,13 @@
 import hudson.model.Result;
 import org.kohsuke.github.GHCommitState;
 import com.cloudbees.jenkins.GitHubRepositoryName;
+import com.coravy.hudson.plugins.github.GithubProjectProperty;
 
 manager.listener.logger.println "Setting Commit Status to the current build result"
 
 def result = manager.build.getResult()
 
-def commit_status_context = 'default'
-try {
-    commit_status_context = manager.envVars['COMMIT_STATUS_CONTEXT']
-} catch(e) {
-    manager.listener.logger.println(
-        'Defaulting to the "default" commit status context since "COMMIT_STATUS_CONTEXT" was ' + \
-        'not found as an environment variable'
-    )
-}
+def commit_status_context = manager.envVars.get('COMMIT_STATUS_CONTEXT', 'default')
 manager.listener.logger.println "GitHub commit status context: " + commit_status_context
 
 def state = GHCommitState.ERROR;
@@ -32,19 +25,10 @@ if (result == null) { // Build is ongoing
     manager.listener.logger.println 'GitHub commit status is ERROR'
 }
 
-def github_repo = ""
-try {
-    github_repo = manager.envVars['GITHUB_REPO']
-} catch(e) {
-    def github_repo_pattern = 'https://github.com/(.*)/pull/(.*?)'
-    def regex_match = (manager.envVars['ghprbPullLink'] =~ ~github_repo_pattern)
-    github_repo = regex_match[0][1]
-}
+def github_repo_url = manager.build.getProperty(GithubProjectProperty.class).getProjectUrl()
 
-if ( github_repo != null ) {
-    def github_repo_url = 'https://github.com/' + github_repo + '.git'
+if ( github_repo_url != null ) {
     manager.listener.logger.println 'GitHub Repository URL: ' + github_repo_url
-
     repo = GitHubRepositoryName.create(github_repo_url)
     if ( repo != null ) {
         def git_commit = manager.build.getBuildVariables()['GIT_COMMIT']
@@ -61,17 +45,18 @@ if ( github_repo != null ) {
                 manager.createSummary('warning.gif').appendText(msg)
                 manager.listener.logger.println msg
             } else {
-                manager.listener.logger.println "GitHub commit status successfuly set"
+                msg = "GitHub commit status successfuly set"
+                manager.createSummary('info.gif').appendText(msg)
+                manager.listener.logger.println(msg)
             }
         }
     } else {
-        msg = "Failed to resolve the github repo: " + 'https://github.com/' + github_repo + '.git'
+        msg = "Failed to resolve the github GIT repo URL from " + github_repo_url
         manager.createSummary('warning.gif').appendText(msg)
         manager.listener.logger.println msg
     }
 } else {
-    manager.listener.logger.println(
-        'Unable to find the GitHub repo either by looing at "GITHUB_REPO" or ' + \
-        '"ghprbPullLink" in the build environment'
-    )
+    msg = "Unable to find the GitHub project URL from the build's properties"
+    manager.createSummary('warning.gif').appendText(msg)
+    manager.listener.logger.println msg
 }
