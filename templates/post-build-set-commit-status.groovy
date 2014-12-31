@@ -64,4 +64,3 @@ if ( github_repo_url != null ) {
     //manager.createSummary('warning.gif').appendText(msg, false)
     manager.listener.logger.println msg
 }
-manager.addShortText(manager.build.getDurationString(), "grey", "white", "0px", "white")
