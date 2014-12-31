@@ -1,34 +1,63 @@
 import hudson.model.Result;
 import org.kohsuke.github.GHCommitState;
 import com.cloudbees.jenkins.GitHubRepositoryName;
+import com.coravy.hudson.plugins.github.GithubProjectProperty;
 
-
-def build_env_vars = currentBuild.getEnvVars()
 def result = currentBuild.getResult()
 
 def state = GHCommitState.ERROR;
 
 if (result == null) { // Build is ongoing
     state = GHCommitState.PENDING;
+    out.println 'GitHub commit status is PENDING'
 } else if (result.isBetterOrEqualTo(Result.SUCCESS)) {
     state = GHCommitState.SUCCESS;
+    out.println 'GitHub commit status is SUCCESS'
 } else if (result.isBetterOrEqualTo(Result.UNSTABLE)) {
     state = GHCommitState.FAILURE;
+    out.println 'GitHub commit status is FAILURE'
+} else {
+    out.println 'GitHub commit status is ERROR'
 }
 
-def repo = GitHubRepositoryName.create('https://github.com/${github_repo}.git')
-repo.resolve().each {
-    def status_result = it.createCommitStatus(
-        currentBuild.getBuildVariables()['GIT_COMMIT'],
-        state,
-        currentBuild.getAbsoluteUrl(),
-        currentBuild.getFullDisplayName(),
-        '$commit_status_context'
-    )
+def github_repo_url = currentBuild.getProperty(GithubProjectProperty.class).getProjectUrl()
+
+if ( github_repo_url != null ) {
+    out.println 'GitHub Repository URL: ' + github_repo_url
+    repo = GitHubRepositoryName.create(github_repo_url)
+    if ( repo != null ) {
+        def git_commit = currentBuild.buildVariableResolver.resolve('GIT_COMMIT')
+        repo.resolve().each {
+            def status_result = it.createCommitStatus(
+                git_commit,
+                state,
+                currentBuild.getAbsoluteUrl(),
+                currentBuild.getFullDisplayName(),
+                '$commit_status_context'
+            )
+            if ( ! status_result ) {
+                msg = 'Failed to set commit status on GitHub'
+                manager.createSummary('warning.gif').appendText(msg)
+                out.println msg
+            } else {
+                msg = "GitHub commit status successfuly set"
+                manager.createSummary('info.gif').appendText(msg)
+                out.println(msg)
+            }
+        }
+    } else {
+        msg = "Failed to resolve the github GIT repo URL from " + github_repo_url
+        manager.createSummary('warning.gif').appendText(msg)
+        out.println msg
+    }
+} else {
+    msg = "Unable to find the GitHub project URL from the build's properties"
+    manager.createSummary('warning.gif').appendText(msg)
+    out.println msg
 }
 
 <% if ( vm_name_nodots != null ) { %>
-def build_number = build_env_vars['BUILD_NUMBER'].padLeft(4, '0')
+def build_number = currentBuild.buildVariableResolver.resolve('BUILD_NUMBER').padLeft(4, '0')
 <% } %>
 
 return [<%
@@ -43,6 +72,6 @@ return [<%
     if (build_vm_name != null) { %>
     BUILD_VM_NAME: '$build_vm_name',<% } %><%
     if (vm_name_nodots != null) { %>
-    JENKINS_VM_NAME: build_env_vars['JENKINS_VM_NAME_PREFIX'] + '_' + '$vm_name_nodots' + '_' + build_number<% } %>
+    JENKINS_VM_NAME: currentBuild.buildVariableResolver.resolve('JENKINS_VM_NAME_PREFIX') + '_' + '$vm_name_nodots' + '_' + build_number<% } %>
     COMMIT_STATUS_CONTEXT: '$commit_status_context'
 ]
