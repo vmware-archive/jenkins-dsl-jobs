@@ -8,7 +8,7 @@ def commit_status_context = 'default'
 try {
     commit_status_context = manager.envVars['COMMIT_STATUS_CONTEXT']
 } catch(e) {
-    println 'Defaulting to the "default" commit status context'
+    manager.listener.logger.println 'Defaulting to the "default" commit status context'
 }
 
 def state = GHCommitState.ERROR;
@@ -42,5 +42,5 @@ if ( repo != null ) {
         )
     }
 } else {
-    println "Failed to resolve the github repo: " + 'https://github.com/' + github_repo + '.git'
+    manager.listener.logger.println "Failed to resolve the github repo: " + 'https://github.com/' + github_repo + '.git'
 }
