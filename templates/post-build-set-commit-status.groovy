@@ -25,7 +25,7 @@ if (result == null) { // Build is ongoing
     manager.listener.logger.println 'GitHub commit status is ERROR'
 }
 
-def github_repo_url = manager.build.getProperty(GithubProjectProperty.class).getProjectUrl()
+def github_repo_url = manager.build.getProject().getProperty(GithubProjectProperty.class).getProjectUrl()
 
 if ( github_repo_url != null ) {
     manager.listener.logger.println 'GitHub Repository URL: ' + github_repo_url

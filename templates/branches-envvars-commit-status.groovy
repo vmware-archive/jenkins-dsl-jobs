@@ -20,7 +20,7 @@ if (result == null) { // Build is ongoing
     out.println 'GitHub commit status is ERROR'
 }
 
-def github_repo_url = currentBuild.getProperty(GithubProjectProperty.class).getProjectUrl()
+def github_repo_url = currentBuild.getProject().getProperty(GithubProjectProperty.class).getProjectUrl()
 
 if ( github_repo_url != null ) {
     out.println 'GitHub Repository URL: ' + github_repo_url
