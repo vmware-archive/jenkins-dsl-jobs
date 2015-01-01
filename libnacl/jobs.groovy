@@ -3,13 +3,13 @@
 @Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT')
 
 import groovy.text.*
-import com.cloudbees.jenkins.GitHubRepositoryName
 import com.saltstack.jenkins.PullRequestAdmins
 
 // Common variable Definitions
 def github_repo = 'saltstack/libnacl'
-def repo = GitHubRepositoryName.create("https://github.com/${github_repo}").resolve().iterator().next()
-def project_description = repo.getDescription()
+def repo_api = new URL("https://api.github.com/repos/${github_repo}")
+def repo_data = new groovy.json.JsonSlurper().parse(repo_api.newReader())
+def project_description = repo_data['description']
 
 // Job rotation defaults
 def default_days_to_keep = 90
