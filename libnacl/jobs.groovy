@@ -1,6 +1,6 @@
 // libnacl Jenkins jobs seed script
-@GrabResolver(name='com.saltstack.jenkins', root='http://saltstack.github.io/jenkins-dsl-jobs/')
-@Grab(group='com.saltstack.jenkins', module='com.saltstack.jenkins', version='1.0-SNAPSHOT')
+@GrabResolver(name='jenkins-dsl-jobs', root='http://saltstack.github.io/jenkins-dsl-jobs/')
+@Grab(group='com.saltstack:jenkins-dsl-jobs', module='com.saltstack.jenkins', version='1.0-SNAPSHOT')
 
 import groovy.text.*
 import com.saltstack.jenkins.PullRequestAdmins
