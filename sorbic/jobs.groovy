@@ -1,5 +1,9 @@
 // Sorbic Jenkins jobs seed script
-import lib.Admins
+@GrabResolver(name='jenkins-dsl-jobs', root='http://saltstack.github.io/jenkins-dsl-jobs/')
+@Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT')
+
+import groovy.text.*
+import com.saltstack.jenkins.PullRequestAdmins
 
 // Common variable Definitions
 def github_repo = 'thatch45/sorbic'
@@ -484,7 +488,7 @@ job(type: BuildFlow) {
             useGitHubHooks()
             permitAll()
             triggerPhrase('Go Go Jenkins!')
-            admins(Admins.usernames)
+            admins(PullRequestAdmins.usernames)
         }
     }
 
