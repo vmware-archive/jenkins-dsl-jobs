@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Generated from archetype; please customize.
+-->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.saltstack</groupId>
+  <artifactId>jenkins-dsl-jobs</artifactId>
+  <name>Jenkins DSL Jobs Project</name>
+  <version>1.0-SNAPSHOT</version>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.gmaven</groupId>
+        <artifactId>gmaven-plugin</artifactId>
+        <version>1.5</version>
+        <configuration>
+          <providerSelection>1.8</providerSelection>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generateStubs</goal>
+              <goal>compile</goal>
+              <goal>generateTestStubs</goal>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.github.github</groupId>
+        <artifactId>site-maven-plugin</artifactId>
+        <version>0.9</version>
+        <configuration>
+          <message>Maven artifacts for ${project.version}</message>               <!-- git commit message -->
+          <noJekyll>true</noJekyll>                                               <!-- disable webpage processing -->
+          <outputDirectory>${project.build.directory}/mvn-repo</outputDirectory>  <!-- matches distribution management repository url above -->
+          <branch>refs/heads/mvn-repo</branch>                                    <!-- remote branch name -->
+          <includes><include>**/*</include></includes>
+          <repositoryName>jenkins-dsl-jobs</repositoryName>                       <!-- github repo name -->
+          <repositoryOwner>saltstack</repositoryOwner>                            <!-- github username  -->
+        </configuration>
+        <executions>
+          <!-- run site-maven-plugin's 'site' target as part of the build's normal 'deploy' phase -->
+          <execution>
+            <goals>
+              <goal>site</goal>
+            </goals>
+            <phase>deploy</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <distributionManagement>
+    <repository>
+      <id>internal.repo</id>
+      <name>Temporary Staging Repository</name>
+      <url>file://${project.build.directory}/mvn-repo</url>
+    </repository>
+  </distributionManagement>
+
+  <plugins>
+    <plugin>
+      <artifactId>maven-deploy-plugin</artifactId>
+      <version>2.8.1</version>
+      <configuration>
+        <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
+      </configuration>
+    </plugin>
+  </plugins>
+
+  <properties>
+    <!-- github server corresponds to entry in ~/.m2/settings.xml -->
+    <github.global.server>jenkins-dsl-job-github</github.global.server>
+  </properties>
+</project>
