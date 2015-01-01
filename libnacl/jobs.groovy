@@ -1,6 +1,9 @@
 // libnacl Jenkins jobs seed script
+@GrabResolver(name='com.saltstack.jenkins', root='http://saltstack.github.io/jenkins-dsl-jobs/')
+@Grab(group='com.saltstack', module='com.saltstack.jenkins', version='1.0-SNAPSHOT')
+
 import groovy.text.*
-import lib.Admins
+import com.saltstack.jenkins.PullRequestAdmins
 
 // Common variable Definitions
 def github_repo = 'saltstack/libnacl'
@@ -499,7 +502,7 @@ job(type: BuildFlow) {
             useGitHubHooks()
             permitAll()
             triggerPhrase('Go Go Jenkins!')
-            admins(Admins.usernames)
+            admins(PullRequestAdmins.usernames)
         }
     }
 
