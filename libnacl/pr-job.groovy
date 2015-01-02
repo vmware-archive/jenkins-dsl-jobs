@@ -129,8 +129,16 @@ pr_data.each { pr ->
                 }
             }
 
+            template_context = [
+                project: 'libnacl',
+                pr_number: pr.number
+            ]
+            script_template = template_engine.createTemplate(
+                readFileFromWorkspace('jenkins-seed', 'templates/pr-main-build-flow.groovy')
+            )
+            rendered_script_template = script_template.make(template_context.withDefault{ null })
             buildFlow(
-                readFileFromWorkspace('jenkins-seed', 'libnacl/groovy/pr-main-build-flow.groovy')
+                rendered_script_template.toString()
             )
 
             publishers {
