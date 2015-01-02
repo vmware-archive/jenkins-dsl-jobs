@@ -484,13 +484,11 @@ pr_data.each { pr ->
 }
 
 
-if ( new_prs.length() > 0 ) {
-    def thr = Thread.currentThread()
-    def build = thr?.executable
+def thr = Thread.currentThread()
+def build = thr?.executable
 
-    new_prs_file = build.getWorkspace().child('new-prs.txt').withWritter { out ->
-        new_prs.each { pr_id ->
-            out.writeLine("${pr_id}")
-        }
+new_prs_file = build.getWorkspace().child('new-prs.txt').withWritter { out ->
+    new_prs.each { pr_id ->
+        out.writeLine("${pr_id}")
     }
 }
