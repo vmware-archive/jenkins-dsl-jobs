@@ -46,7 +46,11 @@ pr_data.each { pr ->
         description = pr.body
     }
 
-    existing_job = Jenkins.instance.getJob('libnacl').getJob('pr').getJob("${pr.number}").getJob('main-build')
+    try {
+        existing_job = Jenkins.instance.getJob('libnacl').getJob('pr').getJob("${pr.number}").getJob('main-build')
+    } catch(e) {
+        // no existing job
+    }
     if ( existing_job == null ) {
         new_prs.add(pr.number)
     }
@@ -478,18 +482,6 @@ pr_data.each { pr ->
         }
 }
 
-def thr = Thread.currentThread()
-def build = thr?.executable
-
-if ( new_prs.length() > 0 ) {
-    build.getWorkspace().child('new-prs.txt').withWriter { out ->
-        new_prs.each { pr_id ->
-            out.writeLine(pr_id)
-        }
-    }
-}
-
-/*
 new_prs.each { pr_id ->
     pr_job = Jenkins.instance.getJob('libnacl').getJob('pr').getJob("${pr_id}").getJob('main-build')
     trigger = job.triggers.iterator().next().value
@@ -499,4 +491,3 @@ new_prs.each { pr_id ->
     pr = repo.pulls.get(pr_id)
     repo.helper.builds.build(pr, pr.author, 'Job Created. Start Initial Build')
 }
-*/
