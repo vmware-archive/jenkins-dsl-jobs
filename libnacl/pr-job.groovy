@@ -2,7 +2,6 @@
 @GrabResolver(name='jenkins-dsl-jobs', root='http://saltstack.github.io/jenkins-dsl-jobs/')
 @Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT')
 
-import hudson
 import groovy.text.*
 import jenkins.model.Jenkins
 import com.saltstack.jenkins.PullRequestAdmins
@@ -479,8 +478,11 @@ pr_data.each { pr ->
         }
 }
 
+def thr = Thread.currentThread()
+def build = thr?.executable
+
 if ( new_prs.length() > 0 ) {
-    new hudson.model.Executor.currentExecutor().getCurrentWorkspace().child('new-prs.txt').withWriter { out ->
+    build.getWorkspace().child('new-prs.txt').withWriter { out ->
         new_prs.each { pr_id ->
             out.writeLine(pr_id)
         }
