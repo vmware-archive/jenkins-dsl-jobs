@@ -478,6 +478,15 @@ pr_data.each { pr ->
         }
 }
 
+if ( new_prs.length() > 0 ) {
+    new hudson.model.Executor.currentExecutor().getCurrentWorkspace().child('new-prs.txt').withWriter { out ->
+        new_prs.each { pr_id ->
+            out.writeLine(pr_id)
+        }
+    }
+}
+
+/*
 new_prs.each { pr_id ->
     pr_job = Jenkins.instance.getJob('libnacl').getJob('pr').getJob("${pr_id}").getJob('main-build')
     trigger = job.triggers.iterator().next().value
@@ -487,3 +496,4 @@ new_prs.each { pr_id ->
     pr = repo.pulls.get(pr_id)
     repo.helper.builds.build(pr, pr.author, 'Job Created. Start Initial Build')
 }
+*/
