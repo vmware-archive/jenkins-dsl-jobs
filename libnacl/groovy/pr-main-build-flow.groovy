@@ -2,22 +2,22 @@ import hudson.FilePath
 
 guard {
     retry(3) {
-        clone = build('libnacl/pr/clone',
-                      PR: params['ghprbPullId'],
+        clone = build("libnacl/pr/${pr.number}/clone",
+                      PR: "${pr.number}",
                       GIT_COMMIT: params['ghprbActualCommit'])
     }
 
     // Let's run Lint & Unit in parallel
     parallel (
         {
-            lint = build('libnacl/pr/lint',
-                         PR: params['ghprbPullId'],
+            lint = build("libnacl/pr/${pr.number}/lint",
+                         PR: "${pr.number}",
                          GIT_COMMIT: params['ghprbActualCommit'],
                          CLONE_BUILD_ID: clone.build.number)
         },
         {
-            unit = build('libnacl/pr/unit',
-                         PR: params['ghprbPullId'],
+            unit = build("libnacl/pr/${pr.number}/tests",
+                         PR: "${pr.number}",
                          GIT_COMMIT: params['ghprbActualCommit'],
                          CLONE_BUILD_ID: clone.build.number)
         }
