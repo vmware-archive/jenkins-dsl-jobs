@@ -53,6 +53,7 @@ pr_data.each { pr ->
         }
     } catch(e) {
         // no existing job
+        new_prs.add(pr.number)
     }
 
         // PR Main Job
