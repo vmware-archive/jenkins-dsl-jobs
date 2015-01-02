@@ -59,8 +59,8 @@ pr_data.each { pr ->
         // PR Main Job
         job(type: BuildFlow) {
             name = "libnacl/pr/${pr.number}/main-build"
-            displayName("PR #${pr.number} Main Build - ${pr.title}")
-            description(pr.body)
+            displayName("Main Build")
+            description("${pr.title}\n\n${pr.body})
             label('worker')
             concurrentBuild(allowConcurrentBuild = false)
 
@@ -176,10 +176,10 @@ pr_data.each { pr ->
         // PR Clone Job
         def pr_clone_job = job {
             name = "libnacl/pr/${pr.number}/clone"
-            displayName("PR #${pr.number} - Clone Repository")
+            displayName("Clone Repository")
 
             concurrentBuild(allowConcurrentBuild = true)
-            description(pr.body)
+            description("${pr.title}\n\n${pr.body})
             label('worker')
 
             parameters {
@@ -289,9 +289,9 @@ pr_data.each { pr ->
         // PR Lint Job
         job {
             name = "libnacl/pr/${pr.number}/lint"
-            displayName("PR #${pr.number} - Lint")
+            displayName("Lint")
             concurrentBuild(allowConcurrentBuild = true)
-            description(pr.body)
+            description("${pr.title}\n\n${pr.body})
             label('worker')
 
             // Parameters Definition
@@ -388,9 +388,9 @@ pr_data.each { pr ->
         // PR Unit Tests
         job {
             name = "libnacl/pr/${pr.number}/tests"
-            displayName("PR #${pr.number} - Tests")
+            displayName("Tests")
             concurrentBuild(allowConcurrentBuild = true)
-            description(pr.body)
+            description("${pr.title}\n\n${pr.body})
             label('worker')
 
             // Parameters Definition
