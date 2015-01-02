@@ -858,28 +858,3 @@ job {
         groovyPostBuild(rendered_script_template.toString())
     }
 }
-
-// Let's try to start a job from here!
-/*import org.kohsuke.github.GHCommitState;
-import com.cloudbees.jenkins.GitHubRepositoryName;
-import com.coravy.hudson.plugins.github.GithubProjectProperty
-import org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestResults
-import hudson.plugins.violations.ViolationsBuildAction
-import org.jenkinsci.plugins.ghprb.GhprbBuilds
-
-import org.jenkinsci.plugins.ghprb.GhprbCause
-import org.jenkinsci.plugins.ghprb.GhprbRepository
- */
-
-//@Grab('org.jenkinsci.plugins.ghprb')
-//import org.jenkinsci.plugins.ghprb.GhprbTrigger
-import jenkins.model.Jenkins
-
-job = Jenkins.instance.getJob('libnacl').getJob('pr-main-build')
-//trigger = job.getTrigger(GhprbTrigger.class)
-trigger = job.triggers.iterator().next().value
-repo = trigger.getRepository()
-pr = repo.getPullRequest(38)
-repo.check(pr)
-pr = repo.pulls.get(38)
-build = repo.helper.builds.build(pr, pr.author, 'auto started')
