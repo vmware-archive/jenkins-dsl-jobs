@@ -50,7 +50,7 @@ pr_data.each { pr ->
 
         // PR Main Job
         job(type: BuildFlow) {
-            name = "libnacl/pr/${pr.number}/main-build'
+            name = "libnacl/pr/${pr.number}/main-build"
             displayName("PR #${pr.number} Main Build - ${pr.title}")
             description(pr.body)
             label('worker')
