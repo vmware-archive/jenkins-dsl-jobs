@@ -3,7 +3,7 @@
 @Grapes([
     @Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT'),
     @Grab('org.kohsuke:github-api'),
-    @Grab('com.coravy.hudson.plugins.github:github')
+    @Grab(group='com.coravy.hudson.plugins.github', module='github', version='1.10')
 ])
 
 import org.kohsuke.github.GHCommitState;
