@@ -487,8 +487,7 @@ pr_data.each { pr ->
 def thr = Thread.currentThread()
 def build = thr?.executable
 
-new_prs_file = build.getWorkspace().child('new-prs.txt').withWritter { out ->
-    new_prs.each { pr_id ->
-        out.writeLine("${pr_id}")
-    }
+new_prs_file = build.getWorkspace().child('new-prs.txt') { out ->
+    out.deleteContents()
+    out.write(new_prs.join('\n'), 'UTF-8')
 }
