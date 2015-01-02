@@ -3,6 +3,7 @@
 @Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT')
 
 import groovy.text.*
+import hudson.model.Executor
 import jenkins.model.Jenkins
 import com.saltstack.jenkins.PullRequestAdmins
 
@@ -479,7 +480,7 @@ pr_data.each { pr ->
 }
 
 if ( new_prs.length() > 0 ) {
-    new hudson.model.Executor.currentExecutor().getCurrentWorkspace().child('new-prs.txt').withWriter { out ->
+    new Executor.currentExecutor().getCurrentWorkspace().child('new-prs.txt').withWriter { out ->
         new_prs.each { pr_id ->
             out.writeLine(pr_id)
         }
