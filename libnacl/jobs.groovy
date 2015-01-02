@@ -4,7 +4,6 @@
 
 import groovy.text.*
 import com.saltstack.jenkins.PullRequestAdmins
-import com.saltstack.jenkins.EmailNotifications
 
 // Common variable Definitions
 def github_repo = 'saltstack/libnacl'
@@ -530,11 +529,6 @@ job(type: BuildFlow) {
                 sendToRecipientList: true
             )
             configure { node ->
-                def opt_out = "def opt_out = [\n"
-                EmailNotifications.opt_out.each {
-                    opt_out += "    '${it}',\n"
-                }
-                opt_out += "]\n"
                 node.appendNode('presendScript').setValue(
                     readFileFromWorkspace('jenkins-seed', 'groovy/inject-submitter-email-address.groovy')
                 )
