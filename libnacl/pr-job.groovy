@@ -48,11 +48,11 @@ pr_data.each { pr ->
 
     try {
         existing_job = Jenkins.instance.getJob('libnacl').getJob('pr').getJob("${pr.number}").getJob('main-build')
+        if ( existing_job == null ) {
+            new_prs.add(pr.number)
+        }
     } catch(e) {
         // no existing job
-    }
-    if ( existing_job == null ) {
-        new_prs.add(pr.number)
     }
 
         // PR Main Job
