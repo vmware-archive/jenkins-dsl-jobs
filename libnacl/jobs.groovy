@@ -860,19 +860,23 @@ job {
 }
 
 // Let's try to start a job from here!
-import org.kohsuke.github.GHCommitState;
+/*import org.kohsuke.github.GHCommitState;
 import com.cloudbees.jenkins.GitHubRepositoryName;
 import com.coravy.hudson.plugins.github.GithubProjectProperty
 import org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestResults
 import hudson.plugins.violations.ViolationsBuildAction
 import org.jenkinsci.plugins.ghprb.GhprbBuilds
-import org.jenkinsci.plugins.ghprb.GhprbTrigger
+
 import org.jenkinsci.plugins.ghprb.GhprbCause
 import org.jenkinsci.plugins.ghprb.GhprbRepository
- 
- 
+ */
+
+//@Grab('org.jenkinsci.plugins.ghprb')
+//import org.jenkinsci.plugins.ghprb.GhprbTrigger
+
 job = Jenkins.instance.getJob('libnacl').getJob('pr-main-build')
-trigger = job.getTrigger(GhprbTrigger.class)
+//trigger = job.getTrigger(GhprbTrigger.class)
+trigger = job.triggers.iterator().next()
 repo = trigger.getRepository()
 pr = repo.getPullRequest(38)
 repo.check(pr)
