@@ -5,7 +5,7 @@ new_prs = manager.build.getWorkspace().child('new-prs.txt').readToString().split
 new_prs.each { pr_id ->
     if ( triggered.contains(pr_id) == false) {
         try {
-            pr_job = Jenkins.instance.getJob('libnacl').getJob('pr').getJob(pr_id).getJob('main-build')
+            pr_job = Jenkins.instance.getJob('$project').getJob('pr').getJob(pr_id).getJob('main-build')
             manager.listener.logger.println("Triggering build for ${pr_job.getFullDisplayName()}")
             trigger = pr_job.triggers.iterator().next().value
             repo = trigger.getRepository()
