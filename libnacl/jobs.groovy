@@ -877,7 +877,7 @@ import jenkins.model.Jenkins
 
 job = Jenkins.instance.getJob('libnacl').getJob('pr-main-build')
 //trigger = job.getTrigger(GhprbTrigger.class)
-trigger = job.triggers.iterator().next()
+trigger = job.triggers.iterator().next().value
 repo = trigger.getRepository()
 pr = repo.getPullRequest(38)
 repo.check(pr)
