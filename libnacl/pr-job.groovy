@@ -1,10 +1,8 @@
 // libnacl Jenkins jobs seed script
 @GrabResolver(name='jenkins-dsl-jobs', root='http://saltstack.github.io/jenkins-dsl-jobs/')
-@Grapes([
-    @Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT'),
-    @Grab('org.kohsuke:github-api'),
-    @Grab(group='com.coravy.hudson.plugins.github', module='github', version='1.10')
-])
+@Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT'),
+@Grab('org.kohsuke:github-api:1.59'),
+@Grab('com.coravy.hudson.plugins.github:github:1.10')
 
 import org.kohsuke.github.GHCommitState;
 import com.cloudbees.jenkins.GitHubRepositoryName;
