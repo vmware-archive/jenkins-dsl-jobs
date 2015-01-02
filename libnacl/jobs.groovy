@@ -873,6 +873,7 @@ import org.jenkinsci.plugins.ghprb.GhprbRepository
 
 //@Grab('org.jenkinsci.plugins.ghprb')
 //import org.jenkinsci.plugins.ghprb.GhprbTrigger
+import jenkins.model.Jenkins
 
 job = Jenkins.instance.getJob('libnacl').getJob('pr-main-build')
 //trigger = job.getTrigger(GhprbTrigger.class)
