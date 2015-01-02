@@ -60,7 +60,7 @@ pr_data.each { pr ->
         job(type: BuildFlow) {
             name = "libnacl/pr/${pr.number}/main-build"
             displayName("Main Build")
-            description("${pr.title}\n\n${pr.body})
+            description("${pr.title}\n\n${pr.body}")
             label('worker')
             concurrentBuild(allowConcurrentBuild = false)
 
@@ -179,7 +179,7 @@ pr_data.each { pr ->
             displayName("Clone Repository")
 
             concurrentBuild(allowConcurrentBuild = true)
-            description("${pr.title}\n\n${pr.body})
+            description("${pr.title}\n\n${pr.body}")
             label('worker')
 
             parameters {
@@ -291,7 +291,7 @@ pr_data.each { pr ->
             name = "libnacl/pr/${pr.number}/lint"
             displayName("Lint")
             concurrentBuild(allowConcurrentBuild = true)
-            description("${pr.title}\n\n${pr.body})
+            description("${pr.title}\n\n${pr.body}")
             label('worker')
 
             // Parameters Definition
@@ -390,7 +390,7 @@ pr_data.each { pr ->
             name = "libnacl/pr/${pr.number}/tests"
             displayName("Tests")
             concurrentBuild(allowConcurrentBuild = true)
-            description("${pr.title}\n\n${pr.body})
+            description("${pr.title}\n\n${pr.body}")
             label('worker')
 
             // Parameters Definition
