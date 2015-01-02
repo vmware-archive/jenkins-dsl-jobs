@@ -8,6 +8,9 @@ import com.saltstack.jenkins.PullRequestAdmins
 
 // Common variable Definitions
 def github_repo = 'saltstack/libnacl'
+def repo_api = new URL("https://api.github.com/repos/${github_repo}")
+def repo_data = new groovy.json.JsonSlurper().parse(repo_api.newReader())
+def project_description = repo_data['description']
 def pr_api = new URL("https://api.github.com/repos/${github_repo}/pulls?state=open")
 def pr_data = new groovy.json.JsonSlurper().parse(pr_api.newReader())
 
@@ -171,7 +174,7 @@ pr_data.each { pr ->
             displayName("PR #${pr.number} - Clone Repository")
 
             concurrentBuild(allowConcurrentBuild = true)
-            description(project_description + ' - Clone Repository')
+            description(pr.body)
             label('worker')
 
             parameters {
@@ -283,7 +286,7 @@ pr_data.each { pr ->
             name = "libnacl/pr/${pr.number}/lint"
             displayName("PR #${pr.number} - Lint")
             concurrentBuild(allowConcurrentBuild = true)
-            description(project_description + ' - Code Lint')
+            description(pr.body)
             label('worker')
 
             // Parameters Definition
@@ -382,7 +385,7 @@ pr_data.each { pr ->
             name = "libnacl/pr/${pr.number}/tests"
             displayName("PR #${pr.number} - Tests")
             concurrentBuild(allowConcurrentBuild = true)
-            description(project_description + ' - Unit Tests')
+            description(pr.body)
             label('worker')
 
             // Parameters Definition
