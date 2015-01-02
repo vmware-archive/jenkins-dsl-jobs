@@ -43,7 +43,7 @@ pr_data.each { pr ->
     folder {
         name("libnacl/pr/${pr.number}")
         displayName("PR #${pr.number}")
-        description = pr.body
+        description = "${pr.title}\n\n${pr.body}"
     }
 
     try {
