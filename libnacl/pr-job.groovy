@@ -2,7 +2,7 @@
 @GrabResolver(name='jenkins-dsl-jobs', root='http://saltstack.github.io/jenkins-dsl-jobs/')
 @Grapes([
     @Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT'),
-    @Grab('org.kohsuke.github'),
+    @Grab('org.kohsuke:github-api'),
     @Grab('com.cloudbees.jenkins'),
     @Grab('com.coravy.hudson.plugins.github')
 ])
