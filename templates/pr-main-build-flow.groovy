@@ -2,7 +2,7 @@ import hudson.FilePath
 
 guard {
     retry(3) {
-        clone = build('${project}/pr/${pr_number}/clone",
+        clone = build('${project}/pr/${pr_number}/clone',
                       PR: '${pr_number}',
                       GIT_COMMIT: params['ghprbActualCommit'])
     }
@@ -16,7 +16,7 @@ guard {
                          CLONE_BUILD_ID: clone.build.number)
         },
         {
-            unit = build('${project}/pr/${pr_number}/tests,
+            unit = build('${project}/pr/${pr_number}/tests',
                          PR: '${pr_number}',
                          GIT_COMMIT: params['ghprbActualCommit'],
                          CLONE_BUILD_ID: clone.build.number)
