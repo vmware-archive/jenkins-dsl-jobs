@@ -191,7 +191,6 @@ pr_data.each { pr ->
             label('worker')
 
             parameters {
-                stringParam('PR')
                 stringParam('GIT_COMMIT')
             }
 
@@ -200,7 +199,7 @@ pr_data.each { pr ->
                 job_properties.appendNode(
                     'hudson.plugins.copyartifact.CopyArtifactPermissionProperty').appendNode(
                         'projectNameList').appendNode(
-                            'string').setValue('libnacl/pr/*')
+                            'string').setValue("libnacl/pr/${pr.number}/*")
                 github_project_property = job_properties.appendNode(
                     'com.coravy.hudson.plugins.github.GithubProjectProperty')
                 github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
@@ -304,7 +303,6 @@ pr_data.each { pr ->
 
             // Parameters Definition
             parameters {
-                stringParam('PR')
                 stringParam('GIT_COMMIT')
                 stringParam('CLONE_BUILD_ID')
             }
@@ -403,7 +401,6 @@ pr_data.each { pr ->
 
             // Parameters Definition
             parameters {
-                stringParam('PR')
                 stringParam('GIT_COMMIT')
                 stringParam('CLONE_BUILD_ID')
             }
