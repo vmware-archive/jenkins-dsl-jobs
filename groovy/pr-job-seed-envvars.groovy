@@ -18,7 +18,7 @@ if ( github_repo_url != null ) {
             open_prs.add([
                 number: pr.number,
                 title: pr.title,
-                body:  pr.body,
+                body:  pr.body.replace('\n', '<br/>\n'),
                 sha: pr.getHead().getSha()
             ])
         }
