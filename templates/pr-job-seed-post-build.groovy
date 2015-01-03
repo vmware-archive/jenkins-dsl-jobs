@@ -4,7 +4,7 @@ import org.kohsuke.github.GHCommitState
 
 def triggered = []
 def slurper = new groovy.json.JsonSlurper()
-def github_json_data = slurper.parseText(build.getEnvironment().get('GITHUB_JSON_DATA', '""'))
+def github_json_data = slurper.parseText(manager.build.getEnvironment().get('GITHUB_JSON_DATA', '""'))
 new_prs = slurper.parseText(manager.build.getWorkspace().child('new-prs.txt').readToString())
 new_prs.each { pr ->
     if ( triggered.contains(pr.key) == false) {
