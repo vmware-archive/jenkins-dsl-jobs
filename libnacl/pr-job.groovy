@@ -503,8 +503,8 @@ pr_data.each { pr ->
 }
 
 
-def thr = Thread.currentThread()
-def build = thr?.executable
+//def thr = Thread.currentThread()
+//def build = thr?.executable
 
 new_prs_file = build.getWorkspace().child('new-prs.txt')
 new_prs_file.deleteContents()
