@@ -11,7 +11,8 @@ def thr = Thread.currentThread()
 // get current build
 def build = thr?.executable
 
-def slurper = new JsonSlurper()
+def slurper = new groovy.json.JsonSlurper()
+
 def github_json_data = slurper.parseText(build.getEnvironment().get('GITHUB_JSON_DATA', '""'))
 
 // Common variable Definitions
