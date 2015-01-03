@@ -496,4 +496,5 @@ github_json_data['open_prs'].each { pr ->
 // Write any new PR's to a file so we can trigger then in the post build step
 new_prs_file = build.getWorkspace().child('new-prs.txt')
 new_prs_file.deleteContents()
-new_prs_file.write(new JsonBuilder(new_prs).toString(), 'UTF-8')
+json_data = new JsonBuilder(new_prs)
+new_prs_file.write(json_data.toString(), 'UTF-8')
