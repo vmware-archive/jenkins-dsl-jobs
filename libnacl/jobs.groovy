@@ -920,7 +920,7 @@ dsl_job = job {
         dsl {
             removeAction('DELETE')
             text(
-                readFileFromWorkspace('jenkins-seed', 'libnacl/pr-dsl-job.groovy')
+                readFileFromWorkspace('jenkins-seed', 'libnacl/groovy/pr-dsl-job.groovy')
             )
         }
     }
