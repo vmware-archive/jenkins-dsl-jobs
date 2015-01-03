@@ -4,6 +4,7 @@
 @Grapes([
     @Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT'),
     @Grab('org.jenkins-ci.plugins:github-api:1.59'),
+    @Grab('com.coravy.hudson.plugins.github:github:1.11-SNAPSHOT'),
     @GrabExclude('org.codehaus.groovy:groovy')
 ])
 
