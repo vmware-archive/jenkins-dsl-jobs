@@ -6,7 +6,7 @@ def triggered = []
 def slurper = new groovy.json.JsonSlurper()
 new_prs_file = manager.build.getWorkspace().child('new-prs.txt')
 if ( new_prs_file.exists() ) {
-    new_prs = slurper.parseText(.readToString())
+    new_prs = slurper.parseText(new_prs_file.readToString())
     new_prs.each { pr ->
         if ( triggered.contains(pr.key) == false) {
             try {
