@@ -11,7 +11,7 @@ if ( new_prs_file.exists() ) {
         if ( triggered.contains(pr.key) == false) {
             try {
                 pr_job = Jenkins.instance.getJob('$project').getJob('pr').getJob(pr.key).getJob('main-build')
-                manager.listener.logger.println("Triggering build for " + pr_job.getFullDisplayName())
+                manager.listener.logger.println("Triggering build for " + pr_job.getFullDisplayName() + " @ " + pr.value)
                 trigger = pr_job.triggers.iterator().next().value
                 repo = trigger.getRepository()
                 repo.createCommitStatus(
@@ -26,7 +26,7 @@ if ( new_prs_file.exists() ) {
                 pull_req = repo.pulls.get(pr.key.toInteger())
                 repo.helper.builds.build(pull_req, pull_req.author, 'Job Created. Start Initial Build')
             } catch(e) {
-                manager.listener.logger.println "Failed to get Job " + '$project' + "/pr/" + pr.key + "/main-build"
+                manager.listener.logger.println "Failed to get Job " + '$project' + "/pr/" + pr.key + "/main-build: " + e.toString()
             }
             triggered.add(pr.key)
         }
