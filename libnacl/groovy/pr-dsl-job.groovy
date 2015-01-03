@@ -64,8 +64,8 @@ github_json_data['open_prs'].each { pr ->
 
         // PR Main Job
         job(type: BuildFlow) {
-            name = "libnacl/pr/${pr.number}/main-build"
-            displayName("Main Build")
+            name = "libnacl/pr/${pr.number}"
+            displayName("PR #${pr.number} - Main Build")
             description("${pr.title}\n\n${pr.body}")
             label('worker')
             concurrentBuild(allowConcurrentBuild = false)
@@ -373,7 +373,7 @@ github_json_data['open_prs'].each { pr ->
                 shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
 
                 // Copy the workspace artifact
-                copyArtifacts('libnacl/pr/clone', 'workspace.cpio.xz') {
+                copyArtifacts("libnacl/pr/${pr.number}/clone", 'workspace.cpio.xz') {
                     buildNumber('${CLONE_BUILD_ID}')
                 }
                 shell(readFileFromWorkspace('jenkins-seed', 'scripts/decompress-workspace.sh'))
@@ -461,7 +461,7 @@ github_json_data['open_prs'].each { pr ->
                 shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
 
                 // Copy the workspace artifact
-                copyArtifacts('libnacl/pr/clone', 'workspace.cpio.xz') {
+                copyArtifacts("libnacl/pr/${pr.number}/clone", 'workspace.cpio.xz') {
                     buildNumber('${CLONE_BUILD_ID}')
                 }
                 shell(readFileFromWorkspace('jenkins-seed', 'scripts/decompress-workspace.sh'))
