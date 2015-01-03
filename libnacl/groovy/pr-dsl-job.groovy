@@ -44,7 +44,7 @@ folder {
     displayName('Pull Requests')
     description = project_description
 }
-pr_data.each { pr ->
+github_json_data['open_prs'].each { pr ->
     folder {
         name("libnacl/pr/${pr.number}")
         displayName("PR #${pr.number}")
