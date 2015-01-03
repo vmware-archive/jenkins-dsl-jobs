@@ -12,15 +12,18 @@ if ( github_repo_url != null ) {
     if ( repo != null ) {
         def open_prs = []
         def closed_prs = []
+        out.println 'Processing Open Pull Requests'
         repo.getPullRequests(GHIssueState.OPEN).each { pr ->
+            out.println '  * Processing PR #' + pr.number
             open_prs.add([
                 number: pr.number,
                 title: pr.title,
                 body:  pr.body,
-                username: pr.getUser()
             ])
         }
+        out.println 'Processing Closed Pull Requests'
         repo.getPullRequests(GHIssueState.CLOSED).each { pr ->
+            out.println '  * Processing PR #' + pr.number
             closed_prs.add([
                 number: pr.number,
                 title: pr.title,
