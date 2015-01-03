@@ -1,8 +1,9 @@
 // libnacl Jenkins jobs seed script
 @GrabResolver(name='jenkins-dsl-jobs', root='http://saltstack.github.io/jenkins-dsl-jobs/')
+@GrabResolver(name='jenkins', root='http://maven.jenkins-ci.org/content/repositories/releases/')
 @Grapes([
     @Grab('com.saltstack:jenkins-dsl-jobs'),
-    @Grab('org.kohsuke:github-api'),
+    @Grab('org.jenkins-ci.plugins:github-api'),
     @GrabExclude('org.codehaus.groovy:groovy')
 ])
 
