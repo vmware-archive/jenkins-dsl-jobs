@@ -4,17 +4,13 @@
 @Grapes([
     @Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT'),
     @Grab('org.jenkins-ci.plugins:github-api:1.59'),
-    @Grab(group='com.coravy.hudson.plugins.github', module='github', version='1.10'),
     @GrabExclude('org.codehaus.groovy:groovy')
 ])
-
-import org.kohsuke.github.GHCommitState;
-import com.cloudbees.jenkins.GitHubRepositoryName;
-import com.coravy.hudson.plugins.github.GithubProjectProperty;
 
 import groovy.text.*
 import jenkins.model.Jenkins
 import com.saltstack.jenkins.PullRequestAdmins
+import com.cloudbees.jenkins.GitHubRepositoryName
 
 // Common variable Definitions
 def github_repo = 'saltstack/libnacl'
