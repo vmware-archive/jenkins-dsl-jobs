@@ -18,7 +18,7 @@ println 'FOOBAR: ' + build.getEnvironment().get('foo', 'BIN')
 import groovy.text.*
 import jenkins.model.Jenkins
 import com.saltstack.jenkins.PullRequestAdmins
-import com.cloudbees.jenkins.GitHubRepositoryName
+//import com.cloudbees.jenkins.GitHubRepositoryName
 
 // Common variable Definitions
 def github_repo = 'saltstack/libnacl'
