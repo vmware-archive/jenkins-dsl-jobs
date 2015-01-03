@@ -1,7 +1,7 @@
 // libnacl Jenkins jobs seed script
 @GrabResolver(name='jenkins-dsl-jobs', root='http://saltstack.github.io/jenkins-dsl-jobs/')
 @GrabResolver(name='jenkins-releases', root='http://repo.jenkins-ci.org/releases/')
-@GrabResolver(name='jfrog-releases', root='http://repo.jfrog.org/artifactory/libs-releases/')
+@GrabResolver(name='jgit-repository', root='http://download.eclipse.org/jgit/maven/')
 @Grapes([
     @Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT'),
     @Grab('com.coravy.hudson.plugins.github:github:1.10'),
