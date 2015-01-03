@@ -19,6 +19,7 @@ if ( github_repo_url != null ) {
                 number: pr.number,
                 title: pr.title,
                 body:  pr.body,
+                sha: pr.getHead().getSha()
             ])
         }
         out.println 'Processing Closed Pull Requests'
@@ -28,6 +29,7 @@ if ( github_repo_url != null ) {
                 number: pr.number,
                 title: pr.title,
                 body:  pr.body,
+                sha: pr.getHead().getSha()
                 closed_at: pr.getClosedAt()
             ])
         }
