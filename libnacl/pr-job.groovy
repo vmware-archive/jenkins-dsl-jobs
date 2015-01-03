@@ -2,6 +2,7 @@
 @GrabResolver(name='jenkins-dsl-jobs', root='http://saltstack.github.io/jenkins-dsl-jobs/')
 @GrabResolver(name='jenkins-releases', root='http://repo.jenkins-ci.org/releases/')
 @GrabResolver(name='jgit-repository', root='http://download.eclipse.org/jgit/maven/')
+@GrabResolver(name='repo.jenkins-ci.org', root='http://repo.jenkins-ci.org/public/')
 @Grapes([
     @Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT'),
     @Grab('com.coravy.hudson.plugins.github:github:1.10'),
