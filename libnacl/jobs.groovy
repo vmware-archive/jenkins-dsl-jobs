@@ -858,3 +858,82 @@ job {
         groovyPostBuild(rendered_script_template.toString())
     }
 }
+
+dsl_job = job(
+    name = 'libnacl/jenkins-seed'
+    displayName('PR Jenkins Seed')
+
+    concurrentBuild(allowConcurrentBuild = false)
+
+    description('PR Jenkins Seed')
+
+    label('worker')
+
+    configure {
+        job_properties = it.get('properties').get(0)
+        github_project_property = job_properties.appendNode(
+            'com.coravy.hudson.plugins.github.GithubProjectProperty')
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+    }
+
+    wrappers {
+        // Cleanup the workspace before starting
+        preBuildCleanup()
+
+        // Add timestamps to console log
+        timestamps()
+
+        // Color Support to console log
+        colorizeOutput('xterm')
+
+        // Build Timeout
+        timeout {
+            elastic(
+                percentage = default_timeout_percent,
+                numberOfBuilds = default_timeout_builds,
+                minutesDefault= default_timeout_minutes
+            )
+            writeDescription('Build failed due to timeout after {0} minutes')
+        }
+    }
+
+    // Delete old jobs
+    /* Since we're just cloning the repository in order to make it an artifact to
+     * user as workspace for all other jobs, we only need to keep the artifact for
+     * a couple of minutes. Since one day is the minimum....
+     */
+    logRotator(
+        default_days_to_keep,
+        default_nr_of_jobs_to_keep,
+        default_artifact_days_to_keep,
+        default_artifact_nr_of_jobs_to_keep
+    )
+
+    environmentVariables {
+        groovy(
+            readFileFromWorkspace('jenkins-seed', 'groovy/pr-job-seed-envvars.groovy')
+        )
+    }
+
+    // Job Steps
+    steps {
+        dsl {
+            removeAction('DELETE')
+            text(
+                readFileFromWorkspace('jenkins-seed', 'libnacl/pr-dsl-job.groovy')
+            )
+        }
+    }
+
+    publishers {
+        template_context = [
+            project: 'libnacl'
+        ]
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-seed', 'templates/pr-job-seed-post-build.groovy')
+        )
+        rendered_script_template = script_template.make(template_context.withDefault{ null })
+        groovyPostBuild(rendered_script_template.toString())
+    }
+}
+

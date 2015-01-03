@@ -1,32 +1,22 @@
-// libnacl Jenkins jobs seed script
+// $project Jenkins jobs seed script
 @GrabResolver(name='jenkins-dsl-jobs', root='http://saltstack.github.io/jenkins-dsl-jobs/')
-@GrabResolver(name='jenkins-releases', root='http://repo.jenkins-ci.org/releases/')
-@GrabResolver(name='jgit-repository', root='http://download.eclipse.org/jgit/maven/')
-@GrabResolver(name='repo.jenkins-ci.org', root='http://repo.jenkins-ci.org/public/')
-@Grapes([
-    @Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT'),
-    @Grab('com.coravy.hudson.plugins.github:github:1.10'),
-    @GrabExclude('org.codehaus.groovy:groovy')
-])
+@Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT'),
+
+import groovy.text.*
+import jenkins.model.Jenkins
+import com.saltstack.jenkins.PullRequestAdmins
 
 // get current thread / Executor
 def thr = Thread.currentThread()
 // get current build
 def build = thr?.executable
-println 'FOOBAR: ' + build.getEnvironment().get('foo', 'BIN')
 
-import groovy.text.*
-import jenkins.model.Jenkins
-import com.saltstack.jenkins.PullRequestAdmins
-//import com.cloudbees.jenkins.GitHubRepositoryName
+def slurper = new JsonSlurper()
+def github_json_data = slurper.parseText(build.getEnvironment().get('GITHUB_JSON_DATA', '""'))
 
 // Common variable Definitions
 def github_repo = 'saltstack/libnacl'
-def repo_api = new URL("https://api.github.com/repos/${github_repo}")
-def repo_data = new groovy.json.JsonSlurper().parse(repo_api.newReader())
-def project_description = repo_data['description']
-def pr_api = new URL("https://api.github.com/repos/${github_repo}/pulls?state=open")
-def pr_data = new groovy.json.JsonSlurper().parse(pr_api.newReader())
+def project_description = github_json_data['project_description']
 
 // Job rotation defaults
 def default_days_to_keep = 90
@@ -39,7 +29,7 @@ def default_timeout_percent = 150
 def default_timeout_builds = 10
 def default_timeout_minutes = 15
 
-def new_prs = []
+def new_prs = [:]
 def template_engine = new SimpleTemplateEngine()
 
 // Define the folder structure
@@ -63,11 +53,11 @@ pr_data.each { pr ->
     try {
         existing_job = Jenkins.instance.getJob('libnacl').getJob('pr').getJob("${pr.number}").getJob('main-build')
         if ( existing_job == null ) {
-            new_prs.add(pr.number)
+            new_prs[pr.number] = pr.sha
         }
     } catch(e) {
         // no existing job
-        new_prs.add(pr.number)
+        new_prs[pr.number] = pr.sha
     }
 
         // PR Main Job
@@ -502,10 +492,7 @@ pr_data.each { pr ->
         }
 }
 
-
-//def thr = Thread.currentThread()
-//def build = thr?.executable
-
+// Write any new PR's to a file so we can trigger then in the post build step
 new_prs_file = build.getWorkspace().child('new-prs.txt')
 new_prs_file.deleteContents()
-new_prs_file.write(new_prs.join('\n'), 'UTF-8')
+new_prs_file.write(new JsonBuilder(new_prs).toString(), 'UTF-8')
