@@ -14,13 +14,17 @@ if ( new_prs_file.exists() ) {
                 manager.listener.logger.println("Triggering build for " + pr_job.getFullDisplayName() + " @ " + commit_sha)
                 trigger = pr_job.triggers.iterator().next().value
                 repo = trigger.getRepository()
-                repo.createCommitStatus(
-                    commit_sha,
-                    GHCommitState.SUCCESS,
-                    pr_job.getAbsoluteUrl(),
-                    pr_job.getFullDisplayName(),
-                    'ci/create-jobs'
-                )
+                try {
+                    repo.createCommitStatus(
+                        commit_sha,
+                        GHCommitState.SUCCESS,
+                        pr_job.getAbsoluteUrl(),
+                        pr_job.getFullDisplayName(),
+                        'ci/create-jobs'
+                    )
+                } catch(create_commit_error) {
+                    manager.listener.logger.println "Failed to set commit status: " + create_commit_error.toString()
+                }
                 pull_req = repo.getPullRequest(pr_id.toInteger())
                 repo.check(pull_req)
                 pull_req = repo.pulls.get(pr_id.toInteger())
