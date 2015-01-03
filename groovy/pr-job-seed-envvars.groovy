@@ -22,21 +22,21 @@ if ( github_repo_url != null ) {
                 sha: pr.getHead().getSha()
             ])
         }
-        out.println 'Processing Closed Pull Requests'
+        /*out.println 'Processing Closed Pull Requests'
         repo.getPullRequests(GHIssueState.CLOSED).each { pr ->
             out.println '  * Processing PR #' + pr.number
             closed_prs.add([
                 number: pr.number,
                 title: pr.title,
                 body:  pr.body,
-                sha: pr.getHead().getSha()
+                sha: pr.getHead().getSha(),
                 closed_at: pr.getClosedAt()
             ])
-        }
+        }*/
         return [
             GITHUB_JSON_DATA: new JsonBuilder([
                 open_prs: open_prs,
-                closed_prs: closed_prs,
+                //closed_prs: closed_prs,
                 project_description: repo.getDescription(),
             ]).toString()
         ]
