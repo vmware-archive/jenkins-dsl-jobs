@@ -3,6 +3,7 @@
 @Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT')
 
 import groovy.json.*
+import groovy.text.*
 import jenkins.model.Jenkins
 import com.saltstack.jenkins.PullRequestAdmins
 
