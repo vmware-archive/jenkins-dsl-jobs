@@ -64,8 +64,8 @@ github_json_data['open_prs'].each { pr ->
 
         // PR Main Job
         job(type: BuildFlow) {
-            name = "libnacl/pr/${pr.number}"
-            displayName("PR #${pr.number} - Main Build")
+            name = "libnacl/pr/${pr.number}/main-build"
+            displayName("Main Build")
             description("${pr.title}\n\n${pr.body}")
             label('worker')
             concurrentBuild(allowConcurrentBuild = false)
