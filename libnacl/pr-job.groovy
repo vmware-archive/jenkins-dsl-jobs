@@ -3,7 +3,7 @@
 @GrabResolver(name='jenkins-releases', root='http://repo.jenkins-ci.org/releases/')
 @Grapes([
     @Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT'),
-    @Grab('org.jenkins-ci.plugins:github-api:1.59'),
+    @Grab('com.coravy.hudson.plugins.github:github:1.10'),
     @GrabExclude('org.codehaus.groovy:groovy')
 ])
 
