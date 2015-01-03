@@ -1,10 +1,10 @@
 // libnacl Jenkins jobs seed script
 @GrabResolver(name='jenkins-dsl-jobs', root='http://saltstack.github.io/jenkins-dsl-jobs/')
-@GrabResolver(name='jenkins', root='http://maven.jenkins-ci.org/content/repositories/releases/')
+@GrabResolver(name='jenkins-releases', root='http://repo.jenkins-ci.org/releases/')
 @Grapes([
     @Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT'),
     @Grab('org.jenkins-ci.plugins:github-api:1.59'),
-    @Grab('com.coravy.hudson.plugins.github:github:1.11-SNAPSHOT'),
+    @Grab(group='com.coravy.hudson.plugins.github', module='github', version='1.10'),
     @GrabExclude('org.codehaus.groovy:groovy')
 ])
 
