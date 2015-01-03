@@ -3,7 +3,6 @@
 @Grapes([
     @Grab('com.saltstack:jenkins-dsl-jobs'),
     @Grab('org.jenkins-ci.plugins:github-api'),
-    @Grab('org.jenkins-ci.plugins:ghprb'),
     @GrabExclude('org.codehaus.groovy:groovy')
 ])
 
