@@ -6,7 +6,7 @@ new_prs.each { pr_id ->
     if ( triggered.contains(pr_id) == false) {
         try {
             pr_job = Jenkins.instance.getJob('$project').getJob('pr').getJob(pr_id).getJob('main-build')
-            manager.listener.logger.println("Triggering build for ${pr_job.getFullDisplayName()}")
+            manager.listener.logger.println("Triggering build for " + pr_job.getFullDisplayName())
             trigger = pr_job.triggers.iterator().next().value
             repo = trigger.getRepository()
             pr = repo.getPullRequest(pr_id.toInteger())

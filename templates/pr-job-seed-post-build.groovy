@@ -10,7 +10,7 @@ new_prs.each { pr ->
     if ( triggered.contains(pr.key) == false) {
         try {
             pr_job = Jenkins.instance.getJob('$project').getJob('pr').getJob(pr.key).getJob('main-build')
-            manager.listener.logger.println("Triggering build for ${pr_job.getFullDisplayName()}")
+            manager.listener.logger.println("Triggering build for " + pr_job.getFullDisplayName())
             trigger = pr_job.triggers.iterator().next().value
             repo = trigger.getRepository()
             repo.createCommitStatus(
