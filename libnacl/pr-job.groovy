@@ -2,8 +2,8 @@
 @GrabResolver(name='jenkins-dsl-jobs', root='http://saltstack.github.io/jenkins-dsl-jobs/')
 @GrabResolver(name='jenkins', root='http://maven.jenkins-ci.org/content/repositories/releases/')
 @Grapes([
-    @Grab('com.saltstack:jenkins-dsl-jobs'),
-    @Grab('org.jenkins-ci.plugins:github-api'),
+    @Grab('com.saltstack:jenkins-dsl-jobs:1.0-SNAPSHOT'),
+    @Grab('org.jenkins-ci.plugins:github-api:1.59'),
     @GrabExclude('org.codehaus.groovy:groovy')
 ])
 
