@@ -859,7 +859,7 @@ job {
     }
 }
 
-dsl_job = job(
+dsl_job = job {
     name = 'libnacl/jenkins-seed'
     displayName('PR Jenkins Seed')
 
