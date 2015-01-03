@@ -9,6 +9,12 @@
     @GrabExclude('org.codehaus.groovy:groovy')
 ])
 
+// get current thread / Executor
+def thr = Thread.currentThread()
+// get current build
+def build = thr?.executable
+println 'FOOBAR: ' + build.getEnvironment().get('foo', 'BIN')
+
 import groovy.text.*
 import jenkins.model.Jenkins
 import com.saltstack.jenkins.PullRequestAdmins
