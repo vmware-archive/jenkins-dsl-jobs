@@ -34,4 +34,3 @@ if ( new_prs_file.exists() ) {
 } else {
     manager.listener.logger.println "The 'new-prs.txt' file was not found"
 }
-}
