@@ -16,7 +16,7 @@ if ( new_prs_file.exists() ) {
                 repo = trigger.getRepository()
                 repo.createCommitStatus(
                     commit_sha,
-                    GHCommitState.PENDING,
+                    GHCommitState.SUCCESS,
                     pr_job.getAbsoluteUrl(),
                     pr_job.getFullDisplayName(),
                     'ci/create-jobs'
