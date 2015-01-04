@@ -486,9 +486,12 @@ dsl_job = job {
     )
 
     environmentVariables {
-        groovy(
-            readFileFromWorkspace('jenkins-seed', 'groovy/pr-job-seed-envvars.groovy')
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-seed', 'templates/pr-job-seed-envvars.groovy')
         )
+        rendered_script_template = script_template.make()
+
+        groovy(rendered_script_template.toString())
     }
 
     // Job Steps

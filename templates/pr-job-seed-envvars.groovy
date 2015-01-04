@@ -11,7 +11,9 @@ if ( github_repo_url != null ) {
     def repo = GitHubRepositoryName.create(github_repo_url.toString()).resolve().iterator().next()
     if ( repo != null ) {
         def open_prs = []
+        <% if ( include_closed_prs != null ) { %>
         def closed_prs = []
+        <% } <%>
         out.println 'Processing Open Pull Requests'
         repo.getPullRequests(GHIssueState.OPEN).each { pr ->
             out.println '  * Processing PR #' + pr.number
@@ -22,7 +24,8 @@ if ( github_repo_url != null ) {
                 sha: pr.getHead().getSha()
             ])
         }
-        /*out.println 'Processing Closed Pull Requests'
+        <% if ( include_closed_prs != null ) { %>
+        out.println 'Processing Closed Pull PullRequestAdminsests'
         repo.getPullRequests(GHIssueState.CLOSED).each { pr ->
             out.println '  * Processing PR #' + pr.number
             closed_prs.add([
@@ -32,11 +35,21 @@ if ( github_repo_url != null ) {
                 sha: pr.getHead().getSha(),
                 closed_at: pr.getClosedAt()
             ])
-        }*/
+        }
+        <% } %>
+        <% if ( include_branches != null ) { %>
+        branches = []
+        repo.getBranches().each { name, branch ->
+            branches.add(name)
+        }
+        <% } %>
         return [
             GITHUB_JSON_DATA: new JsonBuilder([
                 open_prs: open_prs,
-                //closed_prs: closed_prs,
+                <% if ( include_closed_prs != null ) {
+                %>closed_prs: closed_prs,<%
+                } %><% if ( include_branches != null ) {
+                %>branches: branches,<% } %>
                 project_description: repo.getDescription(),
             ]).toString()
         ]
