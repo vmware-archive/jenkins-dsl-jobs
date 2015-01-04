@@ -445,7 +445,7 @@ dsl_job = job {
     label('worker')
 
     configure {
-        it.appendNode('authToken).setValue(RandomString.generate())
+        it.appendNode('authToken').setValue(RandomString.generate())
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
