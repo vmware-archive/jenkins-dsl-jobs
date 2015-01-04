@@ -1,4 +1,4 @@
-
+package com.saltstack.jenkins
 
 class RandomString {
 
