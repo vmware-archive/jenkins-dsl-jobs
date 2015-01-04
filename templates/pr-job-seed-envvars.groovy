@@ -10,10 +10,8 @@ if ( github_repo_url != null ) {
     out.println 'GitHub Repository URL: ' + github_repo_url
     def repo = GitHubRepositoryName.create(github_repo_url.toString()).resolve().iterator().next()
     if ( repo != null ) {
+        <% if ( include_open_prs != null ) { %>
         def open_prs = []
-        <% if ( include_closed_prs != null ) { %>
-        def closed_prs = []
-        <% } <%>
         out.println 'Processing Open Pull Requests'
         repo.getPullRequests(GHIssueState.OPEN).each { pr ->
             out.println '  * Processing PR #' + pr.number
@@ -24,7 +22,9 @@ if ( github_repo_url != null ) {
                 sha: pr.getHead().getSha()
             ])
         }
+        <% } %>
         <% if ( include_closed_prs != null ) { %>
+        def closed_prs = []
         out.println 'Processing Closed Pull PullRequestAdminsests'
         repo.getPullRequests(GHIssueState.CLOSED).each { pr ->
             out.println '  * Processing PR #' + pr.number
@@ -45,7 +45,8 @@ if ( github_repo_url != null ) {
         <% } %>
         return [
             GITHUB_JSON_DATA: new JsonBuilder([
-                open_prs: open_prs,
+                <% if ( include_open_prs != null ) {
+                %>open_prs: open_prs,<% } %>
                 <% if ( include_closed_prs != null ) {
                 %>closed_prs: closed_prs,<%
                 } %><% if ( include_branches != null ) {

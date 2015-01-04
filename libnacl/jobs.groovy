@@ -486,11 +486,13 @@ dsl_job = job {
     )
 
     environmentVariables {
+        template_context = [
+            include_open_prs: true
+        ]
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'templates/pr-job-seed-envvars.groovy')
         )
-        rendered_script_template = script_template.make()
-
+        rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovy(rendered_script_template.toString())
     }
 
