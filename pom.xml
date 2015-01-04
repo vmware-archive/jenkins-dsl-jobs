@@ -13,7 +13,7 @@
   <groupId>com.saltstack</groupId>
   <artifactId>jenkins-dsl-jobs</artifactId>
   <name>Jenkins DSL Jobs Project</name>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.2-SNAPSHOT</version>
 
   <properties>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -38,6 +38,11 @@
           <artifactId>groovy-all</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.coravy.hudson.plugins.github</groupId>
+      <artifactId>github</artifactId>
+      <version>1.10</version>
     </dependency>
   </dependencies>
 
@@ -93,6 +98,22 @@
           <altDeploymentRepository>internal.repo::default::file://${project.build.directory}/mvn-repo</altDeploymentRepository>
         </configuration>
       </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <descriptorRefs>
+            <descriptorRef>jar-with-dependencies</descriptorRef>
+          </descriptorRefs>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 
@@ -103,5 +124,12 @@
       <url>file://${project.build.directory}/mvn-repo</url>
     </repository>
   </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>jenkins-releases</id>
+      <url>http://repo.jenkins-ci.org/releases/</url>
+    </repository>
+  </repositories>
 
 </project>
