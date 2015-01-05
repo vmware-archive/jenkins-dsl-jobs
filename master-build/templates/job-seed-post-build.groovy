@@ -42,7 +42,7 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
             if ( data.create_branches_webhook == true ) {
                 try {
                     manager.listener.logger.println 'Setting up branches create/delete webhook for ' + data.display_name + ' ...'
-                    def webhook_url = running_job.getAbsoluteUrl() + '?token=' + running_job.getAuthToken().getToken()
+                    def webhook_url = running_job.getAbsoluteUrl() + 'build?token=' + running_job.getAuthToken().getToken()
                     repo.createWebHook(
                         webhook_url.toURL(),
                         [GHEvent.CREATE, GHEvent.DELETE]
@@ -56,7 +56,7 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
                 def pr_seed_job = Jenkins.instance.getJob(name).getJob('pr').getJob('jenkins-seed')
                 if ( pr_seed_job != null ) {
                     manager.listener.logger.println 'Setting up pull requests webhook for ' + data.display_name + ' ...'
-                    def webhook_url = pr_seed_job.getAbsoluteUrl() + '?token=' + pr_seed_job.getAuthToken().getToken()
+                    def webhook_url = pr_seed_job.getAbsoluteUrl() + 'build?token=' + pr_seed_job.getAuthToken().getToken()
                     repo.createWebHook(
                         webhook_url.toURL(),
                         [GHEvent.PULL_REQUEST]
