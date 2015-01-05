@@ -1,9 +1,12 @@
+import groovy.json.*
 import groovy.text.*
 import jenkins.model.Jenkins
 import org.kohsuke.github.GHCommitState
+import com.cloudbees.jenkins.GitHubRepositoryName
+import com.coravy.hudson.plugins.github.GithubProjectProperty
 
 def triggered = []
-def slurper = new groovy.json.JsonSlurper()
+def slurper = new JsonSlurper()
 new_prs_file = manager.build.getWorkspace().child('new-prs.txt')
 if ( new_prs_file.exists() ) {
     new_prs = slurper.parseText(new_prs_file.readToString())
@@ -11,9 +14,9 @@ if ( new_prs_file.exists() ) {
         if ( triggered.contains(pr_id) == false) {
             try {
                 pr_job = Jenkins.instance.getJob('$project').getJob('pr').getJob(pr_id).getJob('main-build')
+                def github_repo_url = manager.build.getProject().getProperty(GithubProjectProperty.class).getProjectUrl()
+                repo = GitHubRepositoryName.create(github_repo_url.toString())
                 manager.listener.logger.println("Triggering build for " + pr_job.getFullDisplayName() + " @ " + commit_sha)
-                trigger = pr_job.triggers.iterator().next().value
-                repo = trigger.getRepository()
                 try {
                     repo.createCommitStatus(
                         commit_sha,
