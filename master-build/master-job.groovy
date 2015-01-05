@@ -19,7 +19,7 @@ def template_engine = new SimpleTemplateEngine()
 projects = [
     libnacl: [
         display_name: 'libnacl',
-        githib_repo: 'saltstack/libnacl',
+        github_repo: 'saltstack/libnacl',
         create_branches_webhook: false
     ],
     raet: [
