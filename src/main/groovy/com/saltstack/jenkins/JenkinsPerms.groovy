@@ -12,7 +12,7 @@ class JenkinsPerms {
         'com.cloudbees.plugins.credentials.CredentialsProvider.Create',
         'com.cloudbees.plugins.credentials.CredentialsProvider.Delete',
         'com.cloudbees.plugins.credentials.CredentialsProvider.ManageDomains',
-        'com.cloudbees.plugins.credentials.CredentialsProvider.Update'
+        'com.cloudbees.plugins.credentials.CredentialsProvider.Update',
         'com.cloudbees.plugins.credentials.CredentialsProvider.View',
         'hudson.model.Item.Build',
         'hudson.model.Item.Cancel',
@@ -25,6 +25,6 @@ class JenkinsPerms {
         'hudson.model.Item.ViewStatus',
         'hudson.model.Item.Workspace',
         'hudson.model.Run.Delete',
-        'hudson.scm.SCM.Tag',
+        'hudson.scm.SCM.Tag'
     ]
 }
