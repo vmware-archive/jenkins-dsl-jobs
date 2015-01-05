@@ -13,7 +13,7 @@ def build = thr?.executable
 
 // Common variable Definitions
 def github_repo = 'saltstack/raet'
-def github_json_data = new JsonSlurper().parseText(build.getEnvironment()['GITHUB_JSON_DATA']
+def github_json_data = new JsonSlurper().parseText(build.getEnvironment()['GITHUB_JSON_DATA'])
 def project_description = github_json_data['raet']['description']
 
 // Job rotation defaults

@@ -14,7 +14,7 @@ def build = thr?.executable
 
 // Common variable Definitions
 def github_repo = 'thatch45/sorbic'
-def github_json_data = new JsonSlurper().parseText(build.getEnvironment()['GITHUB_JSON_DATA']
+def github_json_data = new JsonSlurper().parseText(build.getEnvironment()['GITHUB_JSON_DATA'])
 def project_description = github_json_data['sorbic']['description']
 
 // Job rotation defaults
