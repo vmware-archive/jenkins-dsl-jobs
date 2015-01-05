@@ -107,7 +107,7 @@ job {
     steps {
         dsl {
             removeAction('DELETE')
-            external('*/jobs.groovy')
+            external('jobs/*.groovy')
         }
     }
 
