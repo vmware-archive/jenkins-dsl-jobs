@@ -22,7 +22,7 @@ if ( new_prs_file.exists() ) {
                         commit_sha,
                         GHCommitState.SUCCESS,
                         pr_job.getAbsoluteUrl(),
-                        pr_job.getFullDisplayName(),
+                        'Create Jobs For PR #' + pr_id,
                         'ci/create-jobs'
                     )
                 } catch(create_commit_error) {
