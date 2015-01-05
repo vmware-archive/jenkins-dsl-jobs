@@ -8,8 +8,10 @@ new JsonSlurper().parseText(projects).each { name, data ->
     def github_repo_url = "https://github.com/" + data.github_repo
     def repo = GitHubRepositoryName.create(github_repo_url).resolve().iterator().next()
     if ( repo != null ) {
-        branches = []
+        out.println "  * Getting branches"
+        def branches = []
         repo.getBranches().each { branch_name, branch_data ->
+            out.println "    * " + branch_name
             branches.add(branch_name)
         }
         environ_data[name] = [
@@ -17,7 +19,7 @@ new JsonSlurper().parseText(projects).each { name, data ->
             github_repo: data.github_repo,
             description: repo.getDescription(),
             add_branches_webhook: data.add_branches_webhook,
-            branches: branches
+            branches: branches,
         ]
     } else {
         out.println 'Unable to grab data about ' + data.display_name
