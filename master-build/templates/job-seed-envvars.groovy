@@ -18,7 +18,7 @@ new JsonSlurper().parseText(projects).each { name, data ->
             display_name: data.display_name,
             github_repo: data.github_repo,
             description: repo.getDescription(),
-            add_branches_webhook: data.add_branches_webhook,
+            create_branches_webhook: data.create_branches_webhook,
             branches: branches,
         ]
     } else {

@@ -8,7 +8,7 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
     def repo = GitHubRepositoryName.create(github_repo_url).resolve().iterator().next()
     repo.getHooks().each { hook ->
         if ( hook.getName() == 'web' ) {
-            if ( data.add_branches_webhook == true ) {
+            if ( data.create_branches_webhook == true ) {
                 manager.listener.logger.println 'Setting up branches create/delete webhook for ' + data.display_name + ' ...'
                 def project = manager.build.getProject()
                 try {
