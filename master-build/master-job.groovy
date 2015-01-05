@@ -1,6 +1,7 @@
 @GrabResolver(name='jenkins-dsl-jobs', root='http://saltstack.github.io/jenkins-dsl-jobs/')
 @Grab('com.saltstack:jenkins-dsl-jobs:1.2-SNAPSHOT')
 
+import groovy.json.*
 import groovy.text.*
 import com.saltstack.jenkins.JenkinsPerms
 import com.saltstack.jenkins.RandomString
@@ -95,7 +96,7 @@ job {
 
     environmentVariables {
         template_context = [
-            projects: projects.toString()
+            projects: new JsonBuilder(projects).toString()
         ]
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'master-build/templates/job-seed-envvars.groovy')
@@ -114,7 +115,7 @@ job {
 
     publishers {
         template_context = [
-            projects: projects.toString()
+            projects: new JsonBuilder(projects).toString()
         ]
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'master-build/templates/job-seed-post-build.groovy')

@@ -1,7 +1,7 @@
 import groovy.json.*
 import com.cloudbees.jenkins.GitHubRepositoryName
 
-def projects = $projects
+def projects = new JsonSlurper().parseText('''$projects''')
 def environ_data = [:]
 projects.each { name, data ->
     out.println 'Grabbing data about ' + data.display_name + ' ...'

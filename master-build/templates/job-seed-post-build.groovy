@@ -1,7 +1,8 @@
+import groovy.json.*
 import org.kohsuke.github.GHEvent
 import com.cloudbees.jenkins.GitHubRepositoryName
 
-def projects = $projects
+def projects = new JsonSlurper().parseText('''$projects''')
 projects.each { data ->
     if ( data.add_branches_webhook == true ) {
         manager.listener.logger.println 'Setting up branches create/delete webhook for ' + data.display_name + ' ...'
