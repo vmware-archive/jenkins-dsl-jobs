@@ -28,10 +28,12 @@ if ( new_prs_file.exists() ) {
                 } catch(create_commit_error) {
                     manager.listener.logger.println "Failed to set commit status: " + create_commit_error.toString()
                 }
-                pull_req = repo.getPullRequest(pr_id.toInteger())
-                repo.check(pull_req)
-                pull_req = repo.pulls.get(pr_id.toInteger())
-                repo.helper.builds.build(pull_req, pull_req.author, 'Job Created. Start Initial Build')
+                trigger = pr_job.triggers.iterator().next().value
+                ghprb_repo = trigger.getRepository()
+                pull_req = ghprb_repo.getPullRequest(pr_id.toInteger())
+                ghprb_repo.check(pull_req)
+                pull_req = ghprb_repo.pulls.get(pr_id.toInteger())
+                ghprb_repo.helper.builds.build(pull_req, pull_req.author, 'Job Created. Start Initial Build')
             } catch(e) {
                 manager.listener.logger.println "Failed to get Job " + '$project' + "/pr/" + pr_id + "/main-build: " + e.toString()
             }
