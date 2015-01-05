@@ -15,7 +15,7 @@ if ( new_prs_file.exists() ) {
             try {
                 pr_job = Jenkins.instance.getJob('$project').getJob('pr').getJob(pr_id).getJob('main-build')
                 def github_repo_url = manager.build.getProject().getProperty(GithubProjectProperty.class).getProjectUrl()
-                repo = GitHubRepositoryName.create(github_repo_url.toString())
+                repo = GitHubRepositoryName.create(github_repo_url.toString()).resolve().iterator().next()
                 manager.listener.logger.println("Triggering build for " + pr_job.getFullDisplayName() + " @ " + commit_sha)
                 try {
                     repo.createCommitStatus(
