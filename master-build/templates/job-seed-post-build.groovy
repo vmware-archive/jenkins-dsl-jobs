@@ -4,6 +4,7 @@ import org.kohsuke.github.GHEvent
 import com.cloudbees.jenkins.GitHubRepositoryName
 
 def processed = []
+def running_job = manager.build.getProject()
 new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, data ->
     if ( ! processed.contains(name) ) {
         processed.add(name)
@@ -17,41 +18,52 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
                         def job = manager.build.getProject()
                         try {
                             hook_config = hook.getConfig()
-                            if ( hook_config.url.startsWith(job.getAbsoluteUrl()) ) {
+                            if ( hook_config.url.startsWith(running_job.getAbsoluteUrl()) ) {
                                 hook.delete()
                             }
                         } catch(e) {
                             manager.listener.logger.println 'Failed to delete existing webhook:' + e.toString()
                         }
-                        def webhook_url = job.getAbsoluteUrl() + '?token=' + job.getAuthToken().getToken()
-                        repo.createWebHook(
-                            webhook_url.toURL(),
-                            [GHEvent.CREATE, GHEvent.DELETE]
-                        )
                     }
                     // Let's setup the pull request webhooks if the jobs needing it are found
-                    try {
-                        def job = Jenkins.instance.getJob(name).getJob('pr').getJob('jenkins-seed')
-                        if ( job != null ) {
-                            manager.listener.logger.println 'Setting up pull requests webhook for ' + data.display_name + ' ...'
-                            try {
-                                hook_config = hook.getConfig()
-                                if ( hook_config.url.startsWith(job.getAbsoluteUrl()) ) {
-                                    hook.delete()
-                                }
-                            } catch(e) {
-                                manager.listener.logger.println 'Failed to delete existing webhook:' + e.toString()
+                    def pr_seed_job = Jenkins.instance.getJob(name).getJob('pr').getJob('jenkins-seed')
+                    if ( pr_seed_job != null ) {
+                        try {
+                            hook_config = hook.getConfig()
+                            if ( hook_config.url.startsWith(pr_seed_job.getAbsoluteUrl()) ) {
+                                hook.delete()
                             }
-                            def webhook_url = job.getAbsoluteUrl() + '?token=' + job.getAuthToken().getToken()
-                            repo.createWebHook(
-                                webhook_url.toURL(),
-                                [GHEvent.PULL_REQUEST]
-                            )
+                        } catch(e) {
+                            manager.listener.logger.println 'Failed to delete existing webhook:' + e.toString()
                         }
-                    } catch (pr_jenkins_seed_error) {
-                        manager.listener.logger.println 'Failed to setup pull requests webhook: ' + pr_jenkins_seed_error.toString()
                     }
                 }
+            }
+            if ( data.create_branches_webhook == true ) {
+                try {
+                    manager.listener.logger.println 'Setting up branches create/delete webhook for ' + data.display_name + ' ...'
+                    def webhook_url = running_job.getAbsoluteUrl() + '?token=' + running_job.getAuthToken().getToken()
+                    repo.createWebHook(
+                        webhook_url.toURL(),
+                        [GHEvent.CREATE, GHEvent.DELETE]
+                    )
+                } catch(branches_webhook_error) {
+                    manager.listener.logger.println 'Failed to setup create/delete webhook: ' + branches_webhook_error.toString()
+                }
+            }
+            // Let's setup the pull request webhooks if the jobs needing it are found
+            try {
+                def pr_seed_job = Jenkins.instance.getJob(name).getJob('pr').getJob('jenkins-seed')
+                if ( pr_seed_job != null ) {
+                    manager.listener.logger.println 'Setting up pull requests webhook for ' + data.display_name + ' ...'
+                    def webhook_url = pr_seed_job.getAbsoluteUrl() + '?token=' + pr_seed_job.getAuthToken().getToken()
+                    repo.createWebHook(
+                        webhook_url.toURL(),
+                        [GHEvent.PULL_REQUEST]
+                    )
+                }
+            } catch (pr_jenkins_seed_error) {
+                manager.listener.logger.println 'Failed to setup pull requests webhook: ' + pr_jenkins_seed_error.toString()
             }
         } catch(hooks_error) {
             manager.listener.logger.println 'Unable to query existing hooks for ' + data.display_name + ': ' + hooks_error.toString()
