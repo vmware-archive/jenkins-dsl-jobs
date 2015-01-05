@@ -96,7 +96,7 @@ job {
 
     environmentVariables {
         template_context = [
-            projects: new JsonBuilder(projects).toString()
+            projects: "'''${new JsonBuilder(projects).toString()}'''"
         ]
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'master-build/templates/job-seed-envvars.groovy')
@@ -115,7 +115,7 @@ job {
 
     publishers {
         template_context = [
-            projects: new JsonBuilder(projects).toString()
+            projects: "'''${new JsonBuilder(projects).toString()}'''"
         ]
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('jenkins-seed', 'master-build/templates/job-seed-post-build.groovy')

@@ -1,11 +1,9 @@
 import groovy.json.*
 import com.cloudbees.jenkins.GitHubRepositoryName
 
-def projects = '''
-$projects
-'''
+def projects = $projects
 def environ_data = [:]
-new JsonSlurper().parseText(projects.trim()).each { name, data ->
+new JsonSlurper().parseText(projects).each { name, data ->
     out.println 'Grabbing data about ' + data.display_name + ' ...'
     def github_repo_url = "https://github.com/" + data.github_repo
     def repo = GitHubRepositoryName.create(github_repo_url).resolve().iterator().next()
