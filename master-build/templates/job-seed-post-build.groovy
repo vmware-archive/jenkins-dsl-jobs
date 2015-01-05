@@ -1,10 +1,15 @@
 import groovy.json.*
+import hudson.model.User
 import jenkins.model.Jenkins
+import jenkins.security.ApiTokenProperty
 import org.kohsuke.github.GHEvent
 import com.cloudbees.jenkins.GitHubRepositoryName
 
 def processed = []
 def running_job = manager.build.getProject()
+def webhooks_user = 'salt-testing'
+def webhooks_apitoken = User.get(webhooks_user).getProperty(ApiTokenProperty.class).getApiToken()
+
 new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, data ->
     if ( ! processed.contains(name) ) {
         processed.add(name)
@@ -43,6 +48,9 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
                 try {
                     manager.listener.logger.println 'Setting up branches create/delete webhook for ' + data.display_name + ' ...'
                     def webhook_url = running_job.getAbsoluteUrl() + 'build?token=' + running_job.getAuthToken().getToken()
+                    webhook_url = webhook_url.replace(
+                        'https://', 'https://' + webhooks_user + ':' + webhooks_apitoken + '@').replace(
+                            'http://', 'http://' + webhooks_user + ':' + webhooks_apitoken + '@')
                     repo.createWebHook(
                         webhook_url.toURL(),
                         [GHEvent.CREATE, GHEvent.DELETE]
@@ -57,6 +65,9 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
                 if ( pr_seed_job != null ) {
                     manager.listener.logger.println 'Setting up pull requests webhook for ' + data.display_name + ' ...'
                     def webhook_url = pr_seed_job.getAbsoluteUrl() + 'build?token=' + pr_seed_job.getAuthToken().getToken()
+                    webhook_url = webhook_url.replace(
+                        'https://', 'https://' + webhooks_user + ':' + webhooks_apitoken + '@').replace(
+                            'http://', 'http://' + webhooks_user + ':' + webhooks_apitoken + '@')
                     repo.createWebHook(
                         webhook_url.toURL(),
                         [GHEvent.PULL_REQUEST]
