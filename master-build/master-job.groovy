@@ -15,26 +15,22 @@ def default_artifact_nr_of_jobs_to_keep = default_nr_of_jobs_to_keep
 def template_engine = new SimpleTemplateEngine()
 
 projects = [
-    [
-        name: 'libnacl',
+    libnacl: [
         display_name: 'libnacl',
         githib_repo: 'saltstack/libnacl',
         create_branches_webhook: false
     ],
-    [
-        name: 'raet',
+    raet: [
         display_name: 'RAET',
         github_repo: 'saltstack/raet',
         create_branches_webhook: false
     ],
-    [
-        name: 'salt',
+    salt: [
         display_name: 'Salt',
         github_repo: 'saltstack/salt',
         create_branches_webhook: true
     ],
-    [
-        name: 'sorbic',
+    sorbic: [
         display_name: 'Sorbic',
         github_repo: 'thatch45/sorbic',
         create_branches_webhook: false
@@ -96,7 +92,7 @@ job {
         githubPush()
     }
 
-    /*environmentVariables {
+    environmentVariables {
         template_context = [
             projects: projects.toString()
         ]
@@ -105,7 +101,7 @@ job {
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovy(rendered_script_template.toString())
-    }*/
+    }
 
     // Job Steps
     steps {
