@@ -25,6 +25,7 @@ class JenkinsPerms {
         'hudson.model.Item.ViewStatus',
         'hudson.model.Item.Workspace',
         'hudson.model.Run.Delete',
+        'hudson.model.Run.Update',
         'hudson.scm.SCM.Tag'
     ]
 }
