@@ -127,7 +127,7 @@ def master_main_job = job(type: BuildFlow) {
     }
 
     buildFlow(
-        readFileFromWorkspace('jenkins-seed', 'sorbic/groovy/master-main-build-flow.groovy')
+        readFileFromWorkspace('jenkins-master-seed', 'sorbic/groovy/master-main-build-flow.groovy')
     )
 
     publishers {
@@ -222,13 +222,13 @@ def master_clone_job = job {
     // Job Steps
     steps {
         // Setup the required virtualenv
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
 
         // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
 
         // Compress the checked out workspace
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/compress-workspace.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/compress-workspace.sh'))
     }
 
     publishers {
@@ -236,7 +236,7 @@ def master_clone_job = job {
 
         postBuildTask {
             // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+            task('.', readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
         }
     }
 }
@@ -303,19 +303,19 @@ def master_lint_job = job {
     // Job Steps
     steps {
         // Setup the required virtualenv
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
 
         // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
 
         // Copy the workspace artifact
         copyArtifacts('sorbic/master/clone', 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
         }
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/decompress-workspace.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/decompress-workspace.sh'))
 
         // Run Lint Code
-        shell(readFileFromWorkspace('jenkins-seed', 'sorbic/scripts/run-lint.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'sorbic/scripts/run-lint.sh'))
     }
 
     publishers {
@@ -326,7 +326,7 @@ def master_lint_job = job {
 
         postBuildTask {
             // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+            task('.', readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
         }
     }
 }
@@ -386,19 +386,19 @@ def master_unit_job = job {
     // Job Steps
     steps {
         // Setup the required virtualenv
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
 
         // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
 
         // Copy the workspace artifact
         copyArtifacts('sorbic/master/clone', 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
         }
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/decompress-workspace.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/decompress-workspace.sh'))
 
         // Run Unit Tests
-        shell(readFileFromWorkspace('jenkins-seed', 'sorbic/scripts/run-unit.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'sorbic/scripts/run-unit.sh'))
     }
 
     publishers {
@@ -417,7 +417,7 @@ def master_unit_job = job {
 
         postBuildTask {
             // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+            task('.', readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
         }
     }
 }
@@ -499,7 +499,7 @@ job(type: BuildFlow) {
     }
 
     buildFlow(
-        readFileFromWorkspace('jenkins-seed', 'sorbic/groovy/pr-main-build-flow.groovy')
+        readFileFromWorkspace('jenkins-master-seed', 'sorbic/groovy/pr-main-build-flow.groovy')
     )
 
     publishers {
@@ -523,7 +523,7 @@ job(type: BuildFlow) {
             )
             configure { node ->
                 node.appendNode('presendScript').setValue(
-                    readFileFromWorkspace('jenkins-seed', 'groovy/inject-submitter-email-address.groovy')
+                    readFileFromWorkspace('jenkins-master-seed', 'groovy/inject-submitter-email-address.groovy')
                 )
             }
         }
@@ -622,13 +622,13 @@ def pr_clone_job = job {
     // Job Steps
     steps {
         // Setup the required virtualenv
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
 
         // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
 
         // Compress the checked out workspace
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/compress-workspace.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/compress-workspace.sh'))
     }
 
     publishers {
@@ -636,7 +636,7 @@ def pr_clone_job = job {
 
         postBuildTask {
             // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+            task('.', readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
         }
     }
 }
@@ -708,19 +708,19 @@ job {
     // Job Steps
     steps {
         // Setup the required virtualenv
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
 
         // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
 
         // Copy the workspace artifact
         copyArtifacts('sorbic/pr/clone', 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
         }
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/decompress-workspace.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/decompress-workspace.sh'))
 
         // Run Lint Code
-        shell(readFileFromWorkspace('jenkins-seed', 'sorbic/scripts/run-lint.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'sorbic/scripts/run-lint.sh'))
     }
 
     publishers {
@@ -731,7 +731,7 @@ job {
 
         postBuildTask {
             // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+            task('.', readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
         }
     }
 }
@@ -794,19 +794,19 @@ job {
     // Job Steps
     steps {
         // Setup the required virtualenv
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
 
         // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
 
         // Copy the workspace artifact
         copyArtifacts('sorbic/pr/clone', 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
         }
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/decompress-workspace.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/decompress-workspace.sh'))
 
         // Run Unit Tests
-        shell(readFileFromWorkspace('jenkins-seed', 'sorbic/scripts/run-unit.sh'))
+        shell(readFileFromWorkspace('jenkins-master-seed', 'sorbic/scripts/run-unit.sh'))
     }
 
     publishers {
@@ -825,7 +825,7 @@ job {
 
         postBuildTask {
             // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+            task('.', readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
         }
     }
 }
