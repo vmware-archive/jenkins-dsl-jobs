@@ -57,7 +57,7 @@ job {
     authorization {
         JenkinsPerms.usernames.each { username ->
             JenkinsPerms.permissions.each { permname ->
-                permission(permname, username)
+                permission("${permname}:${username}")
             }
         }
     }
