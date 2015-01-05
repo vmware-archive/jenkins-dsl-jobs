@@ -8,11 +8,13 @@ new JsonSlurper().parseText(projects).each { name, data ->
     def github_repo_url = "https://github.com/" + data.github_repo
     def repo = GitHubRepositoryName.create(github_repo_url).resolve().iterator().next()
     if ( repo != null ) {
-        out.println "  * Getting branches"
         def branches = []
-        repo.getBranches().each { branch_name, branch_data ->
-            out.println "    * " + branch_name
-            branches.add(branch_name)
+        if ( data.create_branches_webhook == true ) {
+            out.println "  * Getting branches"
+            repo.getBranches().each { branch_name, branch_data ->
+                out.println "    * " + branch_name
+                branches.add(branch_name)
+            }
         }
         environ_data[name] = [
             display_name: data.display_name,
