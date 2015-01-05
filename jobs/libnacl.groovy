@@ -78,7 +78,7 @@ def master_main_job = job(type: BuildFlow) {
         slack_notifications.appendNode('notifyBackToNormal').setValue(true)
         job_publishers.appendNode(
             'jenkins.plugins.slack.SlackNotifier',
-            [plugin: slack]
+            [plugin: 'slack']
         )
     }
 
