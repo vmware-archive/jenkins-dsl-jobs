@@ -5,7 +5,7 @@ import com.cloudbees.jenkins.GitHubRepositoryName
 
 def processed = []
 new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, data ->
-    if ( ! processed.contains(name) {
+    if ( ! processed.contains(name) ) {
         processed.add(name)
         def github_repo_url = "https://github.com/" + data.github_repo
         def repo = GitHubRepositoryName.create(github_repo_url).resolve().iterator().next()
@@ -31,7 +31,7 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
                     }
                     // Let's setup the pull request webhooks if the jobs needing it are found
                     try {
-                        job = Jenkins.instance.getJob(name).getJob('pr').getJob('jenkins-seed')
+                        def job = Jenkins.instance.getJob(name).getJob('pr').getJob('jenkins-seed')
                         if ( job != null ) {
                             manager.listener.logger.println 'Setting up pull requests webhook for ' + data.display_name + ' ...'
                             try {
