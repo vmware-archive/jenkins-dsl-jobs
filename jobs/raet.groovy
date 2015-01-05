@@ -2,6 +2,7 @@
 @GrabResolver(name='jenkins-dsl-jobs', root='http://saltstack.github.io/jenkins-dsl-jobs/')
 @Grab('com.saltstack:jenkins-dsl-jobs:1.2-SNAPSHOT')
 
+import groovy.json.*
 import groovy.text.*
 import com.saltstack.jenkins.PullRequestAdmins
 
