@@ -11,16 +11,16 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
             if ( hook.getName() == 'web' ) {
                 if ( data.create_branches_webhook == true ) {
                     manager.listener.logger.println 'Setting up branches create/delete webhook for ' + data.display_name + ' ...'
-                    def project = manager.build.getProject()
+                    def job = manager.build.getProject()
                     try {
                         hook_config = hook.getConfig()
-                        if ( hook_config.url.startsWith(project.getAbsoluteUrl()) ) {
+                        if ( hook_config.url.startsWith(job.getAbsoluteUrl()) ) {
                             hook.delete()
                         }
                     } catch(e) {
                         manager.listener.logger.println 'Failed to delete existing webhook:' + e.toString()
                     }
-                    def webhook_url = project.getAbsoluteUrl() + '?token=' + project.getAuthToken().getToken()
+                    def webhook_url = job.getAbsoluteUrl() + '?token=' + job.getAuthToken().getToken()
                     repo.createWebHook(
                         webhook_url.toURL()
                         [GHEvent.CREATE, GHEvent.DELETE]
@@ -38,7 +38,7 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
                     } catch(e) {
                         manager.listener.logger.println 'Failed to delete existing webhook:' + e.toString()
                     }
-                    def webhook_url = job.getAbsoluteUrl() + '?token=' + project.getAuthToken().getToken()
+                    def webhook_url = job.getAbsoluteUrl() + '?token=' + job.getAuthToken().getToken()
                     repo.createWebHook(
                         webhook_url.toURL()
                         [GHEvent.PULL_REQUEST]
