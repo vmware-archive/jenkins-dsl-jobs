@@ -68,16 +68,6 @@ job {
 
         // Color Support to console log
         colorizeOutput('xterm')
-
-        // Build Timeout
-        timeout {
-            elastic(
-                percentage = default_timeout_percent,
-                numberOfBuilds = default_timeout_builds,
-                minutesDefault= default_timeout_minutes
-            )
-            writeDescription('Build failed due to timeout after {0} minutes')
-        }
     }
 
     // Delete old jobs
