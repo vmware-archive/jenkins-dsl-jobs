@@ -9,13 +9,13 @@ new JsonSlurper().parseText(projects).each { name, data ->
     def repo = GitHubRepositoryName.create(github_repo_url).resolve().iterator().next()
     if ( repo != null ) {
         environ_data[name] = [
-            display_name: display_name,
-            github_repo: github_repo,
+            display_name: data.display_name,
+            github_repo: data.github_repo,
             description: repo.getDescription(),
-            add_branches_webhook: add_branches_webhook,
+            add_branches_webhook: data.add_branches_webhook,
         ]
     } else {
-        out.println 'Unable to grab data about ' + display_name
+        out.println 'Unable to grab data about ' + data.display_name
     }
 }
 
