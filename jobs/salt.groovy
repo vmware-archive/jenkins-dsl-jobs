@@ -27,14 +27,7 @@ def default_timeout_percent = 150
 def default_timeout_builds = 10
 def default_timeout_minutes = 60
 
-// Get branches to build from GitHub. Only branches matching 'develop' and 'dddd.dd'
-def branches_api = new URL("https://api.github.com/repos/${github_repo}/branches")
-def salt_branches_data = new groovy.json.JsonSlurper().parse(branches_api.newReader())
-def salt_branches = []
-salt_branches_data.each {
-  salt_branches.add(it.name)
-}
-salt_branches = salt_branches.grep(~/(develop|([\d]{4}.[\d]{1,2}))/)
+salt_branches = github_json_data['salt']['branches'].grep(~/(develop|([\d]{4}.[\d]{1,2}))/)
 
 def salt_build_types = [
     'Cloud': [
