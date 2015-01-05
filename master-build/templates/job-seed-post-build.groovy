@@ -22,7 +22,7 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
                     }
                     def webhook_url = job.getAbsoluteUrl() + '?token=' + job.getAuthToken().getToken()
                     repo.createWebHook(
-                        webhook_url.toURL()
+                        webhook_url.toURL(),
                         [GHEvent.CREATE, GHEvent.DELETE]
                     )
                 }
@@ -40,7 +40,7 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
                     }
                     def webhook_url = job.getAbsoluteUrl() + '?token=' + job.getAuthToken().getToken()
                     repo.createWebHook(
-                        webhook_url.toURL()
+                        webhook_url.toURL(),
                         [GHEvent.PULL_REQUEST]
                     )
                 } catch (pr_jenkins_seed_error) {
