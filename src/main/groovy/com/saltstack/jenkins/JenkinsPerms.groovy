@@ -6,6 +6,7 @@ class JenkinsPerms {
         's0undt3ch',
         'cachedout',
         'rallytime',
+        'salt-testing'
     ]
 
     static permissions = [
