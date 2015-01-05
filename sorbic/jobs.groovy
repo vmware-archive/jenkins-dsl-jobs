@@ -4,12 +4,17 @@
 
 import groovy.text.*
 import com.saltstack.jenkins.PullRequestAdmins
+import com.saltstack.jenkins.RandomString
+
+// get current thread / Executor
+def thr = Thread.currentThread()
+// get current build
+def build = thr?.executable
 
 // Common variable Definitions
 def github_repo = 'thatch45/sorbic'
-def repo_api = new URL("https://api.github.com/repos/${github_repo}")
-def repo_data = new groovy.json.JsonSlurper().parse(repo_api.newReader())
-def project_description = repo_data['description']
+def github_json_data = new JsonSlurper().parseText(build.getEnvironment()['GITHUB_JSON_DATA']
+def project_description = github_json_data['sorbic']['description']
 
 // Job rotation defaults
 def default_days_to_keep = 90
