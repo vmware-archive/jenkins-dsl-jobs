@@ -4,6 +4,7 @@
 
 import groovy.json.*
 import groovy.text.*
+import com.saltstack.jenkins.JenkinsPerms
 import com.saltstack.jenkins.PullRequestAdmins
 import com.saltstack.jenkins.RandomString
 
@@ -455,6 +456,16 @@ dsl_job = job {
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
         github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+        auth_matrix = job_properties.appendNode('hudson.security.AuthorizationMatrixProperty')
+        auth_matrix.appendNode('blocksInheritance').setValue(true)
+    }
+
+    authorization {
+        JenkinsPerms.usernames.each { username ->
+            JenkinsPerms.permissions.each { permname ->
+                permission(permname, username)
+            }
+        }
     }
 
     wrappers {
