@@ -395,6 +395,7 @@ def master_unit_job = job {
         readFileFromWorkspace('jenkins-master-seed', 'templates/branches-envvars-commit-status.groovy')
     )
     rendered_script_template = script_template.make(template_context.withDefault{ null })
+    environmentVariables {
         groovy(rendered_script_template.toString())
     }
 
