@@ -31,7 +31,7 @@ def default_timeout_minutes = 15
 // Define the folder structure
 folder {
     name('raet')
-    displayName('RAET')
+    displayName(github_json_data['raet']['display_name'])
     description = project_description
 }
 folder {

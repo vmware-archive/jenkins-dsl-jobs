@@ -34,7 +34,7 @@ def template_engine = new SimpleTemplateEngine()
 // Define the folder structure
 folder {
     name('libnacl')
-    displayName('libnacl')
+    displayName(github_json_data['libnacl']['display_name'])
     description = project_description
 }
 folder {

@@ -56,7 +56,7 @@ def template_engine = new SimpleTemplateEngine()
 // Define the folder structure
 folder {
     name('salt')
-    displayName('Salt')
+    displayName(github_json_data['salt']['display_name'])
     description = project_description
 }
 
