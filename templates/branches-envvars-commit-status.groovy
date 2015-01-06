@@ -69,6 +69,6 @@ return [<%
     if (build_vm_name != null) { %>
     BUILD_VM_NAME: '$build_vm_name',<% } %><%
     if (vm_name_nodots != null) { %>
-    JENKINS_VM_NAME: build_env_vars['JENKINS_VM_NAME_PREFIX'] + '_' + '$vm_name_nodots' + '_' + build_number<% } %>
+    JENKINS_VM_NAME: build_env_vars['JENKINS_VM_NAME_PREFIX'] + '_' + '$vm_name_nodots' + '_' + build_number,<% } %>
     COMMIT_STATUS_CONTEXT: '$commit_status_context'
 ]
