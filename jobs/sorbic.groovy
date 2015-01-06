@@ -81,9 +81,6 @@ def master_main_job = job(type: BuildFlow) {
     }
 
     wrappers {
-        // Inject global defined passwords in the environment
-        injectPasswords()
-
         // Add timestamps to console log
         timestamps()
 
@@ -140,6 +137,15 @@ def master_main_job = job(type: BuildFlow) {
             pylint(10, 999, 999, 'lint/pylint-report*.xml')
         }
 
+        template_context = [
+            commit_status_context: "default"
+        ]
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-master-seed', 'templates/post-build-set-commit-status.groovy')
+        )
+        rendered_script_template = script_template.make(template_context.withDefault{ null })
+        groovyPostBuild(rendered_script_template.toString())
+
         // Cleanup workspace
         wsCleanup()
     }
@@ -167,9 +173,6 @@ def master_clone_job = job {
     }
 
     wrappers {
-        // Inject global defined passwords in the environment
-        injectPasswords()
-
         // Cleanup the workspace before starting
         preBuildCleanup()
 
@@ -212,20 +215,24 @@ def master_clone_job = job {
     }
     checkoutRetryCount(3)
 
+    template_context = [
+        commit_status_context: 'ci/clone',
+        github_repo: github_repo,
+        virtualenv_name: 'sorbic-master',
+        virtualenv_setup_state_name: 'projects.clone'
+    ]
+    script_template = template_engine.createTemplate(
+        readFileFromWorkspace('jenkins-master-seed', 'templates/branches-envvars-commit-status.groovy')
+    )
+    rendered_script_template = script_template.make(template_context.withDefault{ null })
     environmentVariables {
-        env('GITHUB_REPO', github_repo)
-        env('COMMIT_STATUS_CONTEXT', 'ci/clone')
-        env('VIRTUALENV_NAME', 'sorbic-master')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.clone')
+        groovy(rendered_script_template.toString())
     }
 
     // Job Steps
     steps {
         // Setup the required virtualenv
         shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
-
-        // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
 
         // Compress the checked out workspace
         shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/compress-workspace.sh'))
@@ -234,10 +241,11 @@ def master_clone_job = job {
     publishers {
         archiveArtifacts('workspace.cpio.xz')
 
-        postBuildTask {
-            // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
-        }
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-master-seed', 'templates/post-build-set-commit-status.groovy')
+        )
+        rendered_script_template = script_template.make(template_context.withDefault{ null })
+        groovyPostBuild(rendered_script_template.toString())
     }
 }
 
@@ -262,9 +270,6 @@ def master_lint_job = job {
     }
 
     wrappers {
-        // Inject global defined passwords in the environment
-        injectPasswords()
-
         // Cleanup the workspace before starting
         preBuildCleanup()
 
@@ -293,20 +298,25 @@ def master_lint_job = job {
         default_artifact_nr_of_jobs_to_keep
     )
 
+    template_context = [
+        commit_status_context: 'ci/lint',
+        github_repo: github_repo,
+        virtualenv_name: 'sorbic-master',
+        virtualenv_setup_state_name: 'projects.sorbic.lint'
+    ]
+    script_template = template_engine.createTemplate(
+        readFileFromWorkspace('jenkins-master-seed', 'templates/branches-envvars-commit-status.groovy')
+    )
+    rendered_script_template = script_template.make(template_context.withDefault{ null })
+
     environmentVariables {
-        env('GITHUB_REPO', github_repo)
-        env('COMMIT_STATUS_CONTEXT', 'ci/lint')
-        env('VIRTUALENV_NAME', 'sorbic-master')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.sorbic.lint')
+        groovy(rendered_script_template.toString())
     }
 
     // Job Steps
     steps {
         // Setup the required virtualenv
         shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
-
-        // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
 
         // Copy the workspace artifact
         copyArtifacts('sorbic/master/clone', 'workspace.cpio.xz') {
@@ -324,10 +334,12 @@ def master_lint_job = job {
             pylint(10, 999, 999, 'pylint-report*.xml')
         }
 
-        postBuildTask {
-            // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
-        }
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-master-seed', 'templates/post-build-set-commit-status.groovy')
+        )
+        rendered_script_template = script_template.make(template_context.withDefault{ null })
+
+        groovyPostBuild(rendered_script_template.toString())
     }
 }
 
@@ -353,9 +365,6 @@ def master_unit_job = job {
     }
 
     wrappers {
-        // Inject global defined passwords in the environment
-        injectPasswords()
-
         // Cleanup the workspace before starting
         preBuildCleanup()
 
@@ -376,20 +385,23 @@ def master_unit_job = job {
         }
     }
 
-    environmentVariables {
-        env('GITHUB_REPO', github_repo)
-        env('COMMIT_STATUS_CONTEXT', 'ci/unit')
-        env('VIRTUALENV_NAME', 'sorbic-master')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.sorbic.unit')
+    template_context = [
+        commit_status_context: 'ci/unit',
+        github_repo: github_repo,
+        virtualenv_name: 'sorbic-master',
+        virtualenv_setup_state_name: 'projects.sornic.unit'
+    ]
+    script_template = template_engine.createTemplate(
+        readFileFromWorkspace('jenkins-master-seed', 'templates/branches-envvars-commit-status.groovy')
+    )
+    rendered_script_template = script_template.make(template_context.withDefault{ null })
+        groovy(rendered_script_template.toString())
     }
 
     // Job Steps
     steps {
         // Setup the required virtualenv
         shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
-
-        // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
 
         // Copy the workspace artifact
         copyArtifacts('sorbic/master/clone', 'workspace.cpio.xz') {
@@ -415,12 +427,108 @@ def master_unit_job = job {
             }
         }
 
-        postBuildTask {
-            // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
-        }
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-master-seed', 'templates/post-build-set-commit-status.groovy')
+        )
+        rendered_script_template = script_template.make(template_context.withDefault{ null })
+        groovyPostBuild(rendered_script_template.toString())
     }
 }
+
+dsl_job = job {
+    name = 'sorbic/pr/jenkins-seed'
+    displayName('PR Jenkins Seed')
+
+    concurrentBuild(allowConcurrentBuild = false)
+
+    description('PR Jenkins Seed')
+
+    label('worker')
+
+    configure {
+        it.appendNode('authToken').setValue(RandomString.generate())
+        job_properties = it.get('properties').get(0)
+        github_project_property = job_properties.appendNode(
+            'com.coravy.hudson.plugins.github.GithubProjectProperty')
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+        auth_matrix = job_properties.appendNode('hudson.security.AuthorizationMatrixProperty')
+        auth_matrix.appendNode('blocksInheritance').setValue(true)
+    }
+
+    authorization {
+        JenkinsPerms.usernames.each { username ->
+            JenkinsPerms.permissions.each { permname ->
+                permission("${permname}:${username}")
+            }
+        }
+    }
+
+    wrappers {
+        // Cleanup the workspace before starting
+        preBuildCleanup()
+
+        // Add timestamps to console log
+        timestamps()
+
+        // Color Support to console log
+        colorizeOutput('xterm')
+
+        // Build Timeout
+        timeout {
+            elastic(
+                percentage = default_timeout_percent,
+                numberOfBuilds = default_timeout_builds,
+                minutesDefault= default_timeout_minutes
+            )
+            writeDescription('Build failed due to timeout after {0} minutes')
+        }
+    }
+
+    // Delete old jobs
+    /* Since we're just cloning the repository in order to make it an artifact to
+     * user as workspace for all other jobs, we only need to keep the artifact for
+     * a couple of minutes. Since one day is the minimum....
+     */
+    logRotator(
+        default_days_to_keep,
+        default_nr_of_jobs_to_keep,
+        default_artifact_days_to_keep,
+        default_artifact_nr_of_jobs_to_keep
+    )
+
+    environmentVariables {
+        template_context = [
+            include_open_prs: true
+        ]
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-master-seed', 'templates/pr-job-seed-envvars.groovy')
+        )
+        rendered_script_template = script_template.make(template_context.withDefault{ null })
+        groovy(rendered_script_template.toString())
+    }
+
+    // Job Steps
+    steps {
+        dsl {
+            removeAction('DELETE')
+            text(
+                readFileFromWorkspace('jenkins-master-seed', 'sorbic/groovy/pr-dsl-job.groovy')
+            )
+        }
+    }
+
+    publishers {
+        template_context = [
+            project: 'sorbic'
+        ]
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('jenkins-master-seed', 'templates/pr-job-seed-post-build.groovy')
+        )
+        rendered_script_template = script_template.make(template_context.withDefault{ null })
+        groovyPostBuild(rendered_script_template.toString())
+    }
+}
+
 
 // PR Main Job
 job(type: BuildFlow) {
@@ -452,7 +560,7 @@ job(type: BuildFlow) {
         slack_notifications.appendNode('notifyBackToNormal').setValue(true)
         job_publishers.appendNode(
             'jenkins.plugins.slack.SlackNotifier',
-            [plugin: 'slack']
+            [plugin: slack]
         )
     }
 
@@ -503,10 +611,10 @@ job(type: BuildFlow) {
     )
 
     publishers {
-        // Report Coverage - No coverage on PR's - Too CPU expensive
-        //cobertura('unit/coverage.xml') {
-        //    failNoReports = false
-        //}
+         Report Coverage - No coverage on PR's - Too CPU expensive
+        cobertura('unit/coverage.xml') {
+            failNoReports = false
+        }
 
         // Report Violations
         violations {
@@ -530,302 +638,5 @@ job(type: BuildFlow) {
 
         // Cleanup workspace
         wsCleanup()
-    }
-}
-
-// PR Clone Job
-def pr_clone_job = job {
-    name = 'sorbic/pr/clone'
-    displayName('Clone Repository')
-
-    concurrentBuild(allowConcurrentBuild = true)
-    description(project_description + ' - Clone Repository')
-    label('worker')
-
-    parameters {
-        stringParam('PR')
-    }
-
-    configure {
-        job_properties = it.get('properties').get(0)
-        job_properties.appendNode(
-            'hudson.plugins.copyartifact.CopyArtifactPermissionProperty').appendNode(
-                'projectNameList').appendNode(
-                    'string').setValue('sorbic/pr/*')
-        github_project_property = job_properties.appendNode(
-            'com.coravy.hudson.plugins.github.GithubProjectProperty')
-        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
-    }
-
-    wrappers {
-        // Inject global defined passwords in the environment
-        injectPasswords()
-
-        // Cleanup the workspace before starting
-        preBuildCleanup()
-
-        // Add timestamps to console log
-        timestamps()
-
-        // Color Support to console log
-        colorizeOutput('xterm')
-
-        // Build Timeout
-        timeout {
-            elastic(
-                percentage = default_timeout_percent,
-                numberOfBuilds = default_timeout_builds,
-                minutesDefault= default_timeout_minutes
-            )
-            writeDescription('Build failed due to timeout after {0} minutes')
-        }
-    }
-
-    // Delete old jobs
-    /* Since we're just cloning the repository in order to make it an artifact to
-     * user as workspace for all other jobs, we only need to keep the artifact for
-     * a couple of minutes. Since one day is the minimum....
-     */
-    logRotator(
-        default_days_to_keep,
-        default_nr_of_jobs_to_keep,
-        1,  //default_artifact_days_to_keep,
-        default_artifact_nr_of_jobs_to_keep
-    )
-
-    // scm configuration
-    scm {
-        git {
-            remote {
-                github(github_repo, protocol='https')
-                refspec('+refs/pull/*:refs/remotes/origin/pr/*')
-            }
-            branch('origin/pr/${PR}/merge')
-            configure {
-                git_extensions = it.appendNode('extensions')
-                extension = git_extensions.appendNode('hudson.plugins.git.extensions.impl.ChangelogToBranch')
-                options = extension.appendNode('options')
-                options.appendNode('compareRemote').setValue('origin')
-                options.appendNode('compareTarget').setValue('pr/${PR}/head')
-            }
-        }
-    }
-    checkoutRetryCount(3)
-
-    environmentVariables {
-        env('GITHUB_REPO', github_repo)
-        env('COMMIT_STATUS_CONTEXT', 'ci/clone')
-        env('VIRTUALENV_NAME', 'sorbic-pr')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.clone')
-    }
-
-    // Job Steps
-    steps {
-        // Setup the required virtualenv
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
-
-        // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
-
-        // Compress the checked out workspace
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/compress-workspace.sh'))
-    }
-
-    publishers {
-        archiveArtifacts('workspace.cpio.xz')
-
-        postBuildTask {
-            // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
-        }
-    }
-}
-
-// PR Lint Job
-job {
-    name = 'sorbic/pr/lint'
-    displayName('Lint')
-    concurrentBuild(allowConcurrentBuild = true)
-    description(project_description + ' - Code Lint')
-    label('worker')
-
-    // Parameters Definition
-    parameters {
-        stringParam('PR')
-        stringParam('GIT_COMMIT')
-        stringParam('CLONE_BUILD_ID')
-    }
-
-    configure {
-        job_properties = it.get('properties').get(0)
-        github_project_property = job_properties.appendNode(
-            'com.coravy.hudson.plugins.github.GithubProjectProperty')
-        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
-    }
-
-    wrappers {
-        // Inject global defined passwords in the environment
-        injectPasswords()
-
-        // Cleanup the workspace before starting
-        preBuildCleanup()
-
-        // Cleanup the workspace before starting
-        preBuildCleanup()
-
-        // Add timestamps to console log
-        timestamps()
-
-        // Color Support to console log
-        colorizeOutput('xterm')
-
-        // Build Timeout
-        timeout {
-            elastic(
-                percentage = default_timeout_percent,
-                numberOfBuilds = default_timeout_builds,
-                minutesDefault= default_timeout_minutes
-            )
-            writeDescription('Build failed due to timeout after {0} minutes')
-        }
-    }
-
-    // Delete old jobs
-    logRotator(
-        default_days_to_keep,
-        default_nr_of_jobs_to_keep,
-        default_artifact_days_to_keep,
-        default_artifact_nr_of_jobs_to_keep
-    )
-
-    environmentVariables {
-        env('GITHUB_REPO', github_repo)
-        env('COMMIT_STATUS_CONTEXT', 'ci/lint')
-        env('VIRTUALENV_NAME', 'sorbic-pr')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.sorbic.lint')
-    }
-
-    // Job Steps
-    steps {
-        // Setup the required virtualenv
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
-
-        // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
-
-        // Copy the workspace artifact
-        copyArtifacts('sorbic/pr/clone', 'workspace.cpio.xz') {
-            buildNumber('${CLONE_BUILD_ID}')
-        }
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/decompress-workspace.sh'))
-
-        // Run Lint Code
-        shell(readFileFromWorkspace('jenkins-master-seed', 'sorbic/scripts/run-lint.sh'))
-    }
-
-    publishers {
-        // Report Violations
-        violations {
-            pylint(10, 999, 999, 'pylint-report*.xml')
-        }
-
-        postBuildTask {
-            // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
-        }
-    }
-}
-
-// PR Unit Tests
-job {
-    name = 'sorbic/pr/unit'
-    displayName('Unit')
-    concurrentBuild(allowConcurrentBuild = true)
-    description(project_description + ' - Unit Tests')
-    label('worker')
-
-    // Parameters Definition
-    parameters {
-        stringParam('PR')
-        stringParam('GIT_COMMIT')
-        stringParam('CLONE_BUILD_ID')
-        booleanParam('RUN_COVERAGE', defaultValue=false, description='Run unit tests with code coverage')
-    }
-
-    configure {
-        job_properties = it.get('properties').get(0)
-        github_project_property = job_properties.appendNode(
-            'com.coravy.hudson.plugins.github.GithubProjectProperty')
-        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
-    }
-
-    wrappers {
-        // Inject global defined passwords in the environment
-        injectPasswords()
-
-        // Cleanup the workspace before starting
-        preBuildCleanup()
-
-        // Add timestamps to console log
-        timestamps()
-
-        // Color Support to console log
-        colorizeOutput('xterm')
-
-        // Build Timeout
-        timeout {
-            elastic(
-                percentage = default_timeout_percent,
-                numberOfBuilds = default_timeout_builds,
-                minutesDefault= default_timeout_minutes
-            )
-            writeDescription('Build failed due to timeout after {0} minutes')
-        }
-
-    }
-
-    environmentVariables {
-        env('GITHUB_REPO', github_repo)
-        env('COMMIT_STATUS_CONTEXT', 'ci/unit')
-        env('VIRTUALENV_NAME', 'sorbic-pr')
-        env('VIRTUALENV_SETUP_STATE_NAME', 'projects.sorbic.unit')
-    }
-
-    // Job Steps
-    steps {
-        // Setup the required virtualenv
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
-
-        // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
-
-        // Copy the workspace artifact
-        copyArtifacts('sorbic/pr/clone', 'workspace.cpio.xz') {
-            buildNumber('${CLONE_BUILD_ID}')
-        }
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/decompress-workspace.sh'))
-
-        // Run Unit Tests
-        shell(readFileFromWorkspace('jenkins-master-seed', 'sorbic/scripts/run-unit.sh'))
-    }
-
-    publishers {
-        // Report Coverage - No coverage on PR's - Too CPU expensive
-        //cobertura('coverage.xml') {
-        //    failNoReports = false
-        //}
-
-        // Junit Reports
-        archiveJunit('nosetests.xml') {
-            retainLongStdout(true)
-            testDataPublishers {
-                publishTestStabilityData()
-            }
-        }
-
-        postBuildTask {
-            // Set final commit status
-            task('.', readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
-        }
     }
 }
