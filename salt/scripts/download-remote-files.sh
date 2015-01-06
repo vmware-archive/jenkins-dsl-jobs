@@ -1,3 +1,5 @@
+. /srv/virtualenvs/${VIRTUALENV_NAME}/bin/activate > /dev/null 2>&1
+
 salt-jenkins-build \
   --output-columns=160 \
   --download-artifact '/tmp/xml-unittests-output/*.xml' ${WORKSPACE}/artifacts/unittests \
