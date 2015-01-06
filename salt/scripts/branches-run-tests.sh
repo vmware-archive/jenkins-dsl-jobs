@@ -1,3 +1,5 @@
+. /srv/virtualenvs/${VIRTUALENV_NAME}/bin/activate > /dev/null 2>&1
+
 # Random 1-10 seconds sleep to split the server load
 sleep $(($RANDOM % 10))
 
