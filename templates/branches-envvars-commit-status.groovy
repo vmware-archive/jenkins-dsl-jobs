@@ -64,6 +64,8 @@ return [<%
     VIRTUALENV_NAME: '$virtualenv_name',<% } %><%
     if ( virtualenv_setup_state_name != null ) { %>
     VIRTUALENV_SETUP_STATE_NAME: '$virtualenv_setup_state_name',<% } %><%
+    if ( system_site_packages != null ) { %>
+    SYSTEM_SITE_PACKAGES: true,<% } %><%
     if ( branch_name != null ) { %>
     BRANCH_NAME: '$branch_name',<% } %><%
     if (build_vm_name != null) { %>
