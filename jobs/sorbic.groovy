@@ -126,7 +126,7 @@ def master_main_job = job(type: BuildFlow) {
     }
 
     buildFlow(
-        readFileFromWorkspace('jenkins-master-seed', 'sorbic/groovy/master-main-build-flow.groovy')
+        readFileFromWorkspace('jenkins-seed', 'sorbic/groovy/master-main-build-flow.groovy')
     )
 
     publishers {
@@ -143,7 +143,7 @@ def master_main_job = job(type: BuildFlow) {
             commit_status_context: "default"
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('jenkins-master-seed', 'templates/post-build-set-commit-status.groovy')
+            readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovyPostBuild(rendered_script_template.toString())
@@ -224,7 +224,7 @@ def master_clone_job = job {
         virtualenv_setup_state_name: 'projects.clone'
     ]
     script_template = template_engine.createTemplate(
-        readFileFromWorkspace('jenkins-master-seed', 'templates/branches-envvars-commit-status.groovy')
+        readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
     )
     rendered_script_template = script_template.make(template_context.withDefault{ null })
     environmentVariables {
@@ -234,17 +234,17 @@ def master_clone_job = job {
     // Job Steps
     steps {
         // Setup the required virtualenv
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
+        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
 
         // Compress the checked out workspace
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/compress-workspace.sh'))
+        shell(readFileFromWorkspace('jenkins-seed', 'scripts/compress-workspace.sh'))
     }
 
     publishers {
         archiveArtifacts('workspace.cpio.xz')
 
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('jenkins-master-seed', 'templates/post-build-set-commit-status.groovy')
+            readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovyPostBuild(rendered_script_template.toString())
@@ -307,7 +307,7 @@ def master_lint_job = job {
         virtualenv_setup_state_name: 'projects.sorbic.lint'
     ]
     script_template = template_engine.createTemplate(
-        readFileFromWorkspace('jenkins-master-seed', 'templates/branches-envvars-commit-status.groovy')
+        readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
     )
     rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -318,16 +318,16 @@ def master_lint_job = job {
     // Job Steps
     steps {
         // Setup the required virtualenv
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
+        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
 
         // Copy the workspace artifact
         copyArtifacts('sorbic/master/clone', 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
         }
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/decompress-workspace.sh'))
+        shell(readFileFromWorkspace('jenkins-seed', 'scripts/decompress-workspace.sh'))
 
         // Run Lint Code
-        shell(readFileFromWorkspace('jenkins-master-seed', 'sorbic/scripts/run-lint.sh'))
+        shell(readFileFromWorkspace('jenkins-seed', 'sorbic/scripts/run-lint.sh'))
     }
 
     publishers {
@@ -337,7 +337,7 @@ def master_lint_job = job {
         }
 
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('jenkins-master-seed', 'templates/post-build-set-commit-status.groovy')
+            readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -394,7 +394,7 @@ def master_unit_job = job {
         virtualenv_setup_state_name: 'projects.sornic.unit'
     ]
     script_template = template_engine.createTemplate(
-        readFileFromWorkspace('jenkins-master-seed', 'templates/branches-envvars-commit-status.groovy')
+        readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
     )
     rendered_script_template = script_template.make(template_context.withDefault{ null })
     environmentVariables {
@@ -404,16 +404,16 @@ def master_unit_job = job {
     // Job Steps
     steps {
         // Setup the required virtualenv
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
+        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
 
         // Copy the workspace artifact
         copyArtifacts('sorbic/master/clone', 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
         }
-        shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/decompress-workspace.sh'))
+        shell(readFileFromWorkspace('jenkins-seed', 'scripts/decompress-workspace.sh'))
 
         // Run Unit Tests
-        shell(readFileFromWorkspace('jenkins-master-seed', 'sorbic/scripts/run-unit.sh'))
+        shell(readFileFromWorkspace('jenkins-seed', 'sorbic/scripts/run-unit.sh'))
     }
 
     publishers {
@@ -431,7 +431,7 @@ def master_unit_job = job {
         }
 
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('jenkins-master-seed', 'templates/post-build-set-commit-status.groovy')
+            readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovyPostBuild(rendered_script_template.toString())
@@ -504,7 +504,7 @@ dsl_job = job {
             include_open_prs: true
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('jenkins-master-seed', 'templates/pr-job-seed-envvars.groovy')
+            readFileFromWorkspace('jenkins-seed', 'templates/pr-job-seed-envvars.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovy(rendered_script_template.toString())
@@ -515,7 +515,7 @@ dsl_job = job {
         dsl {
             removeAction('DELETE')
             text(
-                readFileFromWorkspace('jenkins-master-seed', 'sorbic/groovy/pr-dsl-job.groovy')
+                readFileFromWorkspace('jenkins-seed', 'sorbic/groovy/pr-dsl-job.groovy')
             )
         }
     }
@@ -525,7 +525,7 @@ dsl_job = job {
             project: 'sorbic'
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('jenkins-master-seed', 'templates/pr-job-seed-post-build.groovy')
+            readFileFromWorkspace('jenkins-seed', 'templates/pr-job-seed-post-build.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovyPostBuild(rendered_script_template.toString())

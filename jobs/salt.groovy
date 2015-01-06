@@ -174,7 +174,7 @@ salt_branches.each { branch_name ->
             virtualenv_setup_state_name: 'projects.clone'
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('jenkins-master-seed', 'templates/branches-envvars-commit-status.groovy')
+            readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -185,17 +185,17 @@ salt_branches.each { branch_name ->
         // Job Steps
         steps {
             // Setup the required virtualenv
-            shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
+            shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
 
             // Compress the checked out workspace
-            shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/compress-workspace.sh'))
+            shell(readFileFromWorkspace('jenkins-seed', 'scripts/compress-workspace.sh'))
         }
 
         publishers {
             archiveArtifacts('workspace.cpio.xz')
 
             script_template = template_engine.createTemplate(
-                readFileFromWorkspace('jenkins-master-seed', 'templates/post-build-set-commit-status.groovy')
+                readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -261,7 +261,7 @@ salt_branches.each { branch_name ->
             virtualenv_setup_state_name: "projects.salt.${branch_name_l}.lint"
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('jenkins-master-seed', 'templates/branches-envvars-commit-status.groovy')
+            readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -272,19 +272,19 @@ salt_branches.each { branch_name ->
         // Job Steps
         steps {
             // Setup the required virtualenv
-            shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/prepare-virtualenv.sh'))
+            shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
 
             // Set initial commit status
-            shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/set-commit-status.sh'))
+            shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
 
             // Copy the workspace artifact
             copyArtifacts("salt/${branch_name_l}/clone", 'workspace.cpio.xz') {
                 buildNumber('${CLONE_BUILD_ID}')
             }
-            shell(readFileFromWorkspace('jenkins-master-seed', 'scripts/decompress-workspace.sh'))
+            shell(readFileFromWorkspace('jenkins-seed', 'scripts/decompress-workspace.sh'))
 
             // Run Lint Code
-            shell(readFileFromWorkspace('jenkins-master-seed', 'libnacl/scripts/run-lint.sh'))
+            shell(readFileFromWorkspace('jenkins-seed', 'libnacl/scripts/run-lint.sh'))
         }
 
         publishers {
@@ -294,7 +294,7 @@ salt_branches.each { branch_name ->
             }
 
             script_template = template_engine.createTemplate(
-                readFileFromWorkspace('jenkins-master-seed', 'templates/post-build-set-commit-status.groovy')
+                readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -391,7 +391,7 @@ salt_branches.each { branch_name ->
                     vm_names: template_vm_data
                 ]
                 flow_script_template = template_engine.createTemplate(
-                    readFileFromWorkspace('jenkins-master-seed', 'salt/templates/flow-script.groovy')
+                    readFileFromWorkspace('jenkins-seed', 'salt/templates/flow-script.groovy')
                 )
                 flow_script_template_text = flow_script_template.make(template_context.withDefault{ null })
 
@@ -411,7 +411,7 @@ salt_branches.each { branch_name ->
                         commit_status_context: "default"
                     ]
                     script_template = template_engine.createTemplate(
-                        readFileFromWorkspace('jenkins-master-seed', 'templates/post-build-set-commit-status.groovy')
+                        readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                     )
                     rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -480,7 +480,7 @@ salt_branches.each { branch_name ->
                                 virtualenv_setup_state_name: "projects.salt.${branch_name_l}.lint"
                             ]
                             script_template = template_engine.createTemplate(
-                                readFileFromWorkspace('jenkins-master-seed', 'templates/branches-envvars-commit-status.groovy')
+                                readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
                             )
                             rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -491,7 +491,7 @@ salt_branches.each { branch_name ->
                             // Job Steps
                             steps {
                                 // Run Unit Tests
-                                shell(readFileFromWorkspace('jenkins-master-seed', 'salt/scripts/branches-run-tests.sh'))
+                                shell(readFileFromWorkspace('jenkins-seed', 'salt/scripts/branches-run-tests.sh'))
                             }
 
                             publishers {
@@ -512,13 +512,13 @@ salt_branches.each { branch_name ->
 
                                 postBuildTask {
                                     // Download remote files
-                                    task('.', readFileFromWorkspace('jenkins-master-seed', 'salt/scripts/download-remote-files.sh'))
+                                    task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/download-remote-files.sh'))
                                     // Shutdown VM
-                                    task('.', readFileFromWorkspace('jenkins-master-seed', 'salt/scripts/shutdown-cloud-vm.sh'))
+                                    task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/shutdown-cloud-vm.sh'))
                                 }
 
                                 script_template = template_engine.createTemplate(
-                                    readFileFromWorkspace('jenkins-master-seed', 'templates/post-build-set-commit-status.groovy')
+                                    readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                                 )
                                 rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -576,7 +576,7 @@ salt_branches.each { branch_name ->
                             virtualenv_setup_state_name: "projects.salt.${branch_name_l}.lint"
                         ]
                         script_template = template_engine.createTemplate(
-                            readFileFromWorkspace('jenkins-master-seed', 'templates/branches-envvars-commit-status.groovy')
+                            readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
                         )
                         rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -587,7 +587,7 @@ salt_branches.each { branch_name ->
                         // Job Steps
                         steps {
                             // Run Unit Tests
-                            shell(readFileFromWorkspace('jenkins-master-seed', 'salt/scripts/branches-run-tests.sh'))
+                            shell(readFileFromWorkspace('jenkins-seed', 'salt/scripts/branches-run-tests.sh'))
                         }
 
                         publishers {
@@ -609,13 +609,13 @@ salt_branches.each { branch_name ->
 
                             postBuildTask {
                                 // Download remote files
-                                task('.', readFileFromWorkspace('jenkins-master-seed', 'salt/scripts/download-remote-files.sh'))
+                                task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/download-remote-files.sh'))
                                 // Shutdown VM
-                                task('.', readFileFromWorkspace('jenkins-master-seed', 'salt/scripts/shutdown-cloud-vm.sh'))
+                                task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/shutdown-cloud-vm.sh'))
                             }
 
                             script_template = template_engine.createTemplate(
-                                readFileFromWorkspace('jenkins-master-seed', 'templates/post-build-set-commit-status.groovy')
+                                readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                             )
                             rendered_script_template = script_template.make(template_context.withDefault{ null })
 
