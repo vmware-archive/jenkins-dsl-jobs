@@ -4,6 +4,7 @@
 
 import groovy.json.*
 import groovy.text.*
+import com.saltstack.jenkins.JenkinsPerms
 import com.saltstack.jenkins.PullRequestAdmins
 import com.saltstack.jenkins.RandomString
 
