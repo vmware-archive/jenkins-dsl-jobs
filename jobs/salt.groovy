@@ -474,7 +474,7 @@ salt_branches.each { branch_name ->
                                 build_vm_name: "${provider_name_l}_${vm_name_nodots}",
                                 vm_name_nodots: vm_name_nodots,
                                 virtualenv_name: "salt-${branch_name_l}",
-                                virtualenv_setup_state_name: "projects.salt.${branch_name_l}.cloud-testrun"
+                                virtualenv_setup_state_name: "projects.salt.cloud-testrun"
                             ]
                             script_template = template_engine.createTemplate(
                                 readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
@@ -572,7 +572,7 @@ salt_branches.each { branch_name ->
                             build_vm_name: "${provider_name_l}_${vm_name_nodots}",
                             vm_name_nodots: vm_name_nodots,
                             virtualenv_name: "salt-${branch_name_l}",
-                            virtualenv_setup_state_name: "projects.salt.${branch_name_l}.cloud-testrun"
+                            virtualenv_setup_state_name: "projects.salt.cloud-testrun"
                         ]
                         script_template = template_engine.createTemplate(
                             readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
