@@ -274,9 +274,6 @@ salt_branches.each { branch_name ->
             // Setup the required virtualenv
             shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
 
-            // Set initial commit status
-            shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
-
             // Copy the workspace artifact
             copyArtifacts("salt/${branch_name_l}/clone", 'workspace.cpio.xz') {
                 buildNumber('${CLONE_BUILD_ID}')
@@ -477,7 +474,7 @@ salt_branches.each { branch_name ->
                                 build_vm_name: "${provider_name_l}_${vm_name_nodots}",
                                 vm_name_nodots: vm_name_nodots,
                                 virtualenv_name: "salt-${branch_name_l}",
-                                virtualenv_setup_state_name: "projects.salt.${branch_name_l}.lint"
+                                virtualenv_setup_state_name: "projects.salt.${branch_name_l}.cloud-testrun"
                             ]
                             script_template = template_engine.createTemplate(
                                 readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
@@ -490,6 +487,9 @@ salt_branches.each { branch_name ->
 
                             // Job Steps
                             steps {
+                                // Setup the required virtualenv
+                                shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+
                                 // Run Unit Tests
                                 shell(readFileFromWorkspace('jenkins-seed', 'salt/scripts/branches-run-tests.sh'))
                             }
@@ -521,7 +521,6 @@ salt_branches.each { branch_name ->
                                     readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                                 )
                                 rendered_script_template = script_template.make(template_context.withDefault{ null })
-
                                 groovyPostBuild(rendered_script_template.toString())
                             }
                         }
@@ -573,7 +572,7 @@ salt_branches.each { branch_name ->
                             build_vm_name: "${provider_name_l}_${vm_name_nodots}",
                             vm_name_nodots: vm_name_nodots,
                             virtualenv_name: "salt-${branch_name_l}",
-                            virtualenv_setup_state_name: "projects.salt.${branch_name_l}.lint"
+                            virtualenv_setup_state_name: "projects.salt.${branch_name_l}.cloud-testrun"
                         ]
                         script_template = template_engine.createTemplate(
                             readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
@@ -586,6 +585,9 @@ salt_branches.each { branch_name ->
 
                         // Job Steps
                         steps {
+                            // Setup the required virtualenv
+                            shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+
                             // Run Unit Tests
                             shell(readFileFromWorkspace('jenkins-seed', 'salt/scripts/branches-run-tests.sh'))
                         }
@@ -618,7 +620,6 @@ salt_branches.each { branch_name ->
                                 readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                             )
                             rendered_script_template = script_template.make(template_context.withDefault{ null })
-
                             groovyPostBuild(rendered_script_template.toString())
                         }
                     }
