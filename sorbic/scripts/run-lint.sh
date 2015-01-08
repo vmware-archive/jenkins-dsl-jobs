@@ -3,8 +3,8 @@
 EC1=-1
 EC2=-1
 
-pylint --rcfile=.testing.pylintrc --disable=I sorbic/ | tee pylint-report.xml; EC1=${PIPESTATUS[0]}
-pylint --rcfile=.testing.pylintrc --disable=I,C0112,E1002,W0232 tests/ | tee pylint-report-tests.xml; EC2=${PIPESTATUS[0]}
+pylint --rcfile=${WORKSPACE}/.testing.pylintrc --disable=I ${WORKSPACE}/sorbic/ | tee ${WORKSPACE}/pylint-report.xml; EC1=${PIPESTATUS[0]}
+pylint --rcfile=${WORKSPACE}/.testing.pylintrc --disable=I,C0112,E1002,W0232 ${WORKSPACE}/tests/ | tee ${WORKSPACE}/pylint-report-tests.xml; EC2=${PIPESTATUS[0]}
 
 if [ $EC1 -ne 0 ]; then
     exit $EC1
