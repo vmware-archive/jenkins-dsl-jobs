@@ -63,7 +63,10 @@ job {
             if (result.isBetterOrEqualTo(Result.SUCCESS)) {
                 def process = "sh /etc/salt/cloud.deploy.d/bootstrap-salt.sh -v".execute()
                 def bootstrap_version = process.text.split(' -- ')[-1]
-                manager.addShortText("${bootstrap_version} // ${manager.envVars['BRANCH']}@${manager.envVars['REPOSITORY']}")
+                manager.addShortText(
+                    "${bootstrap_version} from ${manager.envVars['BRANCH']}@${manager.envVars['REPOSITORY']}",
+                    "grey", "white", "0px", "white"
+                )
             }
         '''.stripIndent())
     }
