@@ -50,9 +50,11 @@ folder {
         )
         JenkinsPerms.usernames.each { username ->
             JenkinsPerms.permissions.each { permname ->
-                auth_matrix_prop.appendNode('permission').setValue(
-                    "${permname}:${username}"
-                )
+                if ( permname != 'hudson.model.Item.Update' ) {
+                    auth_matrix_prop.appendNode('permission').setValue(
+                        "${permname}:${username}"
+                    )
+                }
             }
             // This one is folder specific
             auth_matrix_prop.appendNode('permission').setValue(
