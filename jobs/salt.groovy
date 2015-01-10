@@ -496,8 +496,16 @@ salt_branches.each { branch_name ->
                             }
 
                             publishers {
+                                postBuildTask {
+                                    // Download remote files
+                                    task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/download-remote-files.sh'))
+                                    // Shutdown VM
+                                    task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/shutdown-cloud-vm.sh'))
+                                }
+
                                 // Archive Artifacts
                                 archiveArtifacts('artifacts/logs/*,artifacts/packages/*')
+
                                 // Report Coverage
                                 cobertura('artifacts/coverage/coverage.xml') {
                                     failNoReports = false
@@ -509,13 +517,6 @@ salt_branches.each { branch_name ->
                                     testDataPublishers {
                                         publishTestStabilityData()
                                     }
-                                }
-
-                                postBuildTask {
-                                    // Download remote files
-                                    task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/download-remote-files.sh'))
-                                    // Shutdown VM
-                                    task('.', readFileFromWorkspace('jenkins-seed', 'salt/scripts/shutdown-cloud-vm.sh'))
                                 }
 
                                 script_template = template_engine.createTemplate(
