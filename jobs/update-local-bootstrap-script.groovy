@@ -54,4 +54,17 @@ job {
     steps {
         shell('wget -O /etc/salt/cloud.deploy.d/bootstrap-salt.sh https://raw.github.com/${REPOSITORY}/salt-bootstrap/${BRANCH}/bootstrap-salt.sh')
     }
+
+    publishers {
+        groovyPostBuild('''\
+            import hudson.model.Result
+
+            def result = manager.build.getResult()
+            if (result.isBetterOrEqualTo(Result.SUCCESS)) {
+                def process = "sh /etc/salt/cloud.deploy.d/bootstrap-salt.sh -v".execute()
+                def bootstrap_version = process.text.split(' -- ')[-1]
+                manager.addShortText("${bootstrap_version} // ${manager.envVars['BRANCH']}@${manager.envVars['REPOSITORY']}")
+            }
+        '''.stripIndent())
+    }
 }
