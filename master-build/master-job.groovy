@@ -39,8 +39,31 @@ projects = [
     ],
 ]
 
+folder {
+    name('maintenance')
+    displayName('Jenkins Maintenance Jobs')
+
+    configure {
+        folder_properties = it.get('properties').get(0)
+        auth_matrix_prop = folder_properties.appendNode(
+            'com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty'
+        )
+        JenkinsPerms.usernames.each { username ->
+            JenkinsPerms.permissions.each { permname ->
+                auth_matrix_prop.appendNode('permission').setValue(
+                    "${permname}:${username}"
+                )
+            }
+            // This one is folder specific
+            auth_matrix_prop.appendNode('permission').setValue(
+                "hudson.model.Item.Create:${username}"
+            )
+        }
+    }
+}
+
 job {
-    name = 'jenkins-seed'
+    name = 'maintenance/jenkins-seed'
     displayName('Jenkins Jobs Seed')
 
     concurrentBuild(allowConcurrentBuild = true)
