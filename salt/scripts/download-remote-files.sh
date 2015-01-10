@@ -2,9 +2,9 @@
 
 salt-jenkins-build \
   --output-columns=160 \
-  --download-artifact '/tmp/xml-unittests-output/*.xml' ${WORKSPACE}/artifacts/unittests \
-  --download-artifact '/tmp/coverage.xml' ${WORKSPACE}/artifacts/coverage \
-  --download-artifact /var/log/salt/minion ${WORKSPACE}/artifacts/logs \
-  --download-artifact /tmp/salt-runtests.log ${WORKSPACE}/artifacts/logs ${JENKINS_SALTCLOUD_VM_NAME}
+  --download-artifact '/tmp/xml-unittests-output/*.xml' artifacts/unittests \
+  --download-artifact '/tmp/coverage.xml' artifacts/coverage \
+  --download-artifact /var/log/salt/minion artifacts/logs \
+  --download-artifact /tmp/salt-runtests.log artifacts/logs ${JENKINS_SALTCLOUD_VM_NAME}
 
-find ${WORKSPACE}/artifacts/logs -type f -not -name '*.log' -exec mv {} {}.log \;
+find artifacts/logs -type f -not -name '*.log' -exec mv {} {}.log \;
