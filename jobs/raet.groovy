@@ -124,7 +124,7 @@ def master_main_job = job(type: BuildFlow) {
     }
 
     buildFlow(
-        readFileFromWorkspace('jenkins-seed', 'raet/groovy/master-main-build-flow.groovy')
+        readFileFromWorkspace('maintenance/jenkins-seed', 'raet/groovy/master-main-build-flow.groovy')
     )
 
     publishers {
@@ -141,7 +141,7 @@ def master_main_job = job(type: BuildFlow) {
             commit_status_context: "default"
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovyPostBuild(rendered_script_template.toString())
@@ -223,7 +223,7 @@ def master_clone_job = job {
         virtualenv_setup_state_name: 'projects.clone'
     ]
     script_template = template_engine.createTemplate(
-        readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+        readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
     )
     rendered_script_template = script_template.make(template_context.withDefault{ null })
     environmentVariables {
@@ -233,17 +233,17 @@ def master_clone_job = job {
     // Job Steps
     steps {
         // Setup the required virtualenv
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
 
         // Compress the checked out workspace
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/compress-workspace.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/compress-workspace.sh'))
     }
 
     publishers {
         archiveArtifacts('workspace.cpio.xz')
 
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovyPostBuild(rendered_script_template.toString())
@@ -306,7 +306,7 @@ def master_lint_job = job {
         virtualenv_setup_state_name: 'projects.raet.lint'
     ]
     script_template = template_engine.createTemplate(
-        readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+        readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
     )
     rendered_script_template = script_template.make(template_context.withDefault{ null })
     environmentVariables {
@@ -316,16 +316,16 @@ def master_lint_job = job {
     // Job Steps
     steps {
         // Setup the required virtualenv
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
 
         // Copy the workspace artifact
         copyArtifacts('raet/master/clone', 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
         }
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/decompress-workspace.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/decompress-workspace.sh'))
 
         // Run Lint Code
-        shell(readFileFromWorkspace('jenkins-seed', 'raet/scripts/run-lint.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'raet/scripts/run-lint.sh'))
     }
 
     publishers {
@@ -335,7 +335,7 @@ def master_lint_job = job {
         }
 
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovyPostBuild(rendered_script_template.toString())
@@ -393,7 +393,7 @@ def master_unit_job = job {
         virtualenv_setup_state_name: 'projects.raet.unit'
     ]
     script_template = template_engine.createTemplate(
-        readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+        readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
     )
     rendered_script_template = script_template.make(template_context.withDefault{ null })
     environmentVariables {
@@ -403,19 +403,19 @@ def master_unit_job = job {
     // Job Steps
     steps {
         // Setup the required virtualenv
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
 
         // Set initial commit status
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/set-commit-status.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/set-commit-status.sh'))
 
         // Copy the workspace artifact
         copyArtifacts('raet/master/clone', 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
         }
-        shell(readFileFromWorkspace('jenkins-seed', 'scripts/decompress-workspace.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/decompress-workspace.sh'))
 
         // Run Unit Tests
-        shell(readFileFromWorkspace('jenkins-seed', 'raet/scripts/run-unit.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'raet/scripts/run-unit.sh'))
     }
 
     publishers {
@@ -433,7 +433,7 @@ def master_unit_job = job {
         }
 
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovyPostBuild(rendered_script_template.toString())
@@ -507,7 +507,7 @@ dsl_job = job {
             include_open_prs: true
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('jenkins-seed', 'templates/pr-job-seed-envvars.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'templates/pr-job-seed-envvars.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovy(rendered_script_template.toString())
@@ -518,7 +518,7 @@ dsl_job = job {
         dsl {
             removeAction('DELETE')
             text(
-                readFileFromWorkspace('jenkins-seed', 'raet/groovy/pr-dsl-job.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'raet/groovy/pr-dsl-job.groovy')
             )
         }
     }
@@ -528,7 +528,7 @@ dsl_job = job {
             project: 'raet'
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('jenkins-seed', 'templates/pr-job-seed-post-build.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'templates/pr-job-seed-post-build.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovyPostBuild(rendered_script_template.toString())

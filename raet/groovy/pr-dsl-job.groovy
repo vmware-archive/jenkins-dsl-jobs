@@ -140,7 +140,7 @@ github_json_data['open_prs'].each { pr ->
                 pr_number: pr.number
             ]
             script_template = template_engine.createTemplate(
-                readFileFromWorkspace('jenkins-seed', 'templates/pr-main-build-flow.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'templates/pr-main-build-flow.groovy')
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
             buildFlow(
@@ -167,7 +167,7 @@ github_json_data['open_prs'].each { pr ->
                     )
                     configure { node ->
                         node.appendNode('presendScript').setValue(
-                            readFileFromWorkspace('jenkins-seed', 'groovy/inject-submitter-email-address.groovy')
+                            readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/inject-submitter-email-address.groovy')
                         )
                     }
                 }
@@ -176,7 +176,7 @@ github_json_data['open_prs'].each { pr ->
                     commit_status_context: "default"
                 ]
                 script_template = template_engine.createTemplate(
-                    readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+                    readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                 )
                 rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -270,7 +270,7 @@ github_json_data['open_prs'].each { pr ->
                 virtualenv_setup_state_name: 'projects.clone'
             ]
             script_template = template_engine.createTemplate(
-                readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -281,17 +281,17 @@ github_json_data['open_prs'].each { pr ->
             // Job Steps
             steps {
                 // Setup the required virtualenv
-                shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+                shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
 
                 // Compress the checked out workspace
-                shell(readFileFromWorkspace('jenkins-seed', 'scripts/compress-workspace.sh'))
+                shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/compress-workspace.sh'))
             }
 
             publishers {
                 archiveArtifacts('workspace.cpio.xz')
 
                 script_template = template_engine.createTemplate(
-                    readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+                    readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                 )
                 rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -359,7 +359,7 @@ github_json_data['open_prs'].each { pr ->
                 virtualenv_setup_state_name: 'projects.raet.lint'
             ]
             script_template = template_engine.createTemplate(
-                readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -370,16 +370,16 @@ github_json_data['open_prs'].each { pr ->
             // Job Steps
             steps {
                 // Setup the required virtualenv
-                shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+                shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
 
                 // Copy the workspace artifact
                 copyArtifacts("raet/pr/${pr.number}/clone", 'workspace.cpio.xz') {
                     buildNumber('${CLONE_BUILD_ID}')
                 }
-                shell(readFileFromWorkspace('jenkins-seed', 'scripts/decompress-workspace.sh'))
+                shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/decompress-workspace.sh'))
 
                 // Run Lint Code
-                shell(readFileFromWorkspace('jenkins-seed', 'raet/scripts/run-lint.sh'))
+                shell(readFileFromWorkspace('maintenance/jenkins-seed', 'raet/scripts/run-lint.sh'))
             }
 
             publishers {
@@ -389,7 +389,7 @@ github_json_data['open_prs'].each { pr ->
                 }
 
                 script_template = template_engine.createTemplate(
-                    readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+                    readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                 )
                 rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -447,7 +447,7 @@ github_json_data['open_prs'].each { pr ->
                 virtualenv_setup_state_name: 'projects.raet.unit'
             ]
             script_template = template_engine.createTemplate(
-                readFileFromWorkspace('jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -458,16 +458,16 @@ github_json_data['open_prs'].each { pr ->
             // Job Steps
             steps {
                 // Setup the required virtualenv
-                shell(readFileFromWorkspace('jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+                shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
 
                 // Copy the workspace artifact
                 copyArtifacts("raet/pr/${pr.number}/clone", 'workspace.cpio.xz') {
                     buildNumber('${CLONE_BUILD_ID}')
                 }
-                shell(readFileFromWorkspace('jenkins-seed', 'scripts/decompress-workspace.sh'))
+                shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/decompress-workspace.sh'))
 
                 // Run Unit Tests
-                shell(readFileFromWorkspace('jenkins-seed', 'raet/scripts/run-unit.sh'))
+                shell(readFileFromWorkspace('maintenance/jenkins-seed', 'raet/scripts/run-unit.sh'))
             }
 
             publishers {
@@ -485,7 +485,7 @@ github_json_data['open_prs'].each { pr ->
                 }
 
                 script_template = template_engine.createTemplate(
-                    readFileFromWorkspace('jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+                    readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')
                 )
                 rendered_script_template = script_template.make(template_context.withDefault{ null })
 

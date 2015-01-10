@@ -7,7 +7,7 @@ import com.cloudbees.jenkins.GitHubRepositoryName
  ['salt', 'saltstack/salt'],
  ['sorbic', 'thatch45/sorbic']].each { project, github_repo ->
     try {
-        job = Jenkins.instance.getJob(project).getJob('pr').getJob('jenkins-seed')
+        job = Jenkins.instance.getJob(project).getJob('pr').getJob('maintenance/jenkins-seed')
         if ( job != null ) {
             repo = GitHubRepositoryName.create("https://github.com/${github_repo}").resolve().iterator().next()
             repo.getHooks().each { hook ->
