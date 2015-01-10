@@ -19,6 +19,10 @@ folder {
                     "${permname}:${username}"
                 )
             }
+            // This one is folder specific
+            auth_matrix_prop.appendNode('permission').setValue(
+                "hudson.model.Item.Create:${username}"
+            )
         }
     }
 }
