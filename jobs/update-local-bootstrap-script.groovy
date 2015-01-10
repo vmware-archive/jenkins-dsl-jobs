@@ -8,10 +8,16 @@ folder {
     name('maintenance')
     displayName('Jenkins Maintenance Jobs')
 
-    authorization {
+    configure {
+        folder_properties = it.get('properties').get(0)
+        auth_matrix_prop = folder_properties.appendNode(
+            'com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty'
+        )
         JenkinsPerms.usernames.each { username ->
             JenkinsPerms.permissions.each { permname ->
-                permission("${permname}:${username}")
+                auth_matrix_prop.appendNode('permission').setValue(
+                    "${permname}:${username}"
+                )
             }
         }
     }
