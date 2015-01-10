@@ -28,7 +28,7 @@ job {
     label('master')
 
     parameters {
-        choiceParam('BRANCH', ['develop', 'stable']),
+        choiceParam('BRANCH', ['develop', 'stable'])
         choiceParam('REPOSITORY', ['saltstack', 's0undt3ch'])
     }
 
