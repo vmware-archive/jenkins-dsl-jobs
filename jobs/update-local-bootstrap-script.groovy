@@ -4,8 +4,21 @@
 
 import com.saltstack.jenkins.JenkinsPerms
 
+folder {
+    name('maintenance')
+    displayName('Jenkins Maintenance Jobs')
+
+    authorization {
+        JenkinsPerms.usernames.each { username ->
+            JenkinsPerms.permissions.each { permname ->
+                permission("${permname}:${username}")
+            }
+        }
+    }
+}
+
 job {
-    name = 'update-bootstrap'
+    name = 'maintenance/update-bootstrap'
     displayName('Update Bootstrap Script')
     description('Update the local copy of the bootstrap script')
 
