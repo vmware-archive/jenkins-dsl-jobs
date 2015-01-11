@@ -25,7 +25,7 @@ def default_artifact_nr_of_jobs_to_keep = default_nr_of_jobs_to_keep
 // Job Timeout defauls
 def default_timeout_percent = 150
 def default_timeout_builds = 10
-def default_timeout_minutes = 60
+def default_timeout_minutes = 90
 
 salt_branches = github_json_data['salt']['branches'].grep(~/(develop|([\d]{4}.[\d]{1,2}))/)
 
