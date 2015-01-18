@@ -169,11 +169,6 @@ branches.each { job_branch ->
         description(project_description + ' - Clone Repository')
         label('worker')
 
-        // Parameters Definition
-        parameters {
-            stringParam('GIT_COMMIT')
-        }
-
         configure {
             job_properties = it.get('properties').get(0)
             job_properties.appendNode(

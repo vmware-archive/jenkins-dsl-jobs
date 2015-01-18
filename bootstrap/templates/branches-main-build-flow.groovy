@@ -2,8 +2,7 @@ import hudson.FilePath
 
 guard {
     retry(3) {
-        clone = build('bootstrap/$job_branch/clone',
-                      GIT_COMMIT: params['GIT_COMMIT'])
+        clone = build('bootstrap/$job_branch/clone')
     }
 
     // Let's run Lint & Unit in parallel
@@ -11,7 +10,7 @@ guard {
         {
             lint = build('bootstrap/$job_branch/lint',
                          CLONE_BUILD_ID: clone.build.number,
-                         GIT_COMMIT: params['GIT_COMMIT'])
+                         GIT_COMMIT: clone.environment['GIT_COMMIT'])
         },
     )
 
