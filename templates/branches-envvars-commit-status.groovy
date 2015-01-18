@@ -30,19 +30,24 @@ if ( github_repo_url != null ) {
         def git_commit = build_env_vars.get('GIT_COMMIT', build_env_vars.get('ghprbActualCommit'))
         if ( git_commit != null ) {
             repo.resolve().each {
-                def status_result = it.createCommitStatus(
-                    git_commit,
-                    state,
-                    currentBuild.getAbsoluteUrl(),
-                    currentBuild.getFullDisplayName(),
-                    '$commit_status_context'
-                )
-                if ( ! status_result ) {
-                    msg = 'Failed to set commit status on GitHub'
+                try {
+                    def status_result = it.createCommitStatus(
+                        git_commit,
+                        state,
+                        currentBuild.getAbsoluteUrl(),
+                        currentBuild.getFullDisplayName(),
+                        '$commit_status_context'
+                    )
+                    if ( ! status_result ) {
+                        msg = 'Failed to set commit status on GitHub'
+                        out.println msg
+                    } else {
+                        msg = "GitHub commit status successfuly set"
+                        out.println(msg)
+                    }
+                } catch(commit_status_error) {
+                    msg = 'Failed to set commit status on GitHub: ' + commit_status_error
                     out.println msg
-                } else {
-                    msg = "GitHub commit status successfuly set"
-                    out.println(msg)
                 }
             }
         } else {
