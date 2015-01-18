@@ -37,7 +37,7 @@ def template_engine = new SimpleTemplateEngine()
 // Define the folder structure
 folder {
     name('bootstrap')
-    displayName('Salt Bootstrap')
+    displayName(github_json_data['bootstrap']['display_name'])
     description = project_description
 }
 folder {
@@ -45,6 +45,7 @@ folder {
     displayName('Pull Requests')
     description = project_description
 }
+
 github_json_data['open_prs'].each { pr ->
     folder {
         name("bootstrap/pr/${pr.number}")
