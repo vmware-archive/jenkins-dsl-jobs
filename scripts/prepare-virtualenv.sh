@@ -1,5 +1,5 @@
 #!/bin/sh
-echo '<<<<<<<<<<<<<< Prepare Virtualenv <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
+echo '<<<<<<<<<<<<<< Prepare Build Env <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
 # Don't call 'salt-call' at the same time
 sleep $(($RANDOM % 6))
 
@@ -13,5 +13,8 @@ if [ "$(pgrep -f 'salt-call state.sls')" != "" ]; then
     printf "%s\n\n" "Done!"
 fi
 
-salt-call state.sls ${VIRTUALENV_SETUP_STATE_NAME} pillar="{virtualenv_name: ${VIRTUALENV_NAME}, system_site_packages: ${SYSTEM_SITE_PACKAGES:-false}}"
-echo '<<<<<<<<<<<<<< Prepare Virtualenv <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
+if [ "${VIRTUALENV_NAME}" != "" ]; then
+    salt-call state.sls ${VIRTUALENV_SETUP_STATE_NAME} pillar="{virtualenv_name: ${VIRTUALENV_NAME}, system_site_packages: ${SYSTEM_SITE_PACKAGES:-false}}"
+else
+    salt-call state.sls ${VIRTUALENV_SETUP_STATE_NAME}
+echo '<<<<<<<<<<<<<< Prepare Build Env <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
