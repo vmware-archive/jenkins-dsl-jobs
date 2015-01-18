@@ -38,10 +38,10 @@ folder {
     displayName(github_json_data['bootstrap']['display_name'])
     description = project_description
 }
-branches.each { branch ->
+branches.each { job_branch ->
     folder {
-        name("bootstrap/${branch}")
-        displayName("${branch.capitalize()} Branch")
+        name("bootstrap/${job_branch}")
+        displayName("${job_branch.capitalize()} Branch")
         description = project_description
     }
 }
@@ -51,11 +51,11 @@ folder {
     description = project_description
 }
 
-branches.each { branch ->
+branches.each { job_branch ->
     // Branch Main Job
     job(type: BuildFlow) {
-        name = "bootstrap/${branch}-main-build"
-        displayName("${branch.capitalize()} Branch Main Build")
+        name = "bootstrap/${job_branch}-main-build"
+        displayName("${job_branch.capitalize()} Branch Main Build")
         description(project_description)
         label('worker')
         concurrentBuild(allowConcurrentBuild = true)
@@ -116,7 +116,7 @@ branches.each { branch ->
         scm {
             github(
                 github_repo,
-                branch = "*/${branch}",
+                branch = "*/${job_branch}",
                 protocol = 'https'
             )
         }
@@ -128,7 +128,7 @@ branches.each { branch ->
         }
 
         template_context = [
-            build_branch: branch,
+            job_branch: job_branch,
         ]
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('maintenance/jenkins-seed', 'bootstrap/templates/branches-main-build-flow.groovy')
@@ -162,7 +162,7 @@ branches.each { branch ->
 
     // Clone Job
     job {
-        name = "bootstrap/${branch}/clone"
+        name = "bootstrap/${job_branch}/clone"
         displayName('Clone Repository')
 
         concurrentBuild(allowConcurrentBuild = true)
@@ -174,7 +174,7 @@ branches.each { branch ->
             job_properties.appendNode(
                 'hudson.plugins.copyartifact.CopyArtifactPermissionProperty').appendNode(
                     'projectNameList').appendNode(
-                        'string').setValue("bootstrap/${branch}/*")
+                        'string').setValue("bootstrap/${job_branch}/*")
             github_project_property = job_properties.appendNode(
                 'com.coravy.hudson.plugins.github.GithubProjectProperty')
             github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
@@ -217,7 +217,7 @@ branches.each { branch ->
         scm {
             github(
                 github_repo,
-                branch = "*/${branch}",
+                branch = "*/${job_branch}",
                 protocol = 'https'
             )
         }
@@ -255,7 +255,7 @@ branches.each { branch ->
 
     // Lint Job
     job {
-        name = "bootstrap/${branch}/lint"
+        name = "bootstrap/${job_branch}/lint"
         displayName('Lint')
         concurrentBuild(allowConcurrentBuild = true)
         description(project_description + ' - Code Lint')
@@ -319,7 +319,7 @@ branches.each { branch ->
         // Job Steps
         steps {
             // Copy the workspace artifact
-            copyArtifacts("bootstrap/${branch}/clone", 'workspace.cpio.xz') {
+            copyArtifacts("bootstrap/${job_branch}/clone", 'workspace.cpio.xz') {
                 buildNumber('${CLONE_BUILD_ID}')
             }
             shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/decompress-workspace.sh'))

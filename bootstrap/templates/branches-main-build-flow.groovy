@@ -2,13 +2,13 @@ import hudson.FilePath
 
 guard {
     retry(3) {
-        clone = build('bootstrap/$build_branch/clone')
+        clone = build('bootstrap/$job_branch/clone')
     }
 
     // Let's run Lint & Unit in parallel
     parallel (
         {
-            lint = build('bootstrap/$build_branch/lint',
+            lint = build('bootstrap/$job_branch/lint',
                          CLONE_BUILD_ID: clone.build.number)
         },
     )
