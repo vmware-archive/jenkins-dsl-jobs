@@ -364,6 +364,9 @@ github_json_data['open_prs'].each { pr ->
             }
             shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/decompress-workspace.sh'))
 
+            // Setup the required virtualenv
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+
             // Run Lint Code
             shell(readFileFromWorkspace('maintenance/jenkins-seed', 'bootstrap/scripts/run-lint.sh'))
         }

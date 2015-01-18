@@ -330,6 +330,9 @@ branches.each { job_branch ->
             }
             shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/decompress-workspace.sh'))
 
+            // Setup the required virtualenv
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+
             // Run Lint Code
             shell(readFileFromWorkspace('maintenance/jenkins-seed', 'bootstrap/scripts/run-lint.sh'))
         }
