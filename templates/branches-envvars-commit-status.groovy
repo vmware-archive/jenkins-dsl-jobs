@@ -28,21 +28,26 @@ if ( github_repo_url != null ) {
     repo = GitHubRepositoryName.create(github_repo_url.toString())
     if ( repo != null ) {
         def git_commit = build_env_vars.get('GIT_COMMIT', build_env_vars.get('ghprbActualCommit'))
-        repo.resolve().each {
-            def status_result = it.createCommitStatus(
-                git_commit,
-                state,
-                currentBuild.getAbsoluteUrl(),
-                currentBuild.getFullDisplayName(),
-                '$commit_status_context'
-            )
-            if ( ! status_result ) {
-                msg = 'Failed to set commit status on GitHub'
-                out.println msg
-            } else {
-                msg = "GitHub commit status successfuly set"
-                out.println(msg)
+        if ( git_commit != null ) {
+            repo.resolve().each {
+                def status_result = it.createCommitStatus(
+                    git_commit,
+                    state,
+                    currentBuild.getAbsoluteUrl(),
+                    currentBuild.getFullDisplayName(),
+                    '$commit_status_context'
+                )
+                if ( ! status_result ) {
+                    msg = 'Failed to set commit status on GitHub'
+                    out.println msg
+                } else {
+                    msg = "GitHub commit status successfuly set"
+                    out.println(msg)
+                }
             }
+        } else {
+            out.println('No git commit SHA information could be found. Not setting initial commit status information.')
+
         }
     } else {
         msg = "Failed to resolve the github GIT repo URL from " + github_repo_url
