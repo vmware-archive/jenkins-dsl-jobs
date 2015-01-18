@@ -2,19 +2,15 @@ import hudson.FilePath
 
 guard {
     retry(3) {
-        clone = build('bootstrap/<% branch %>/clone')
+        clone = build('bootstrap/$build_branch/clone')
     }
 
     // Let's run Lint & Unit in parallel
     parallel (
         {
-            lint = build('bootstrap/<% branch %>/lint',
+            lint = build('bootstrap/$build_branch/lint',
                          CLONE_BUILD_ID: clone.build.number)
         },
-        /*{
-            unit = build('bootstrap/<% branch %>/unit',
-                         CLONE_BUILD_ID: clone.build.number)
-        }*/
     )
 
 } rescue {
@@ -26,13 +22,7 @@ guard {
     local_lint_workspace_copy.mkdirs()
     toolbox.copyFiles(lint.workspace, local_lint_workspace_copy)
 
-    /*
-    local_unit_workspace_copy = build.workspace.child('unit')
-    local_unit_workspace_copy.mkdirs()
-    toolbox.copyFiles(unit.workspace, local_unit_workspace_copy)
-    */
-
-    /*
+     /*
      *  Copy the clone build changelog.xml into this jobs root for proper changelog report
      *  This does not currently work but is here for future reference
      */
@@ -46,6 +36,5 @@ guard {
 
     // Delete the child workspaces directory
     lint.workspace.deleteRecursive()
-    //unit.workspace.deleteRecursive()
     clone.workspace.deleteRecursive()
 }

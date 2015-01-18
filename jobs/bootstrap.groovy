@@ -128,7 +128,7 @@ branches.each { branch ->
         }
 
         template_context = [
-            branch: "${branch}"
+            build_branch: branch,
         ]
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('maintenance/jenkins-seed', 'bootstrap/templates/branches-main-build-flow.groovy')
