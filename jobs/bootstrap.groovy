@@ -259,7 +259,7 @@ branches.each { job_branch ->
         displayName('Lint')
         concurrentBuild(allowConcurrentBuild = true)
         description(project_description + ' - Code Lint')
-        label('worker')
+        label('container')
 
         // Parameters Definition
         parameters {

@@ -295,7 +295,7 @@ github_json_data['open_prs'].each { pr ->
         displayName("Lint")
         concurrentBuild(allowConcurrentBuild = true)
         description("${pr.title}\n\n${pr.body}")
-        label('worker')
+        label('container')
 
         // Parameters Definition
         parameters {
