@@ -319,7 +319,7 @@ branches.each { branch ->
         // Job Steps
         steps {
             // Copy the workspace artifact
-            copyArtifacts('bootstrap/stable/clone', 'workspace.cpio.xz') {
+            copyArtifacts("bootstrap/${branch}/clone", 'workspace.cpio.xz') {
                 buildNumber('${CLONE_BUILD_ID}')
             }
             shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/decompress-workspace.sh'))
