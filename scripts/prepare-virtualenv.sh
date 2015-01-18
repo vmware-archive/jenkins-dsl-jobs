@@ -17,4 +17,5 @@ if [ "${VIRTUALENV_NAME}" != "" ]; then
     salt-call state.sls ${VIRTUALENV_SETUP_STATE_NAME} pillar="{virtualenv_name: ${VIRTUALENV_NAME}, system_site_packages: ${SYSTEM_SITE_PACKAGES:-false}}"
 else
     salt-call state.sls ${VIRTUALENV_SETUP_STATE_NAME}
+fi
 echo '<<<<<<<<<<<<<< Prepare Build Env <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
