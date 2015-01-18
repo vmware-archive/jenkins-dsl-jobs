@@ -32,23 +32,28 @@ if ( github_repo_url != null ) {
     repo = GitHubRepositoryName.create(github_repo_url.toString())
     if ( repo != null ) {
         def git_commit = manager.envVars.get('GIT_COMMIT', manager.envVars.get('ghprbActualCommit'))
-        repo.resolve().each {
-            def status_result = it.createCommitStatus(
-                git_commit,
-                state,
-                manager.build.getAbsoluteUrl(),
-                manager.build.getFullDisplayName(),
-                commit_status_context
-            )
-            if ( ! status_result ) {
-                msg = 'Failed to set commit status on GitHub'
-                manager.addWarningBadge(msg)
-                manager.listener.logger.println msg
-            } else {
-                msg = "GitHub commit status successfuly set"
-                manager.addInfoBadge(msg)
-                manager.listener.logger.println(msg)
+        if ( git_commit != null ) {
+            repo.resolve().each {
+                def status_result = it.createCommitStatus(
+                    git_commit,
+                    state,
+                    manager.build.getAbsoluteUrl(),
+                    manager.build.getFullDisplayName(),
+                    commit_status_context
+                )
+                if ( ! status_result ) {
+                    msg = 'Failed to set commit status on GitHub'
+                    manager.addWarningBadge(msg)
+                    manager.listener.logger.println msg
+                } else {
+                    msg = "GitHub commit status successfuly set"
+                    manager.addInfoBadge(msg)
+                    manager.listener.logger.println(msg)
+                }
             }
+        } else {
+            msg = 'No git commit SHA information could be found. Not setting final commit status information.'
+            manager.listener.logger.println(msg)
         }
     } else {
         msg = "Failed to resolve the github GIT repo URL from " + github_repo_url
