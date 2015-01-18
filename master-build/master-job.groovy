@@ -37,6 +37,11 @@ projects = [
         github_repo: 'thatch45/sorbic',
         create_branches_webhook: false
     ],
+    bootstrap: [
+        display_name: 'Salt Bootstrap',
+        github_repo: 'saltstack/salt-bootstrap',
+        create_branches_webhook: false
+    ]
 ]
 
 folder {

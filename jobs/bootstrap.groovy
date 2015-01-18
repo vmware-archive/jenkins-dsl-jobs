@@ -16,7 +16,7 @@ def build = thr?.executable
 // Common variable Definitions
 def github_repo = 'saltstack/salt-bootstrap'
 def github_json_data = new JsonSlurper().parseText(build.getEnvironment()['GITHUB_JSON_DATA'])
-def project_description = github_json_data['salt-bootstrap']['description']
+def project_description = github_json_data['bootstrap']['description']
 def branches = ['stable', 'develop']
 
 // Job rotation defaults
@@ -35,7 +35,7 @@ def template_engine = new SimpleTemplateEngine()
 // Define the folder structure
 folder {
     name('bootstrap')
-    displayName(github_json_data['salt-bootstrap']['display_name'])
+    displayName(github_json_data['bootstrap']['display_name'])
     description = project_description
 }
 branches.each { branch ->
