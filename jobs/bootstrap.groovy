@@ -54,8 +54,8 @@ folder {
 branches.each { branch ->
     // Branch Main Job
     job(type: BuildFlow) {
-        name = "bootstrap/${branch}-main-build'
-        displayName("${branch.capitalize()} Branch Main Build')
+        name = "bootstrap/${branch}-main-build"
+        displayName("${branch.capitalize()} Branch Main Build")
         description(project_description)
         label('worker')
         concurrentBuild(allowConcurrentBuild = true)
