@@ -14,7 +14,7 @@ def build = thr?.executable
 
 def slurper = new groovy.json.JsonSlurper()
 
-def github_json_data = slurper.parseText(build.getEnvironment().get('GITHUB_JSON_DATA', '""'))
+def github_json_data = slurper.parseText(build.getEnvironment().get('GITHUB_JSON_DATA', '{}'))
 
 // Common variable Definitions
 def github_repo = 'saltstack/libnacl'
