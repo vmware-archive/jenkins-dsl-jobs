@@ -23,9 +23,11 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
                         if ( running_job != null ) {
                             try {
                                 hook_config = hook.getConfig()
-                                hook_url_regex = 'https://(.*)@' + running_job.getAbsoluteUrl().replace('https://', '').replace('http://', '') + '(.*)'
+                                hook_url_regex = 'http(s?)://(.*)@' + running_job.getAbsoluteUrl().replace('https://', '').replace('http://', '') + 'build(.*)'
+                                manager.listener.logger.println 'Existing webhook regex: ' + hook_url_regex
                                 hook_url_pattern = ~hook_url_regex
                                 if ( hook_url_pattern.matcher(hook_config.url).getCount() > 0 ) {
+                                    manager.listener.logger.println 'Deleting web hook: ' + hook_config.url
                                     hook.delete()
                                 }
                             } catch(e) {
@@ -36,13 +38,15 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
                         }
                     }
                     // Let's setup the pull request webhooks if the jobs needing it are found
-                    def pr_seed_job = Jenkins.instance.getJob(name).getJob('pr').getJob('maintenance/jenkins-seed')
+                    def pr_seed_job = Jenkins.instance.getJob(name).getJob('pr').getJob('jenkins-seed')
                     if ( pr_seed_job != null ) {
                         try {
                             hook_config = hook.getConfig()
-                            hook_url_regex = 'https://(.*)@' + pr_seed_job.getAbsoluteUrl().replace('https://', '').replace('http://', '') + '(.*)'
+                            hook_url_regex = 'https://(.*)@' + pr_seed_job.getAbsoluteUrl().replace('https://', '').replace('http://', '') + 'build(.*)'
+                            manager.listener.logger.println 'Existing webhook regex: ' + hook_url_regex
                             hook_url_pattern = ~hook_url_regex
                             if ( hook_url_pattern.matcher(hook_config.url).getCount() > 0 ) {
+                                manager.listener.logger.println 'Deleting web hook: ' + hook_config.url
                                 hook.delete()
                             }
                         } catch(e) {
