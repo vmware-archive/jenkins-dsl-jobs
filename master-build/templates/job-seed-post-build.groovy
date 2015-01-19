@@ -61,7 +61,7 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
             }
             // Let's setup the pull request webhooks if the jobs needing it are found
             try {
-                def pr_seed_job = Jenkins.instance.getJob(name).getJob('pr').getJob('maintenance/jenkins-seed')
+                def pr_seed_job = Jenkins.instance.getJob(name).getJob('pr').getJob('jenkins-seed')
                 if ( pr_seed_job != null ) {
                     manager.listener.logger.println 'Setting up pull requests webhook for ' + data.display_name + ' ...'
                     def webhook_url = pr_seed_job.getAbsoluteUrl() + 'build?token=' + pr_seed_job.getAuthToken().getToken()
