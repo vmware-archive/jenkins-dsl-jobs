@@ -32,7 +32,7 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
                                 manager.listener.logger.println 'Failed to delete existing webhook:' + e.toString()
                             }
                         } else {
-                            manager.listener.logger.println 'This job\'s .getProject() weirdly returns null. Not checking existing branches web hooks.'
+                            manager.listener.logger.println "This job's .getProject() weirdly returns null. Not checking existing branches web hooks."
                         }
                     }
                     // Let's setup the pull request webhooks if the jobs needing it are found
@@ -64,7 +64,7 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
                             [GHEvent.CREATE, GHEvent.DELETE]
                         )
                     } else {
-                        manager.listener.logger.println 'This job\'s .getProject() weirdly returns null. Not setting branches web hooks.'
+                        manager.listener.logger.println "This job's .getProject() weirdly returns null. Not setting branches web hooks."
                     }
                 } catch(branches_webhook_error) {
                     manager.listener.logger.println 'Failed to setup create/delete webhook: ' + branches_webhook_error.toString()
