@@ -20,16 +20,19 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
                 if ( hook.getName() == 'web' ) {
                     if ( data.create_branches_webhook == true ) {
                         manager.listener.logger.println 'Setting up branches create/delete webhook for ' + data.display_name + ' ...'
-                        def job = manager.build.getProject()
-                        try {
-                            hook_config = hook.getConfig()
-                            hook_url_regex = "https://(.*)@${running_job.getAbsoluteUrl().replace('https://', '').replace('http://', '')}(.*)"
-                            hook_url_pattern = ~hook_url_regex
-                            if ( hook_url_pattern.matcher(hook_config.url).getCount > 0 ) {
-                                hook.delete()
+                        if ( running_job != null ) {
+                            try {
+                                hook_config = hook.getConfig()
+                                hook_url_regex = "https://(.*)@${running_job.getAbsoluteUrl().replace('https://', '').replace('http://', '')}(.*)"
+                                hook_url_pattern = ~hook_url_regex
+                                if ( hook_url_pattern.matcher(hook_config.url).getCount() > 0 ) {
+                                    hook.delete()
+                                }
+                            } catch(e) {
+                                manager.listener.logger.println 'Failed to delete existing webhook:' + e.toString()
                             }
-                        } catch(e) {
-                            manager.listener.logger.println 'Failed to delete existing webhook:' + e.toString()
+                        } else {
+                            manager.listener.logger.println 'This job\'s .getProject() weirdly returns null. Not checking existing branches web hooks.'
                         }
                     }
                     // Let's setup the pull request webhooks if the jobs needing it are found
@@ -39,7 +42,7 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
                             hook_config = hook.getConfig()
                             hook_url_regex = "https://(.*)@${pr_seed_job.getAbsoluteUrl().replace('https://', '').replace('http://', '')}(.*)"
                             hook_url_pattern = ~hook_url_regex
-                            if ( hook_url_pattern.matcher(hook_config.url).getCount > 0 ) {
+                            if ( hook_url_pattern.matcher(hook_config.url).getCount() > 0 ) {
                                 hook.delete()
                             }
                         } catch(e) {
@@ -51,14 +54,18 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
             if ( data.create_branches_webhook == true ) {
                 try {
                     manager.listener.logger.println 'Setting up branches create/delete webhook for ' + data.display_name + ' ...'
-                    def webhook_url = running_job.getAbsoluteUrl() + 'build?token=' + running_job.getAuthToken().getToken()
-                    webhook_url = webhook_url.replace(
-                        'https://', 'https://' + webhooks_user + ':' + webhooks_apitoken + '@').replace(
-                            'http://', 'http://' + webhooks_user + ':' + webhooks_apitoken + '@')
-                    repo.createWebHook(
-                        webhook_url.toURL(),
-                        [GHEvent.CREATE, GHEvent.DELETE]
-                    )
+                    if ( running_job != null ) {
+                        def webhook_url = running_job.getAbsoluteUrl() + 'build?token=' + running_job.getAuthToken().getToken()
+                        webhook_url = webhook_url.replace(
+                            'https://', 'https://' + webhooks_user + ':' + webhooks_apitoken + '@').replace(
+                                'http://', 'http://' + webhooks_user + ':' + webhooks_apitoken + '@')
+                        repo.createWebHook(
+                            webhook_url.toURL(),
+                            [GHEvent.CREATE, GHEvent.DELETE]
+                        )
+                    } else {
+                        manager.listener.logger.println 'This job\'s .getProject() weirdly returns null. Not setting branches web hooks.'
+                    }
                 } catch(branches_webhook_error) {
                     manager.listener.logger.println 'Failed to setup create/delete webhook: ' + branches_webhook_error.toString()
                 }
