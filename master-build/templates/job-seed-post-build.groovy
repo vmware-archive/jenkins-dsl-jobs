@@ -23,7 +23,9 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
                         def job = manager.build.getProject()
                         try {
                             hook_config = hook.getConfig()
-                            if ( hook_config.url.startsWith(running_job.getAbsoluteUrl()) ) {
+                            hook_url_regex = "https://(.*)@${running_job.getAbsoluteUrl().replace('https://', '').replace('http://', '')}(.*)"
+                            hook_url_pattern = ~hook_url_regex
+                            if ( hook_url_pattern.matcher(hook_config.url).getCount > 0 ) {
                                 hook.delete()
                             }
                         } catch(e) {
@@ -35,7 +37,9 @@ new JsonSlurper().parseText(manager.envVars['GITHUB_JSON_DATA']).each { name, da
                     if ( pr_seed_job != null ) {
                         try {
                             hook_config = hook.getConfig()
-                            if ( hook_config.url.startsWith(pr_seed_job.getAbsoluteUrl()) ) {
+                            hook_url_regex = "https://(.*)@${pr_seed_job.getAbsoluteUrl().replace('https://', '').replace('http://', '')}(.*)"
+                            hook_url_pattern = ~hook_url_regex
+                            if ( hook_url_pattern.matcher(hook_config.url).getCount > 0 ) {
                                 hook.delete()
                             }
                         } catch(e) {
