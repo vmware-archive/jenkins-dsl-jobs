@@ -47,7 +47,9 @@ job {
     authorization {
         JenkinsPerms.usernames.each { username ->
             JenkinsPerms.permissions.each { permname ->
-                permission("${permname}:${username}")
+                if ( permname != 'hudson.model.Item.Update' ) {
+                    permission("${permname}:${username}")
+                }
             }
         }
     }
