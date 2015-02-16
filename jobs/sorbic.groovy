@@ -61,7 +61,7 @@ def master_main_job = job(type: BuildFlow) {
         job_publishers = it.get('publishers').get(0)
         job_publishers.appendNode(
             'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
-            [plugin: 'build-flow-test-aggregator']
+            [plugin: 'build-flow-test-aggregator@1.1-SNAPSHOT']
         )
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
