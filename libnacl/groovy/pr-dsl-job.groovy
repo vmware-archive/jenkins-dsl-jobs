@@ -92,7 +92,7 @@ github_json_data['open_prs'].each { pr ->
                 slack_notifications.appendNode('notifyBackToNormal').setValue(true)
                 job_publishers.appendNode(
                     'jenkins.plugins.slack.SlackNotifier',
-                    [plugin: 'slack']
+                    [plugin: 'slack@1.2']
                 )
             }
 

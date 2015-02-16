@@ -82,7 +82,7 @@ branches.each { job_branch ->
             slack_notifications.appendNode('notifyBackToNormal').setValue(true)
             job_publishers.appendNode(
                 'jenkins.plugins.slack.SlackNotifier',
-                [plugin: 'slack']
+                [plugin: 'slack@1.2']
             )
         }
 
