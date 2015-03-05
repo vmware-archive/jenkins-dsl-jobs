@@ -131,7 +131,7 @@ job {
             projects: "'''${new JsonBuilder(projects).toString()}'''"
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('jenkins-master-seed', 'master-build/templates/job-seed-envvars.groovy')
+            readFileFromWorkspace('maintenance/jenkins-master-seed', 'master-build/templates/job-seed-envvars.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovy(rendered_script_template.toString())
@@ -150,7 +150,7 @@ job {
             projects: "'''${new JsonBuilder(projects).toString()}'''"
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('jenkins-master-seed', 'master-build/templates/job-seed-post-build.groovy')
+            readFileFromWorkspace('maintenance/jenkins-master-seed', 'master-build/templates/job-seed-post-build.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovyPostBuild(rendered_script_template.toString())
