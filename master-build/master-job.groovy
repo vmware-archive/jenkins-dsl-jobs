@@ -122,9 +122,9 @@ job {
     checkoutRetryCount(3)
 
     // Job Triggers
-    triggers {
+    /*triggers {
         githubPush()
-    }
+    }*/
 
     environmentVariables {
         template_context = [
