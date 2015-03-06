@@ -123,11 +123,17 @@
     </repository>
   </distributionManagement>
 
+  <!-- Use repositories suggested in plugin tutorial: https://wiki.jenkins-ci.org/display/JENKINS/Plugin+tutorial -->
   <repositories>
     <repository>
-      <id>jenkins-releases</id>
-      <url>http://repo.jenkins-ci.org/releases/</url>
+      <id>repo.jenkins-ci.org</id>
+      <url>http://repo.jenkins-ci.org/public/</url>
     </repository>
   </repositories>
-
+  <pluginRepositories>
+    <pluginRepository>
+      <id>repo.jenkins-ci.org</id>
+      <url>http://repo.jenkins-ci.org/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
 </project>
