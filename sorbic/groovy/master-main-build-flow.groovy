@@ -12,7 +12,7 @@ guard {
     parallel (
         {
             lint = build('sorbic/master/lint',
-                         CLONE_BUILD_ID: clone.build.number
+                         CLONE_BUILD_ID: clone.build.number,
                          RUN_COVERAGE: today_is_sunday)
         },
         {
