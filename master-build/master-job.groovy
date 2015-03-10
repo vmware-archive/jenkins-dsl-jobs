@@ -1,6 +1,6 @@
 @GrabResolver(name='jenkins-dsl-jobs', root='http://saltstack.github.io/jenkins-dsl-jobs/')
 @GrabResolver(name='repo.jenkins-ci.org', root='http://repo.jenkins-ci.org/public')
-@Grab('com.saltstack:jenkins-dsl-jobs:1.2-SNAPSHOT')
+@Grab('com.saltstack:jenkins-dsl-jobs:1.3-SNAPSHOT')
 
 import groovy.json.*
 import groovy.text.*
