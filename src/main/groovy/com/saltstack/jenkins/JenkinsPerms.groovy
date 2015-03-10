@@ -18,7 +18,7 @@ class JenkinsPerms {
         'rickh563',
         's0undt3ch',
         'salt-jenkins',
-        'salt-testing'
+        'salt-testing',
         'SaltyBray',
         'shanedlee',
         'ssgward',
