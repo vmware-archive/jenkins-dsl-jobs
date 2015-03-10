@@ -15,17 +15,11 @@ folder {
             'com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty'
         )
         JenkinsPerms.usernames.each { username ->
-            JenkinsPerms.permissions.each { permname ->
-                if ( permname != 'hudson.model.Item.Update' ) {
-                    auth_matrix_prop.appendNode('permission').setValue(
-                        "${permname}:${username}"
-                    )
+            JenkinsPerms.folder.each { permname ->
+                auth_matrix_prop.appendNode('permission').setValue(
+                    "${permname}:${username}"
                 }
             }
-            // This one is folder specific
-            auth_matrix_prop.appendNode('permission').setValue(
-                "hudson.model.Item.Create:${username}"
-            )
         }
     }
 }
@@ -47,10 +41,8 @@ job {
 
     authorization {
         JenkinsPerms.usernames.each { username ->
-            JenkinsPerms.permissions.each { permname ->
-                if ( permname != 'hudson.model.Item.Update' ) {
-                    permission("${permname}:${username}")
-                }
+            JenkinsPerms.project.each { permname ->
+                permission("${permname}:${username}")
             }
         }
     }

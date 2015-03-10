@@ -463,10 +463,8 @@ dsl_job = job {
 
     authorization {
         JenkinsPerms.usernames.each { username ->
-            JenkinsPerms.permissions.each { permname ->
-                if ( permname != 'hudson.model.Item.Update' ) {
-                    permission("${permname}:${username}")
-                }
+            JenkinsPerms.project.each { permname ->
+                permission("${permname}:${username}")
             }
         }
     }
