@@ -51,7 +51,7 @@ folder('bootstrap/pr') {
 
 branches.each { job_branch ->
     // Branch Main Job
-    buildFlow("bootstrap/${job_branch}-main-build") {
+    buildFlowJob("bootstrap/${job_branch}-main-build") {
         displayName("${job_branch.capitalize()} Branch Main Build")
         description(project_description)
         label('worker')
@@ -131,7 +131,7 @@ branches.each { job_branch ->
             readFileFromWorkspace('maintenance/jenkins-seed', 'bootstrap/templates/branches-main-build-flow.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
-        buildFlow(
+        buildFlowJob(
             rendered_script_template.toString()
         )
 

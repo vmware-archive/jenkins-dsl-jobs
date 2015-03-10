@@ -300,7 +300,7 @@ salt_branches.each { branch_name ->
         def build_type_l = build_type.toLowerCase()
 
         if ( vm_names != [] ) {
-            buildFlow("salt/${branch_name.toLowerCase()}-${build_type_l}-main-build") {
+            buildFlowJob("salt/${branch_name.toLowerCase()}-${build_type_l}-main-build") {
                 displayName("${branch_name.capitalize()} Branch ${build_type} Main Build")
                 description(project_description)
                 label('worker')
@@ -387,7 +387,7 @@ salt_branches.each { branch_name ->
                 )
                 flow_script_template_text = flow_script_template.make(template_context.withDefault{ null })
 
-                buildFlow(flow_script_template_text.toString())
+                buildFlowJob(flow_script_template_text.toString())
 
                 publishers {
                     // Report Coverage

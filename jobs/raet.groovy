@@ -47,7 +47,7 @@ folder('raet/pr') {
 }
 
 // Main master branch job
-def master_main_job = buildFlow('raet/master-main-build') {
+def master_main_job = buildFlowJob('raet/master-main-build') {
     displayName('Master Branch Main Build')
     description(project_description)
     label('worker')
@@ -120,7 +120,7 @@ def master_main_job = buildFlow('raet/master-main-build') {
         githubPush()
     }
 
-    buildFlow(
+    buildFlowJob(
         readFileFromWorkspace('maintenance/jenkins-seed', 'raet/groovy/master-main-build-flow.groovy')
     )
 

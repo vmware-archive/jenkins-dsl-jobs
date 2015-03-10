@@ -144,7 +144,7 @@ github_json_data['open_prs'].each { pr ->
                 readFileFromWorkspace('maintenance/jenkins-seed', 'templates/pr-main-build-flow.groovy')
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
-            buildFlow(
+            buildFlowJob(
                 rendered_script_template.toString()
             )
 

@@ -47,7 +47,7 @@ folder('libnacl/pr') {
 }
 
 // Main master branch job
-def master_main_job = buildFlow('libnacl/master-main-build') {
+def master_main_job = buildFlowJob('libnacl/master-main-build') {
     displayName('Master Branch Main Build')
     description(project_description)
     label('worker')
@@ -120,7 +120,7 @@ def master_main_job = buildFlow('libnacl/master-main-build') {
         githubPush()
     }
 
-    buildFlow(
+    buildFlowJob(
         readFileFromWorkspace('maintenance/jenkins-seed', 'libnacl/groovy/master-main-build-flow.groovy')
     )
 
