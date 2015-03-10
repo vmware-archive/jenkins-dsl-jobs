@@ -120,7 +120,7 @@ def master_main_job = buildFlowJob('raet/master-main-build') {
         githubPush()
     }
 
-    buildFlowJob(
+    buildFlow(
         readFileFromWorkspace('maintenance/jenkins-seed', 'raet/groovy/master-main-build-flow.groovy')
     )
 

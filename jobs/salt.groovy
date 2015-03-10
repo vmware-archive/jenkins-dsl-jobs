@@ -387,7 +387,7 @@ salt_branches.each { branch_name ->
                 )
                 flow_script_template_text = flow_script_template.make(template_context.withDefault{ null })
 
-                buildFlowJob(flow_script_template_text.toString())
+                buildFlow(flow_script_template_text.toString())
 
                 publishers {
                     // Report Coverage

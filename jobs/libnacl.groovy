@@ -120,7 +120,7 @@ def master_main_job = buildFlowJob('libnacl/master-main-build') {
         githubPush()
     }
 
-    buildFlowJob(
+    buildFlow(
         readFileFromWorkspace('maintenance/jenkins-seed', 'libnacl/groovy/master-main-build-flow.groovy')
     )
 

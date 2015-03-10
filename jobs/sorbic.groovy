@@ -122,7 +122,7 @@ def master_main_job = buildFlowJob('sorbic/master-main-build') {
         githubPush()
     }
 
-    buildFlowJob(
+    buildFlow(
         readFileFromWorkspace('maintenance/jenkins-seed', 'sorbic/groovy/master-main-build-flow.groovy')
     )
 
