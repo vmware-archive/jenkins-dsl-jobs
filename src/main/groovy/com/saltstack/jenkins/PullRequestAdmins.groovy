@@ -1,21 +1,13 @@
 package com.saltstack.jenkins
 
+import com.saltstack.jenkins.JenkinsPerms
+
 class PullRequestAdmins {
+
+    /* Use this list to add additional Pull Request Administrators besides 
+     * the Jenkins Administrators
+     */
+
     static usernames = [
-        'thatch45',
-        's0undt3ch',
-        'UtahDave',
-        'SmithSamuelM',
-        'basepi',
-        'techhat',
-        'whiteinge',
-        'cro',
-        'cachedout',
-        'pass-by-value',
-        'salt-jenkins',
-        'terminalmage',
-        'rallytime',
-        'jfindlay',
-        'pitatus'
-    ]
+    ] + JenkinsPerms.usernames as Set
 }
