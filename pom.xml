@@ -6,6 +6,12 @@
 
   <modelVersion>4.0.0</modelVersion>
 
+  <parent>
+    <groupId>org.jenkins-ci.plugins</groupId>
+    <artifactId>plugin</artifactId>
+    <version>1.602</version>
+  </parent>
+
   <groupId>com.saltstack</groupId>
   <artifactId>jenkins-dsl-jobs</artifactId>
   <name>Jenkins DSL Jobs Project</name>
