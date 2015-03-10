@@ -84,8 +84,7 @@ salt_branches.each { branch_name ->
                     def provider_name_l = provider_name.toLowerCase()
 
                     cloud_provider_folder_name = "${build_type_folder_name}/${provider_name_l}"
-                    folder {
-                        name(cloud_provider_folder_name)
+                    folder(cloud_provider_folder_name) {
                         displayName(provider_name)
                         description = project_description
                     }
