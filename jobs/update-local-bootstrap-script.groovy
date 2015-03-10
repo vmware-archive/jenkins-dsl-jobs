@@ -18,7 +18,6 @@ folder {
             JenkinsPerms.folder.each { permname ->
                 auth_matrix_prop.appendNode('permission').setValue(
                     "${permname}:${username}"
-                }
             }
         }
     }
