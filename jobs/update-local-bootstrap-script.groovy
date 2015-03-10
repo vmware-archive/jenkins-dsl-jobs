@@ -5,8 +5,7 @@
 
 import com.saltstack.jenkins.JenkinsPerms
 
-folder {
-    name('maintenance')
+folder('maintenance') {
     displayName('Jenkins Maintenance Jobs')
 
     configure {
@@ -23,8 +22,7 @@ folder {
     }
 }
 
-job {
-    name = 'maintenance/update-bootstrap'
+freeStyleJob('maintenance/update-bootstrap') {
     displayName('Update Bootstrap Script')
     description('Update the local copy of the bootstrap script')
 

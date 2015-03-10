@@ -33,25 +33,21 @@ def default_timeout_minutes = 15
 def template_engine = new SimpleTemplateEngine()
 
 // Define the folder structure
-folder {
-    name('raet')
+folder('raet') {
     displayName(github_json_data['raet']['display_name'])
     description = project_description
 }
-folder {
-    name('raet/master')
+folder('raet/master') {
     displayName('Master Branch')
     description = project_description
 }
-folder {
-    name('raet/pr')
+folder('raet/pr') {
     displayName('Pull Requests')
     description = project_description
 }
 
 // Main master branch job
-def master_main_job = job(type: BuildFlow) {
-    name = 'raet/master-main-build'
+def master_main_job = buildFlow('raet/master-main-build') {
     displayName('Master Branch Main Build')
     description(project_description)
     label('worker')
@@ -154,8 +150,7 @@ def master_main_job = job(type: BuildFlow) {
 }
 
 // Clone Master Job
-def master_clone_job = job {
-    name = 'raet/master/clone'
+def master_clone_job = freeStyleJob('raet/master/clone') {
     displayName('Clone Repository')
 
     concurrentBuild(allowConcurrentBuild = true)
@@ -252,8 +247,7 @@ def master_clone_job = job {
 }
 
 // Lint Master Job
-def master_lint_job = job {
-    name = 'raet/master/lint'
+def master_lint_job = freeStyleJob('raet/master/lint') {
     displayName('Lint')
     concurrentBuild(allowConcurrentBuild = true)
     description(project_description + ' - Code Lint')
@@ -344,8 +338,7 @@ def master_lint_job = job {
 }
 
 // Master Unit Tests
-def master_unit_job = job {
-    name = 'raet/master/unit'
+def master_unit_job = freeStyleJob('raet/master/unit') {
     displayName('Unit')
     concurrentBuild(allowConcurrentBuild = true)
     description(project_description + ' - Unit Tests')
@@ -442,8 +435,7 @@ def master_unit_job = job {
 }
 
 
-dsl_job = job {
-    name = 'raet/pr/jenkins-seed'
+dsl_job = freeStyleJob('raet/pr/jenkins-seed') {
     displayName('PR Jenkins Seed')
 
     concurrentBuild(allowConcurrentBuild = false)

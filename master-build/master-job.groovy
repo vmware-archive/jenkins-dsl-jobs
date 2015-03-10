@@ -45,8 +45,7 @@ projects = [
     ]
 ]
 
-folder {
-    name('maintenance')
+folder('maintenance') {
     displayName('Jenkins Maintenance Jobs')
 
     configure {
@@ -64,8 +63,7 @@ folder {
     }
 }
 
-job {
-    name = 'maintenance/jenkins-seed'
+freeStyleJob('maintenance/jenkins-seed') {
     displayName('Jenkins Jobs Seed')
 
     concurrentBuild(allowConcurrentBuild = true)

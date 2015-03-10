@@ -34,28 +34,24 @@ def default_timeout_minutes = 15
 def template_engine = new SimpleTemplateEngine()
 
 // Define the folder structure
-folder {
-    name('bootstrap')
+folder('bootstrap') {
     displayName(github_json_data['bootstrap']['display_name'])
     description = project_description
 }
 branches.each { job_branch ->
-    folder {
-        name("bootstrap/${job_branch}")
+    folder("bootstrap/${job_branch}") {
         displayName("${job_branch.capitalize()} Branch")
         description = project_description
     }
 }
-folder {
-    name('bootstrap/pr')
+folder('bootstrap/pr') {
     displayName('Pull Requests')
     description = project_description
 }
 
 branches.each { job_branch ->
     // Branch Main Job
-    job(type: BuildFlow) {
-        name = "bootstrap/${job_branch}-main-build"
+    buildFlow("bootstrap/${job_branch}-main-build") {
         displayName("${job_branch.capitalize()} Branch Main Build")
         description(project_description)
         label('worker')
@@ -162,8 +158,7 @@ branches.each { job_branch ->
 
 
     // Clone Job
-    job {
-        name = "bootstrap/${job_branch}/clone"
+    freeStyleJob("bootstrap/${job_branch}/clone") {
         displayName('Clone Repository')
 
         concurrentBuild(allowConcurrentBuild = true)
@@ -255,8 +250,7 @@ branches.each { job_branch ->
     }
 
     // Lint Job
-    job {
-        name = "bootstrap/${job_branch}/lint"
+    freeStyleJob("bootstrap/${job_branch}/lint") {
         displayName('Lint')
         concurrentBuild(allowConcurrentBuild = true)
         description(project_description + ' - Code Lint')
@@ -348,8 +342,7 @@ branches.each { job_branch ->
     }
 }
 
-dsl_job = job {
-    name = 'bootstrap/pr/jenkins-seed'
+dsl_job = freeStyleJob('bootstrap/pr/jenkins-seed') {
     displayName('PR Jenkins Seed')
 
     concurrentBuild(allowConcurrentBuild = false)

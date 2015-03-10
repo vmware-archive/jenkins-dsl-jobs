@@ -33,25 +33,21 @@ def default_timeout_minutes = 15
 def template_engine = new SimpleTemplateEngine()
 
 // Define the folder structure
-folder {
-    name('libnacl')
+folder('libnacl') {
     displayName(github_json_data['libnacl']['display_name'])
     description = project_description
 }
-folder {
-    name('libnacl/master')
+folder('libnacl/master') {
     displayName('Master Branch')
     description = project_description
 }
-folder {
-    name('libnacl/pr')
+folder('libnacl/pr') {
     displayName('Pull Requests')
     description = project_description
 }
 
 // Main master branch job
-def master_main_job = job(type: BuildFlow) {
-    name = 'libnacl/master-main-build'
+def master_main_job = buildFlow('libnacl/master-main-build') {
     displayName('Master Branch Main Build')
     description(project_description)
     label('worker')
@@ -154,8 +150,7 @@ def master_main_job = job(type: BuildFlow) {
 }
 
 // Clone Master Job
-def master_clone_job = job {
-    name = 'libnacl/master/clone'
+def master_clone_job = freeStyleJob('libnacl/master/clone') {
     displayName('Clone Repository')
 
     concurrentBuild(allowConcurrentBuild = true)
@@ -254,8 +249,7 @@ def master_clone_job = job {
 }
 
 // Lint Master Job
-def master_lint_job = job {
-    name = 'libnacl/master/lint'
+def master_lint_job = freeStyleJob('libnacl/master/lint') {
     displayName('Lint')
     concurrentBuild(allowConcurrentBuild = true)
     description(project_description + ' - Code Lint')
@@ -348,8 +342,7 @@ def master_lint_job = job {
 }
 
 // Master Unit Tests
-def master_unit_job = job {
-    name = 'libnacl/master/unit'
+def master_unit_job = freeStyleJob('libnacl/master/unit') {
     displayName('Unit')
     concurrentBuild(allowConcurrentBuild = true)
     description(project_description + ' - Unit Tests')
@@ -441,8 +434,7 @@ def master_unit_job = job {
     }
 }
 
-dsl_job = job {
-    name = 'libnacl/pr/jenkins-seed'
+dsl_job = freeStyleJob('libnacl/pr/jenkins-seed') {
     displayName('PR Jenkins Seed')
 
     concurrentBuild(allowConcurrentBuild = false)

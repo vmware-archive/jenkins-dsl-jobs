@@ -55,16 +55,14 @@ def salt_cloud_providers = [
 def template_engine = new SimpleTemplateEngine()
 
 // Define the folder structure
-folder {
-    name('salt')
+folder('salt') {
     displayName(github_json_data['salt']['display_name'])
     description = project_description
 }
 
 salt_branches.each { branch_name ->
     def branch_folder_name = "salt/${branch_name.toLowerCase()}"
-    folder {
-        name(branch_folder_name)
+    folder(branch_folder_name) {
         displayName("${branch_name.capitalize()} Branch")
         description = project_description
     }
@@ -75,8 +73,7 @@ salt_branches.each { branch_name ->
 
         if ( vm_names != [] ) {
             def build_type_folder_name = "${branch_folder_name}/${build_type_l}"
-            folder {
-                name(build_type_folder_name)
+            folder(build_type_folder_name) {
                 displayName("${build_type} Builds")
                 description = project_description
             }
@@ -104,8 +101,7 @@ salt_branches.each { branch_name ->
     def branch_name_l = branch_name.toLowerCase()
 
     // Clone Job
-    job {
-        name = "salt/${branch_name_l}/clone"
+    freeStyleJob("salt/${branch_name_l}/clone") {
         displayName('Clone Repository')
 
         concurrentBuild(allowConcurrentBuild = true)
@@ -205,8 +201,7 @@ salt_branches.each { branch_name ->
     }
 
     // Lint Job
-    job {
-        name = "salt/${branch_name_l}/lint"
+    freeStyleJob("salt/${branch_name_l}/lint") {
         displayName('Lint')
         concurrentBuild(allowConcurrentBuild = true)
         description(project_description + ' - Code Lint')
@@ -305,8 +300,7 @@ salt_branches.each { branch_name ->
         def build_type_l = build_type.toLowerCase()
 
         if ( vm_names != [] ) {
-            job(type: BuildFlow) {
-                name = "salt/${branch_name.toLowerCase()}-${build_type_l}-main-build"
+            buildFlow("salt/${branch_name.toLowerCase()}-${build_type_l}-main-build") {
                 displayName("${branch_name.capitalize()} Branch ${build_type} Main Build")
                 description(project_description)
                 label('worker')
@@ -428,8 +422,7 @@ salt_branches.each { branch_name ->
                     vm_names.each { vm_name ->
                         def job_name = vm_name.toLowerCase().replace(' ', '-')
                         def vm_name_nodots = vm_name.replace(' ', '_').replace('.', '_').toLowerCase()
-                        job {
-                            name = "salt/${branch_name_l}/${build_type_l}/${provider_name_l}/${job_name}"
+                        freeStyleJob("salt/${branch_name_l}/${build_type_l}/${provider_name_l}/${job_name}") {
                             displayName(vm_name)
                             concurrentBuild(allowConcurrentBuild = true)
                             description("${project_description} - ${build_type} - ${provider_name} - ${vm_name}")
@@ -532,8 +525,7 @@ salt_branches.each { branch_name ->
             } else {
                 vm_names.each { vm_name ->
                     def job_name = vm_name.toLowerCase().replace(' ', '-')
-                    job {
-                        name = "salt/${branch_name}/${build_type_l}/${job_name}"
+                    freeStyleJob("salt/${branch_name}/${build_type_l}/${job_name}") {
                         displayName(vm_name)
                         concurrentBuild(allowConcurrentBuild = true)
                         description("${project_description} - ${build_type} - ${vm_name}")
