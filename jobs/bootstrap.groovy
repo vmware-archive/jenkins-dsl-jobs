@@ -427,7 +427,7 @@ dsl_job = freeStyleJob('bootstrap/pr/jenkins-seed') {
             text(
                 readFileFromWorkspace('maintenance/jenkins-seed', 'bootstrap/groovy/pr-dsl-job.groovy')
             )
-            additionalClasspath('build/libs')
+            additionalClasspath('build/libs/*.jar')
         }
     }
 

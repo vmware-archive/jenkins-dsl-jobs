@@ -523,7 +523,7 @@ dsl_job = freeStyleJob('libnacl/pr/jenkins-seed') {
             text(
                 readFileFromWorkspace('maintenance/jenkins-seed', 'libnacl/groovy/pr-dsl-job.groovy')
             )
-            additionalClasspath('build/libs')
+            additionalClasspath('build/libs/*.jar')
         }
     }
 

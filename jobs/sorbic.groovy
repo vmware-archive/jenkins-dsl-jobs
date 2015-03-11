@@ -521,7 +521,7 @@ dsl_job = freeStyleJob('sorbic/pr/jenkins-seed') {
             text(
                 readFileFromWorkspace('maintenance/jenkins-seed', 'sorbic/groovy/pr-dsl-job.groovy')
             )
-            additionalClasspath('build/libs')
+            additionalClasspath('build/libs/*.jar')
         }
     }
 
