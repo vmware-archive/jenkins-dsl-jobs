@@ -513,11 +513,17 @@ dsl_job = freeStyleJob('libnacl/pr/jenkins-seed') {
 
     // Job Steps
     steps {
+        gradle {
+            gradleName('gradle')
+            useWrapper(false)
+            description('Build the required dependencies')
+        }
         dsl {
             removeAction('DELETE')
             text(
                 readFileFromWorkspace('maintenance/jenkins-seed', 'libnacl/groovy/pr-dsl-job.groovy')
             )
+            additionalClasspath('build/libs')
         }
     }
 
