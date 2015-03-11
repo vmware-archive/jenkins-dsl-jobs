@@ -457,6 +457,16 @@ dsl_job = freeStyleJob('libnacl/pr/jenkins-seed') {
         }
     }
 
+    // scm configuration
+    scm {
+        github(
+            'saltstack/jenkins-dsl-jobs',
+            branch = '*/master',
+            protocol = 'https'
+        )
+    }
+    checkoutRetryCount(3)
+
     wrappers {
         // Cleanup the workspace before starting
         preBuildCleanup()
