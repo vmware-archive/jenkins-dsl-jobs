@@ -184,7 +184,10 @@ salt_branches.each { branch_name ->
         }
 
         publishers {
-            archiveArtifacts('workspace.cpio.xz')
+            archiveArtifacts {
+                pattern('*.log')
+                pattern('workspace.cpio.xz')
+            }
 
             script_template = template_engine.createTemplate(
                 readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')
@@ -287,6 +290,10 @@ salt_branches.each { branch_name ->
             rendered_script_template = script_template.make(template_context.withDefault{ null })
 
             groovyPostBuild(rendered_script_template.toString())
+
+            archiveArtifacts {
+                pattern('*.log')
+            }
        }
     }
 
@@ -493,7 +500,11 @@ salt_branches.each { branch_name ->
                                 }
 
                                 // Archive Artifacts
-                                archiveArtifacts('artifacts/logs/*,artifacts/packages/*')
+                                archiveArtifacts {
+                                    pattern('*.log')
+                                    pattern('artifacts/logs/*')
+                                    pattern('artifacts/packages/*')
+                                }
 
                                 // Report Coverage
                                 cobertura('artifacts/coverage/coverage.xml') {
@@ -585,7 +596,11 @@ salt_branches.each { branch_name ->
 
                         publishers {
                             // Archive Artifacts
-                            archiveArtifacts('artifacts/logs/*,artifacts/packages/*')
+                            archiveArtifacts {
+                                pattern('*.log')
+                                pattern('artifacts/logs/*')
+                                pattern('artifacts/packages/*')
+                            }
 
                             // Report Coverage
                             cobertura('artifacts/coverage/coverage.xml') {

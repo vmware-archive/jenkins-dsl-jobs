@@ -233,7 +233,10 @@ def master_clone_job = freeStyleJob('sorbic/master/clone') {
     }
 
     publishers {
-        archiveArtifacts('workspace.cpio.xz')
+        archiveArtifacts {
+            pattern('*.log')
+            pattern('workspace.cpio.xz')
+        }
 
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')
@@ -333,6 +336,10 @@ def master_lint_job = freeStyleJob('sorbic/master/lint') {
         rendered_script_template = script_template.make(template_context.withDefault{ null })
 
         groovyPostBuild(rendered_script_template.toString())
+
+        archiveArtifacts {
+            pattern('*.log')
+        }
     }
 }
 
@@ -425,6 +432,10 @@ def master_unit_job = freeStyleJob('sorbic/master/unit') {
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovyPostBuild(rendered_script_template.toString())
+
+        archiveArtifacts {
+            pattern('*.log')
+        }
     }
 }
 

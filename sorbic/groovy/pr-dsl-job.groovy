@@ -285,7 +285,11 @@ github_json_data['open_prs'].each { pr ->
             }
 
             publishers {
-                archiveArtifacts('workspace.cpio.xz')
+
+                archiveArtifacts {
+                    pattern('*.log')
+                    pattern('workspace.cpio.xz')
+                }
 
                 script_template = template_engine.createTemplate(
                     readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')
@@ -391,6 +395,10 @@ github_json_data['open_prs'].each { pr ->
                 rendered_script_template = script_template.make(template_context.withDefault{ null })
 
                 groovyPostBuild(rendered_script_template.toString())
+
+                archiveArtifacts {
+                    pattern('*.log')
+                }
             }
         }
 
@@ -487,6 +495,10 @@ github_json_data['open_prs'].each { pr ->
                 rendered_script_template = script_template.make(template_context.withDefault{ null })
 
                 groovyPostBuild(rendered_script_template.toString())
+
+                archiveArtifacts {
+                    pattern('*.log')
+                }
             }
         }
 }

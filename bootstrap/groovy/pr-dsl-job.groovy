@@ -379,6 +379,10 @@ github_json_data['open_prs'].each { pr ->
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
             groovyPostBuild(rendered_script_template.toString())
+
+            archiveArtifacts {
+                pattern('*.log')
+            }
         }
     }
 
