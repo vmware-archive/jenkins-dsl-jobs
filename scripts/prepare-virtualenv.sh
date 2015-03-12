@@ -22,13 +22,13 @@ fi
 
 if [ "${VIRTUALENV_NAME}" != "" ]; then
     ${SUDO} salt-call --force-color \
-        --log-file=salt-call.log \
+        --log-file=${WORKSPACE:-.}/salt-call.log \
         --log-file-level=trace \
         state.sls ${VIRTUALENV_SETUP_STATE_NAME} \
         pillar="{virtualenv_name: ${VIRTUALENV_NAME}, system_site_packages: ${SYSTEM_SITE_PACKAGES:-false}}"
 else
     ${SUDO} salt-call --force-color \
-        --log-file=salt-call.log \
+        --log-file=${WORKSPACE:-.}/salt-call.log \
         --log-file-level=trace \
         state.sls ${VIRTUALENV_SETUP_STATE_NAME}
 fi
