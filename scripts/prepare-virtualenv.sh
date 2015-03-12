@@ -21,8 +21,15 @@ if [ "$(pgrep -f 'salt-call state.sls')" != "" ]; then
 fi
 
 if [ "${VIRTUALENV_NAME}" != "" ]; then
-    ${SUDO} salt-call --force-color state.sls ${VIRTUALENV_SETUP_STATE_NAME} pillar="{virtualenv_name: ${VIRTUALENV_NAME}, system_site_packages: ${SYSTEM_SITE_PACKAGES:-false}}"
+    ${SUDO} salt-call --force-color \
+        --log-file=salt-call.log \
+        --log-file-level=trace \
+        state.sls ${VIRTUALENV_SETUP_STATE_NAME} \
+        pillar="{virtualenv_name: ${VIRTUALENV_NAME}, system_site_packages: ${SYSTEM_SITE_PACKAGES:-false}}"
 else
-    ${SUDO} salt-call --force-color state.sls ${VIRTUALENV_SETUP_STATE_NAME}
+    ${SUDO} salt-call --force-color \
+        --log-file=salt-call.log \
+        --log-file-level=trace \
+        state.sls ${VIRTUALENV_SETUP_STATE_NAME}
 fi
 echo '<<<<<<<<<<<<<< Prepare Build Env <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
