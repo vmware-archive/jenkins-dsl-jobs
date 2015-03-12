@@ -69,7 +69,7 @@ def build_number = build_env_vars['BUILD_NUMBER'].padLeft(4, '0')
 
 return [<%
     if ( sudo_salt_call != null ) { %>
-    SUDO_SALT_CALL: '1',<% } %><%
+    SUDO_SALT_CALL_REQUIRED: '1',<% } %><%
     if ( github_repo != null ) { %>
     GITHUB_REPO: '$github_repo',<% } %><%
     if ( virtualenv_name != null ) { %>
