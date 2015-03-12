@@ -3,7 +3,7 @@ echo '<<<<<<<<<<<<<< Prepare Build Env <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 # Don't call 'salt-call' at the same time
 sleep $(($RANDOM % 6))
 
-if [ "$(id -u)" -ne 0 ]; then
+if [ "${SUDO_SALT_CALL_REQUIRED:-0}" -eq 1 ] && [ "$(id -u)" -ne 0 ]; then
     # Non root users must sudo
     SUDO="sudo"
 else

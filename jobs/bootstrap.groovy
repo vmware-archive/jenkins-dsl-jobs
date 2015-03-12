@@ -297,7 +297,8 @@ branches.each { job_branch ->
         template_context = [
             commit_status_context: 'ci/lint',
             github_repo: github_repo,
-            virtualenv_setup_state_name: 'projects.bootstrap.lint'
+            virtualenv_setup_state_name: 'projects.bootstrap.lint',
+            sudo_salt_call: true
         ]
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
