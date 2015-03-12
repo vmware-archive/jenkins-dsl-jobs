@@ -293,6 +293,7 @@ salt_branches.each { branch_name ->
 
             archiveArtifacts {
                 pattern('*.log')
+                allowEmpty(true)
             }
        }
     }

@@ -336,6 +336,7 @@ def master_lint_job = freeStyleJob('raet/master/lint') {
 
         archiveArtifacts {
             pattern('*.log')
+            allowEmpty(true)
         }
 
     }
@@ -438,6 +439,7 @@ def master_unit_job = freeStyleJob('raet/master/unit') {
 
         archiveArtifacts {
             pattern('*.log')
+            allowEmpty(true)
         }
     }
 }

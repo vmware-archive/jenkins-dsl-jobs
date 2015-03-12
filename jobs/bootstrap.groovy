@@ -338,6 +338,7 @@ branches.each { job_branch ->
 
             archiveArtifacts {
                 pattern('*.log')
+                allowEmpty(true)
             }
         }
     }

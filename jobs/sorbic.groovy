@@ -339,6 +339,7 @@ def master_lint_job = freeStyleJob('sorbic/master/lint') {
 
         archiveArtifacts {
             pattern('*.log')
+            allowEmpty(true)
         }
     }
 }
@@ -435,6 +436,7 @@ def master_unit_job = freeStyleJob('sorbic/master/unit') {
 
         archiveArtifacts {
             pattern('*.log')
+            allowEmpty(true)
         }
     }
 }

@@ -340,6 +340,7 @@ def master_lint_job = freeStyleJob('libnacl/master/lint') {
 
         archiveArtifacts {
             pattern('*.log')
+            allowEmpty(true)
         }
     }
 }
@@ -437,6 +438,7 @@ def master_unit_job = freeStyleJob('libnacl/master/unit') {
 
         archiveArtifacts {
             pattern('*.log')
+            allowEmpty(true)
         }
     }
 }

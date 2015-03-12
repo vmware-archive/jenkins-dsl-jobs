@@ -397,6 +397,7 @@ github_json_data['open_prs'].each { pr ->
 
                 archiveArtifacts {
                     pattern('*.log')
+                    allowEmpty(true)
                 }
             }
         }
@@ -497,6 +498,7 @@ github_json_data['open_prs'].each { pr ->
 
                 archiveArtifacts {
                     pattern('*.log')
+                    allowEmpty(true)
                 }
             }
         }
