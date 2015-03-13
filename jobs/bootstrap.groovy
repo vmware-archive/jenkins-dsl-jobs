@@ -4,6 +4,8 @@ import groovy.text.*
 import com.saltstack.jenkins.JenkinsPerms
 import com.saltstack.jenkins.PullRequestAdmins
 import com.saltstack.jenkins.RandomString
+import com.saltstack.jenkins.Project
+import com.saltstack.jenkins.GitHubMarkup
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -11,9 +13,7 @@ def thr = Thread.currentThread()
 def build = thr?.executable
 
 // Common variable Definitions
-def github_repo = 'saltstack/salt-bootstrap'
-def github_json_data = new JsonSlurper().parseText(build.getEnvironment()['GITHUB_JSON_DATA'])
-def project_description = github_json_data['bootstrap']['description']
+def project = Project.SaltBootstrap
 def branches = ['stable', 'develop']
 
 // Job rotation defaults
@@ -31,25 +31,25 @@ def template_engine = new SimpleTemplateEngine()
 
 // Define the folder structure
 folder('bootstrap') {
-    displayName(github_json_data['bootstrap']['display_name'])
-    description = project_description
+    displayName(project.display_name)
+    description = project.getRepositoryDescription()
 }
 branches.each { job_branch ->
     folder("bootstrap/${job_branch}") {
         displayName("${job_branch.capitalize()} Branch")
-        description = project_description
+        description = project.getRepositoryDescription()
     }
 }
 folder('bootstrap/pr') {
     displayName('Pull Requests')
-    description = project_description
+    description = project.getRepositoryDescription()
 }
 
 branches.each { job_branch ->
     // Branch Main Job
     buildFlowJob("bootstrap/${job_branch}-main-build") {
         displayName("${job_branch.capitalize()} Branch Main Build")
-        description(project_description)
+        description(project.getRepositoryDescription())
         label('worker')
         concurrentBuild(allowConcurrentBuild = true)
 
@@ -63,7 +63,7 @@ branches.each { job_branch ->
             job_properties = it.get('properties').get(0)
             github_project_property = job_properties.appendNode(
                 'com.coravy.hudson.plugins.github.GithubProjectProperty')
-            github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+            github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
             slack_notifications = job_properties.appendNode(
                 'jenkins.plugins.slack.SlackNotifier_-SlackJobProperty')
             slack_notifications.appendNode('room').setValue('#jenkins')
@@ -108,7 +108,7 @@ branches.each { job_branch ->
         // scm configuration
         scm {
             github(
-                github_repo,
+                project.repo,
                 branch = "*/${job_branch}",
                 protocol = 'https'
             )
@@ -158,7 +158,7 @@ branches.each { job_branch ->
         displayName('Clone Repository')
 
         concurrentBuild(allowConcurrentBuild = true)
-        description(project_description + ' - Clone Repository')
+        description(project.getRepositoryDescription() + ' - Clone Repository')
         label('worker')
 
         configure {
@@ -169,7 +169,7 @@ branches.each { job_branch ->
                         'string').setValue("bootstrap/${job_branch}/*")
             github_project_property = job_properties.appendNode(
                 'com.coravy.hudson.plugins.github.GithubProjectProperty')
-            github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+            github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
         }
 
         wrappers {
@@ -208,7 +208,7 @@ branches.each { job_branch ->
         // scm configuration
         scm {
             github(
-                github_repo,
+                project.repo,
                 branch = "*/${job_branch}",
                 protocol = 'https'
             )
@@ -217,7 +217,7 @@ branches.each { job_branch ->
 
         template_context = [
             commit_status_context: 'ci/clone',
-            github_repo: github_repo,
+            github_repo: project.repo,
         ]
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
@@ -249,7 +249,7 @@ branches.each { job_branch ->
     freeStyleJob("bootstrap/${job_branch}/lint") {
         displayName('Lint')
         concurrentBuild(allowConcurrentBuild = true)
-        description(project_description + ' - Code Lint')
+        description(project.getRepositoryDescription() + ' - Code Lint')
         label('container')
 
         // Parameters Definition
@@ -262,7 +262,7 @@ branches.each { job_branch ->
             job_properties = it.get('properties').get(0)
             github_project_property = job_properties.appendNode(
                 'com.coravy.hudson.plugins.github.GithubProjectProperty')
-            github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+            github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
         }
 
         wrappers {
@@ -296,7 +296,7 @@ branches.each { job_branch ->
 
         template_context = [
             commit_status_context: 'ci/lint',
-            github_repo: github_repo,
+            github_repo: project.repo,
             virtualenv_setup_state_name: 'projects.bootstrap.lint',
             sudo_salt_call: true
         ]
@@ -358,7 +358,7 @@ dsl_job = freeStyleJob('bootstrap/pr/jenkins-seed') {
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
-        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
         auth_matrix = job_properties.appendNode('hudson.security.AuthorizationMatrixProperty')
         auth_matrix.appendNode('blocksInheritance').setValue(true)
     }
