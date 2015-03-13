@@ -98,16 +98,6 @@ freeStyleJob('maintenance/jenkins-seed') {
         default_artifact_nr_of_jobs_to_keep
     )
 
-    // scm configuration
-    scm {
-        github(
-            github_repo,
-            branch = '*/master',
-            protocol = 'https'
-        )
-    }
-    checkoutRetryCount(3)
-
     // Job Triggers
     /*triggers {
         githubPush()
@@ -126,15 +116,14 @@ freeStyleJob('maintenance/jenkins-seed') {
 
     // Job Steps
     steps {
-        gradle {
-            gradleName('gradle')
-            useWrapper(false)
-            description('Build the required dependencies')
+        copyArtifacts('maintenance/jenkins-master-seed', '*.jar', 'groovy-libs') {
+            latestSuccessful()
         }
+
         dsl {
             removeAction('DELETE')
             external('jobs/*.groovy')
-            additionalClasspath('build/libs/*.jar')
+            additionalClasspath('groovy-libs/*.jar')
         }
     }
 
