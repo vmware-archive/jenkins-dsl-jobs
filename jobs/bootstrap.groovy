@@ -4,7 +4,7 @@ import groovy.text.*
 import com.saltstack.jenkins.JenkinsPerms
 import com.saltstack.jenkins.PullRequestAdmins
 import com.saltstack.jenkins.RandomString
-import com.saltstack.jenkins.Project
+import com.saltstack.jenkins.Projects
 import com.saltstack.jenkins.GitHubMarkup
 
 // get current thread / Executor
@@ -13,7 +13,7 @@ def thr = Thread.currentThread()
 def build = thr?.executable
 
 // Common variable Definitions
-def project = Project.SaltBootstrap
+def project = Projects.SaltBootstrap
 def branches = ['stable', 'develop']
 
 // Job rotation defaults
