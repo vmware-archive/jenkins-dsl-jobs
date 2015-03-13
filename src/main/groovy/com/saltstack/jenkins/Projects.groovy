@@ -38,12 +38,13 @@ class Project {
         }
         return branches
     }
+}
 
-    static class SaltBootstrap extends Project {
-        public static String name = 'boostrap'
-        public static String display_name = 'Salt Bootstrap'
-        public static String github_repo = 'saltstack/salt-bootstrap'
-    }
+
+class SaltBootstrap extends Project {
+    public static String name = 'boostrap'
+    public static String display_name = 'Salt Bootstrap'
+    public static String github_repo = 'saltstack/salt-bootstrap'
 }
 
 
