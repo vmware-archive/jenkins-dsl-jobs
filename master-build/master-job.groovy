@@ -116,7 +116,7 @@ freeStyleJob('maintenance/jenkins-seed') {
 
     // Job Steps
     steps {
-        copyArtifacts('maintenance/jenkins-master-seed', '*.jar', 'groovy-libs') {
+        copyArtifacts('maintenance/jenkins-master-seed', 'build/libs/*.jar', targetPath='groovy-libs', flattenFiles=true) {
             latestSuccessful()
         }
 
