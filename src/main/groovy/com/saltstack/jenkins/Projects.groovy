@@ -38,6 +38,12 @@ class Project {
         }
         return branches
     }
+
+    static class SaltBootstrap extends Project {
+        public static String name = 'boostrap'
+        public static String display_name = 'Salt Bootstrap'
+        public static String github_repo = 'saltstack/salt-bootstrap'
+    }
 }
 
 
@@ -68,13 +74,6 @@ class Sorbic extends Project {
     public static String name = 'sorbic'
     public static String display_name = 'Sorbic'
     public static String github_repo = 'thatch45/sorbic'
-}
-
-
-class SaltBootstrap extends Project {
-    public static String name = 'boostrap'
-    public static String display_name = 'Salt Bootstrap'
-    public static String github_repo = 'saltstack/salt-bootstrap'
 }
 
 
