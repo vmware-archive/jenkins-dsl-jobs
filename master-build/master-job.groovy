@@ -99,11 +99,11 @@ freeStyleJob('maintenance/jenkins-seed') {
     )
 
     scm {
-        github {
+        github (
             github_repo,
             branch = '*/master'
             protocol = 'https'
-        }
+        )
     }
     checkoutRetryCount(3)
 
