@@ -10,8 +10,8 @@ configurations {
 }
 
 dependencies {
-    libs 'com.coravy.hudson.plugins.github:github:1.11'
-    libs 'org.codehaus.groovy.modules.http-builder:http-builder:0.7'
+    libs 'com.coravy.hudson.plugins.github:github:1.11@jar'
+    libs 'org.codehaus.groovy.modules.http-builder:http-builder:0.7@jar'
 }
 
 task clean(type: Delete) {
