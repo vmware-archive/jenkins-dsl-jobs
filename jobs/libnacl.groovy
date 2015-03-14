@@ -535,7 +535,12 @@ dsl_job = freeStyleJob('libnacl/pr/jenkins-seed') {
             text(
                 readFileFromWorkspace('maintenance/jenkins-seed', 'libnacl/groovy/pr-dsl-job.groovy')
             )
-            additionalClasspath('lib/*\nsrc/main/groovy')
+            additionalClasspath(
+            '''
+                lib/*
+                src/main/groovy
+            '''.stripIndent().trim()
+            )
         }
     }
 
