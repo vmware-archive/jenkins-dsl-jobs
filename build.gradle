@@ -19,9 +19,9 @@ buildscript {
     }
 
     dependencies {
+        classpath group: 'org.kohsuke', name: 'github-api', version: '1.63', ext: 'jar'
         classpath group: 'com.coravy.hudson.plugins.github', name: 'github', version: '1.11', ext: 'jar'
         classpath group: 'org.codehaus.groovy.modules.http-builder', name: 'http-builder', version: '0.7', ext: 'jar'
-        //classpath group: 'org.codehaus.groovy', name: 'groovy', version: '2.0.0', ext: 'jar'
     }
 }
 
@@ -40,6 +40,7 @@ dependencies {
         exclude(module: 'groovy-all')
     }
 
+    compile group: 'org.kohsuke', name: 'github-api', version: '1.63', ext: 'jar'
     compile group: 'com.coravy.hudson.plugins.github', name: 'github', version: '1.11', ext: 'jar'
     //compile group: 'org.reflections', name: 'reflections', version: '0.9.9-RC1'
     testCompile group: 'org.jenkins-ci.main', name: 'jenkins-war', version: '1.602'
