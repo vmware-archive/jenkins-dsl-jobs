@@ -13,7 +13,7 @@ def thr = Thread.currentThread()
 def build = thr?.executable
 
 // Common variable Definitions
-def project = Projects.SaltBootstrap
+def project = Projects.SaltBootstrap()
 def branches = ['stable', 'develop']
 
 // Job rotation defaults
