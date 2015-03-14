@@ -1,6 +1,6 @@
 package com.saltstack.jenkins
 
-//import com.cloudbees.jenkins.GitHubRepositoryName
+import com.cloudbees.jenkins.GitHubRepositoryName
 
 class Project {
     protected static String name;
@@ -22,16 +22,16 @@ class Project {
     }
 
     def getRepositoryDescription() {
-        if ( this.getRepository() != null ) {
-            return this.getRepository().getDescription()
+        if ( getRepository() != null ) {
+            return getRepository().getDescription()
         }
         return null
     }
 
     def getRepositoryBranches() {
         def branches = []
-        if ( this.getRepository() != null ) {
-            this.getRepository().getBranches().each { branch_name, branch_data ->
+        if ( getRepository() != null ) {
+            getRepository().getBranches().each { branch_name, branch_data ->
                 branches.add(branch_name)
             }
         }
