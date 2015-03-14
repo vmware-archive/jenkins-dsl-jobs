@@ -127,7 +127,9 @@ freeStyleJob('maintenance/jenkins-seed') {
         dsl {
             removeAction('DELETE')
             external('jobs/*.groovy')
-            additionalClasspath('groovy-libs/*.jar')
+            additionalClasspath('groovy-libs/jenkins-dsl-jobs-1.3-SNAPSHOT.jar')
+            additionalClasspath('groovy-libs/github-1.11.jar')
+            additionalClasspath('groovy-libs/github-api-1.63.jar')
         }
     }
 
