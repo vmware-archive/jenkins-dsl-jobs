@@ -11,4 +11,8 @@ class Salt extends Project {
         // In the production branch/environment, the value below should be true
         create_branches_webhook = false
     }
+
+    def getRepositoryBranches() {
+        return super.getRepositoryBranches().grep(~/(develop|([\d]{4}.[\d]{1,2}))/)
+    }
 }
