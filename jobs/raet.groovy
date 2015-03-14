@@ -4,6 +4,7 @@ import groovy.text.*
 import com.saltstack.jenkins.JenkinsPerms
 import com.saltstack.jenkins.PullRequestAdmins
 import com.saltstack.jenkins.RandomString
+import com.saltstack.jenkins.projects.RAET
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -11,9 +12,7 @@ def thr = Thread.currentThread()
 def build = thr?.executable
 
 // Common variable Definitions
-def github_repo = 'saltstack/raet'
-def github_json_data = new JsonSlurper().parseText(build.getEnvironment()['GITHUB_JSON_DATA'])
-def project_description = github_json_data['raet']['description']
+project = RAET()
 
 // Job rotation defaults
 def default_days_to_keep = 90
@@ -29,23 +28,23 @@ def default_timeout_minutes = 15
 def template_engine = new SimpleTemplateEngine()
 
 // Define the folder structure
-folder('raet') {
-    displayName(github_json_data['raet']['display_name'])
-    description = project_description
+folder(project.name) {
+    displayName(project.display_name)
+    description = project.getRepositoryDescription()
 }
-folder('raet/master') {
+folder("${project.name}/master") {
     displayName('Master Branch')
-    description = project_description
+    description = project.getRepositoryDescription()
 }
-folder('raet/pr') {
+folder("${project.name}/pr") {
     displayName('Pull Requests')
-    description = project_description
+    description = project.getRepositoryDescription()
 }
 
 // Main master branch job
-def master_main_job = buildFlowJob('raet/master-main-build') {
+def master_main_job = buildFlowJob("${project.name}/master-main-build") {
     displayName('Master Branch Main Build')
-    description(project_description)
+    description(project.getRepositoryDescription())
     label('worker')
     concurrentBuild(allowConcurrentBuild = true)
 
@@ -59,7 +58,7 @@ def master_main_job = buildFlowJob('raet/master-main-build') {
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
-        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
         slack_notifications = job_properties.appendNode(
             'jenkins.plugins.slack.SlackNotifier_-SlackJobProperty')
         slack_notifications.appendNode('room').setValue('#jenkins')
@@ -104,7 +103,7 @@ def master_main_job = buildFlowJob('raet/master-main-build') {
     // scm configuration
     scm {
         github(
-            github_repo,
+            project.repo,
             branch = '*/master',
             protocol = 'https'
         )
@@ -146,11 +145,11 @@ def master_main_job = buildFlowJob('raet/master-main-build') {
 }
 
 // Clone Master Job
-def master_clone_job = freeStyleJob('raet/master/clone') {
+def master_clone_job = freeStyleJob("${project.name}/master/clone") {
     displayName('Clone Repository')
 
     concurrentBuild(allowConcurrentBuild = true)
-    description(project_description + ' - Clone Repository')
+    description(project.getRepositoryDescription() + ' - Clone Repository')
     label('worker')
 
     configure {
@@ -158,10 +157,10 @@ def master_clone_job = freeStyleJob('raet/master/clone') {
         job_properties.appendNode(
             'hudson.plugins.copyartifact.CopyArtifactPermissionProperty').appendNode(
                 'projectNameList').appendNode(
-                    'string').setValue('raet/master/*')
+                    'string').setValue("${project.name}/master/*")
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
-        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
 
     }
 
@@ -201,7 +200,7 @@ def master_clone_job = freeStyleJob('raet/master/clone') {
     // scm configuration
     scm {
         github(
-            github_repo,
+            project.repo,
             branch = '*/master',
             protocol = 'https'
         )
@@ -210,7 +209,7 @@ def master_clone_job = freeStyleJob('raet/master/clone') {
 
     template_context = [
         commit_status_context: 'ci/clone',
-        github_repo: github_repo,
+        github_repo: project.repo,
         virtualenv_name: 'raet-master',
         virtualenv_setup_state_name: 'projects.clone'
     ]
@@ -246,10 +245,10 @@ def master_clone_job = freeStyleJob('raet/master/clone') {
 }
 
 // Lint Master Job
-def master_lint_job = freeStyleJob('raet/master/lint') {
+def master_lint_job = freeStyleJob("${project.name}/master/lint") {
     displayName('Lint')
     concurrentBuild(allowConcurrentBuild = true)
-    description(project_description + ' - Code Lint')
+    description(project.getRepositoryDescription() + ' - Code Lint')
     label('worker')
 
     // Parameters Definition
@@ -261,7 +260,7 @@ def master_lint_job = freeStyleJob('raet/master/lint') {
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
-        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
     }
 
     wrappers {
@@ -295,7 +294,7 @@ def master_lint_job = freeStyleJob('raet/master/lint') {
 
     template_context = [
         commit_status_context: 'ci/lint',
-        github_repo: github_repo,
+        github_repo: project.repo,
         virtualenv_name: 'raet-master',
         virtualenv_setup_state_name: 'projects.raet.lint'
     ]
@@ -313,7 +312,7 @@ def master_lint_job = freeStyleJob('raet/master/lint') {
         shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
 
         // Copy the workspace artifact
-        copyArtifacts('raet/master/clone', 'workspace.cpio.xz') {
+        copyArtifacts("${project.name}/master/clone", 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
         }
         shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/decompress-workspace.sh'))
@@ -343,10 +342,10 @@ def master_lint_job = freeStyleJob('raet/master/lint') {
 }
 
 // Master Unit Tests
-def master_unit_job = freeStyleJob('raet/master/unit') {
+def master_unit_job = freeStyleJob("${project.name}/master/unit") {
     displayName('Unit')
     concurrentBuild(allowConcurrentBuild = true)
-    description(project_description + ' - Unit Tests')
+    description(project.getRepositoryDescription() + ' - Unit Tests')
     label('worker')
 
     // Parameters Definition
@@ -358,7 +357,7 @@ def master_unit_job = freeStyleJob('raet/master/unit') {
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
-        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
     }
 
     wrappers {
@@ -387,7 +386,7 @@ def master_unit_job = freeStyleJob('raet/master/unit') {
 
     template_context = [
         commit_status_context: 'ci/unit',
-        github_repo: github_repo,
+        github_repo: project.repo,
         virtualenv_name: 'raet-master',
         virtualenv_setup_state_name: 'projects.raet.unit'
     ]
@@ -408,7 +407,7 @@ def master_unit_job = freeStyleJob('raet/master/unit') {
         shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/set-commit-status.sh'))
 
         // Copy the workspace artifact
-        copyArtifacts('raet/master/clone', 'workspace.cpio.xz') {
+        copyArtifacts("${project.name}/master/clone", 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
         }
         shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/decompress-workspace.sh'))
@@ -445,7 +444,7 @@ def master_unit_job = freeStyleJob('raet/master/unit') {
 }
 
 
-dsl_job = freeStyleJob('raet/pr/jenkins-seed') {
+dsl_job = freeStyleJob("${project.name}/pr/jenkins-seed") {
     displayName('PR Jenkins Seed')
 
     concurrentBuild(allowConcurrentBuild = false)
@@ -459,7 +458,7 @@ dsl_job = freeStyleJob('raet/pr/jenkins-seed') {
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
-        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
         auth_matrix = job_properties.appendNode('hudson.security.AuthorizationMatrixProperty')
         auth_matrix.appendNode('blocksInheritance').setValue(true)
     }
@@ -544,7 +543,7 @@ dsl_job = freeStyleJob('raet/pr/jenkins-seed') {
 
     publishers {
         template_context = [
-            project: 'raet'
+            project: project.name
         ]
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('maintenance/jenkins-seed', 'templates/pr-job-seed-post-build.groovy')
