@@ -12,17 +12,19 @@ class Project {
     protected static Boolean create_branches_webhook = false;
     protected static Boolean set_commit_status = false;
 
+    private GitHub _github;
     private GHRepository _repo;
 
     def getRepository() {
         if ( this._repo == null ) {
-            def GitHub github;
-            try {
-                github = GitHub.connect()
-            } catch (Throwable e) {
-                github = GitHub.connectAnonymously()
+            if ( this._github == null ) {
+                try {
+                    this._github = GitHub.connect()
+                } catch (Throwable e) {
+                    this._github = GitHub.connectAnonymously()
+                }
             }
-            this._repo = github.getRepository()
+            this._repo = this._github.getRepository(this.repo)
         }
         return this._repo
     }
