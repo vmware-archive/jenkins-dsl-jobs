@@ -3,7 +3,7 @@ package com.saltstack.jenkins
 import com.cloudbees.jenkins.GitHubRepositoryName
 
 
-class Project {
+class Projects {
     public static String name;
     public static String display_name;
     public static String repo;
@@ -38,50 +38,39 @@ class Project {
         }
         return branches
     }
+
+    class SaltBootstrap extends Projects {
+        public static String name = 'boostrap'
+        public static String display_name = 'Salt Bootstrap'
+        public static String repo = 'saltstack/salt-bootstrap'
+    }
+
+    class LibNACL extends Projects {
+        public static String name = 'libnacl'
+        public static String display_name = 'libnacl'
+        public static String repo = 'saltstack/libnacl'
+    }
+
+
+    class RAET extends Projects {
+        public static String name = 'raet'
+        public static String display_name = 'RAET'
+        public static String repo = 'saltstack/raet'
+    }
+
+
+    class Salt extends Projects {
+        public static String name = 'salt'
+        public static String display_name = 'Salt'
+        public static String repo = 'saltstack/salt'
+        // In the production branch/environment, the value below should be true
+        public static Boolean create_branches_webhook = false
+    }
+
+
+    class Sorbic extends Projects {
+        public static String name = 'sorbic'
+        public static String display_name = 'Sorbic'
+        public static String repo = 'thatch45/sorbic'
+    }
 }
-
-
-class SaltBootstrap extends Project {
-    public static String name = 'boostrap'
-    public static String display_name = 'Salt Bootstrap'
-    public static String github_repo = 'saltstack/salt-bootstrap'
-}
-
-
-class LibNACL extends Project {
-    public static String name = 'libnacl'
-    public static String display_name = 'libnacl'
-    public static String github_repo = 'saltstack/libnacl'
-}
-
-
-class RAET extends Project {
-    public static String name = 'raet'
-    public static String display_name = 'RAET'
-    public static String github_repo = 'saltstack/raet'
-}
-
-
-class Salt extends Project {
-    public static String name = 'salt'
-    public static String display_name = 'Salt'
-    public static String github_repo = 'saltstack/salt'
-    // In the production branch/environment, the value below should be true
-    public static Boolean create_branches_webhook = false
-}
-
-
-class Sorbic extends Project {
-    public static String name = 'sorbic'
-    public static String display_name = 'Sorbic'
-    public static String github_repo = 'thatch45/sorbic'
-}
-
-
-def projects = [
-    'libnacl': LibNACL,
-    'raet': RAET,
-    'salt': Salt,
-    'sorbic': Sorbic,
-    'boostrap': SaltBootstrap
-]
