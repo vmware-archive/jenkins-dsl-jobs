@@ -2,6 +2,7 @@
 import groovy.json.*
 import groovy.text.*
 import com.saltstack.jenkins.PullRequestAdmins
+import com.saltstack.jenkins.projects.Salt
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -9,9 +10,7 @@ def thr = Thread.currentThread()
 def build = thr?.executable
 
 // Common variable Definitions
-def github_repo = 'saltstack/salt'
-def github_json_data = new JsonSlurper().parseText(build.getEnvironment()['GITHUB_JSON_DATA'])
-def project_description = github_json_data['salt']['description']
+def project = new Salt()
 
 // Job rotation defaults
 def default_days_to_keep = 90
@@ -23,8 +22,6 @@ def default_artifact_nr_of_jobs_to_keep = default_nr_of_jobs_to_keep
 def default_timeout_percent = 150
 def default_timeout_builds = 10
 def default_timeout_minutes = 90
-
-salt_branches = github_json_data['salt']['branches'].grep(~/(develop|([\d]{4}.[\d]{1,2}))/)
 
 def salt_build_types = [
     'Cloud': [
@@ -51,16 +48,16 @@ def salt_cloud_providers = [
 def template_engine = new SimpleTemplateEngine()
 
 // Define the folder structure
-folder('salt') {
-    displayName(github_json_data['salt']['display_name'])
-    description = project_description
+folder(project.name) {
+    displayName(project.display_name)
+    description = project.getRepositoryDescription()
 }
 
-salt_branches.each { branch_name ->
+project.getRepositoryBranches().each { branch_name ->
     def branch_folder_name = "salt/${branch_name.toLowerCase()}"
     folder(branch_folder_name) {
         displayName("${branch_name.capitalize()} Branch")
-        description = project_description
+        description = project.getRepositoryDescription()
     }
 
     salt_build_types.each { build_type, vm_names ->
@@ -71,7 +68,7 @@ salt_branches.each { branch_name ->
             def build_type_folder_name = "${branch_folder_name}/${build_type_l}"
             folder(build_type_folder_name) {
                 displayName("${build_type} Builds")
-                description = project_description
+                description = project.getRepositoryDescription()
             }
 
             if (build_type_l == 'cloud') {
@@ -82,7 +79,7 @@ salt_branches.each { branch_name ->
                     cloud_provider_folder_name = "${build_type_folder_name}/${provider_name_l}"
                     folder(cloud_provider_folder_name) {
                         displayName(provider_name)
-                        description = project_description
+                        description = project.getRepositoryDescription()
                     }
                 }
             }
@@ -91,7 +88,7 @@ salt_branches.each { branch_name ->
 }
 
 
-salt_branches.each { branch_name ->
+project.getRepositoryBranches().each { branch_name ->
 
     def branch_name_l = branch_name.toLowerCase()
 
@@ -100,7 +97,7 @@ salt_branches.each { branch_name ->
         displayName('Clone Repository')
 
         concurrentBuild(allowConcurrentBuild = true)
-        description(project_description + ' - Clone Repository')
+        description(project.getRepositoryDescription() + ' - Clone Repository')
         label('worker')
 
         configure {
@@ -111,7 +108,7 @@ salt_branches.each { branch_name ->
                         'string').setValue("salt/${branch_name_l}/*")
             github_project_property = job_properties.appendNode(
                 'com.coravy.hudson.plugins.github.GithubProjectProperty')
-            github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+            github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
         }
 
         wrappers {
@@ -150,7 +147,7 @@ salt_branches.each { branch_name ->
         // scm configuration
         scm {
             github(
-                github_repo,
+                project.repo,
                 branch = "*/${branch_name}",
                 protocol = 'https'
             )
@@ -159,7 +156,7 @@ salt_branches.each { branch_name ->
 
         template_context = [
             commit_status_context: 'default',
-            github_repo: github_repo,
+            github_repo: project.repo,
             branch_name: branch_name,
             branch_name_l: branch_name_l,
             virtualenv_name: "salt-${branch_name_l}",
@@ -202,7 +199,7 @@ salt_branches.each { branch_name ->
     freeStyleJob("salt/${branch_name_l}/lint") {
         displayName('Lint')
         concurrentBuild(allowConcurrentBuild = true)
-        description(project_description + ' - Code Lint')
+        description(project.getRepositoryDescription() + ' - Code Lint')
         label('worker')
 
         // Parameters Definition
@@ -214,7 +211,7 @@ salt_branches.each { branch_name ->
             job_properties = it.get('properties').get(0)
             github_project_property = job_properties.appendNode(
                 'com.coravy.hudson.plugins.github.GithubProjectProperty')
-            github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+            github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
         }
 
         wrappers {
@@ -248,7 +245,7 @@ salt_branches.each { branch_name ->
 
         template_context = [
             commit_status_context: 'ci/lint',
-            github_repo: github_repo,
+            github_repo: project.repo,
             branch_name: branch_name,
             branch_name_l: branch_name_l,
             virtualenv_name: "salt-${branch_name_l}",
@@ -305,7 +302,7 @@ salt_branches.each { branch_name ->
         if ( vm_names != [] ) {
             buildFlowJob("salt/${branch_name.toLowerCase()}-${build_type_l}-main-build") {
                 displayName("${branch_name.capitalize()} Branch ${build_type} Main Build")
-                description(project_description)
+                description(project.getRepositoryDescription())
                 label('worker')
                 concurrentBuild(allowConcurrentBuild = true)
 
@@ -323,7 +320,7 @@ salt_branches.each { branch_name ->
                     job_properties = it.get('properties').get(0)
                     github_project_property = job_properties.appendNode(
                         'com.coravy.hudson.plugins.github.GithubProjectProperty')
-                    github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+                    github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
                     slack_notifications = job_properties.appendNode(
                         'jenkins.plugins.slack.SlackNotifier_-SlackJobProperty')
                     slack_notifications.appendNode('room').setValue('#jenkins')
@@ -428,7 +425,7 @@ salt_branches.each { branch_name ->
                         freeStyleJob("salt/${branch_name_l}/${build_type_l}/${provider_name_l}/${job_name}") {
                             displayName(vm_name)
                             concurrentBuild(allowConcurrentBuild = true)
-                            description("${project_description} - ${build_type} - ${provider_name} - ${vm_name}")
+                            description("${project.getRepositoryDescription()} - ${build_type} - ${provider_name} - ${vm_name}")
                             label('cloud')
 
                             // Parameters Definition
@@ -440,7 +437,7 @@ salt_branches.each { branch_name ->
                                 job_properties = it.get('properties').get(0)
                                 github_project_property = job_properties.appendNode(
                                     'com.coravy.hudson.plugins.github.GithubProjectProperty')
-                                    github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+                                    github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
                             }
 
                             wrappers {
@@ -465,7 +462,7 @@ salt_branches.each { branch_name ->
                             }
                             template_context = [
                                 commit_status_context: "ci/${job_name}",
-                                github_repo: github_repo,
+                                github_repo: project.repo,
                                 branch_name: branch_name,
                                 branch_name_l: branch_name_l,
                                 build_vm_name: "${provider_name_l}_${vm_name_nodots}",
@@ -535,14 +532,14 @@ salt_branches.each { branch_name ->
                     freeStyleJob("salt/${branch_name}/${build_type_l}/${job_name}") {
                         displayName(vm_name)
                         concurrentBuild(allowConcurrentBuild = true)
-                        description("${project_description} - ${build_type} - ${vm_name}")
+                        description("${project.getRepositoryDescription()} - ${build_type} - ${vm_name}")
                         label('container')
 
                         configure {
                             job_properties = it.get('properties').get(0)
                             github_project_property = job_properties.appendNode(
                                 'com.coravy.hudson.plugins.github.GithubProjectProperty')
-                                github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+                                github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
                         }
 
                         wrappers {
@@ -568,7 +565,7 @@ salt_branches.each { branch_name ->
 
                         template_context = [
                             commit_status_context: "ci/${job_name}",
-                            github_repo: github_repo,
+                            github_repo: project.repo,
                             branch_name: branch_name,
                             branch_name_l: branch_name_l,
                             build_vm_name: "${provider_name_l}_${vm_name_nodots}",
