@@ -3,7 +3,7 @@ package com.saltstack.jenkins.projects
 import com.saltstack.jenkins.Project
 
 
-class RAET extends Project {
+class Raet extends Project {
     {
         name = 'raet'
         display_name = 'RAET'
