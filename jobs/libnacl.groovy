@@ -12,7 +12,7 @@ def thr = Thread.currentThread()
 def build = thr?.executable
 
 // Common variable Definitions
-project = Projects.LibNACL()
+project = new LibNACL()
 
 // Job rotation defaults
 def default_days_to_keep = 90
