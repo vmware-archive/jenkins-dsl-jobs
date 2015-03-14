@@ -4,6 +4,7 @@ import groovy.text.*
 import com.saltstack.jenkins.JenkinsPerms
 import com.saltstack.jenkins.PullRequestAdmins
 import com.saltstack.jenkins.RandomString
+import com.saltstack.jenkins.projects.LibNACL
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -11,9 +12,7 @@ def thr = Thread.currentThread()
 def build = thr?.executable
 
 // Common variable Definitions
-def github_repo = 'saltstack/libnacl'
-def github_json_data = new JsonSlurper().parseText(build.getEnvironment()['GITHUB_JSON_DATA'])
-def project_description = github_json_data['libnacl']['description']
+project = Projects.LibNACL()
 
 // Job rotation defaults
 def default_days_to_keep = 90
@@ -30,22 +29,22 @@ def template_engine = new SimpleTemplateEngine()
 
 // Define the folder structure
 folder('libnacl') {
-    displayName(github_json_data['libnacl']['display_name'])
-    description = project_description
+    displayName(project.display_name)
+    description = project.getRepositoryDescription()
 }
 folder('libnacl/master') {
     displayName('Master Branch')
-    description = project_description
+    description = project.getRepositoryDescription()
 }
 folder('libnacl/pr') {
     displayName('Pull Requests')
-    description = project_description
+    description = project.getRepositoryDescription()
 }
 
 // Main master branch job
 def master_main_job = buildFlowJob('libnacl/master-main-build') {
     displayName('Master Branch Main Build')
-    description(project_description)
+    description(project.getRepositoryDescription())
     label('worker')
     concurrentBuild(allowConcurrentBuild = true)
 
@@ -59,7 +58,7 @@ def master_main_job = buildFlowJob('libnacl/master-main-build') {
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
-        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
         slack_notifications = job_properties.appendNode(
             'jenkins.plugins.slack.SlackNotifier_-SlackJobProperty')
         slack_notifications.appendNode('room').setValue('#jenkins')
@@ -104,7 +103,7 @@ def master_main_job = buildFlowJob('libnacl/master-main-build') {
     // scm configuration
     scm {
         github(
-            github_repo,
+            project.repo,
             branch = '*/master',
             protocol = 'https'
         )
@@ -150,7 +149,7 @@ def master_clone_job = freeStyleJob('libnacl/master/clone') {
     displayName('Clone Repository')
 
     concurrentBuild(allowConcurrentBuild = true)
-    description(project_description + ' - Clone Repository')
+    description(project.getRepositoryDescription() + ' - Clone Repository')
     label('worker')
 
     configure {
@@ -161,7 +160,7 @@ def master_clone_job = freeStyleJob('libnacl/master/clone') {
                     'string').setValue('libnacl/master/*')
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
-        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
 
     }
 
@@ -201,7 +200,7 @@ def master_clone_job = freeStyleJob('libnacl/master/clone') {
     // scm configuration
     scm {
         github(
-            github_repo,
+            project.repo,
             branch = '*/master',
             protocol = 'https'
         )
@@ -210,7 +209,7 @@ def master_clone_job = freeStyleJob('libnacl/master/clone') {
 
     template_context = [
         commit_status_context: 'ci/clone',
-        github_repo: github_repo,
+        github_repo: project.repo,
         virtualenv_name: 'libnacl-master',
         virtualenv_setup_state_name: 'projects.clone'
     ]
@@ -251,7 +250,7 @@ def master_clone_job = freeStyleJob('libnacl/master/clone') {
 def master_lint_job = freeStyleJob('libnacl/master/lint') {
     displayName('Lint')
     concurrentBuild(allowConcurrentBuild = true)
-    description(project_description + ' - Code Lint')
+    description(project.getRepositoryDescription() + ' - Code Lint')
     label('worker')
 
     // Parameters Definition
@@ -263,7 +262,7 @@ def master_lint_job = freeStyleJob('libnacl/master/lint') {
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
-        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
     }
 
     wrappers {
@@ -297,7 +296,7 @@ def master_lint_job = freeStyleJob('libnacl/master/lint') {
 
     template_context = [
         commit_status_context: 'ci/lint',
-        github_repo: github_repo,
+        github_repo: project.repo,
         virtualenv_name: 'libnacl-master',
         virtualenv_setup_state_name: 'projects.libnacl.lint'
     ]
@@ -349,7 +348,7 @@ def master_lint_job = freeStyleJob('libnacl/master/lint') {
 def master_unit_job = freeStyleJob('libnacl/master/unit') {
     displayName('Unit')
     concurrentBuild(allowConcurrentBuild = true)
-    description(project_description + ' - Unit Tests')
+    description(project.getRepositoryDescription() + ' - Unit Tests')
     label('worker')
 
     // Parameters Definition
@@ -361,7 +360,7 @@ def master_unit_job = freeStyleJob('libnacl/master/unit') {
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
-        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
     }
 
     wrappers {
@@ -387,7 +386,7 @@ def master_unit_job = freeStyleJob('libnacl/master/unit') {
 
     template_context = [
         commit_status_context: 'ci/unit',
-        github_repo: github_repo,
+        github_repo: project.repo,
         virtualenv_name: 'libnacl-master',
         virtualenv_setup_state_name: 'projects.libnacl.unit'
     ]
@@ -457,7 +456,7 @@ dsl_job = freeStyleJob('libnacl/pr/jenkins-seed') {
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
-        github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
         auth_matrix = job_properties.appendNode('hudson.security.AuthorizationMatrixProperty')
         auth_matrix.appendNode('blocksInheritance').setValue(true)
     }
@@ -551,4 +550,3 @@ dsl_job = freeStyleJob('libnacl/pr/jenkins-seed') {
         groovyPostBuild(rendered_script_template.toString())
     }
 }
-
