@@ -120,8 +120,10 @@ freeStyleJob('maintenance/jenkins-seed') {
 
     // Job Steps
     steps {
-        copyArtifacts('maintenance/jenkins-master-seed', 'build/libs/*.jar', targetPath='groovy-libs', flattenFiles=true) {
-            latestSuccessful()
+        gradle {
+            gradleName('gradle')
+            useWrapper(false)
+            description('Build the required dependencies')
         }
 
         dsl {
