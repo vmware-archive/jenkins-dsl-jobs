@@ -1,6 +1,8 @@
 package com.saltstack.jenkins
 
-import com.cloudbees.jenkins.GitHubRepositoryName
+import org.kohsuke.github.GitHub
+import org.kohsuke.github.GHRepository
+
 
 class Project {
     protected static String name;
@@ -10,13 +12,17 @@ class Project {
     protected static Boolean create_branches_webhook = false;
     protected static Boolean set_commit_status = false;
 
-    private _repo = null;
+    private GHRepository _repo;
 
     def getRepository() {
         if ( this._repo == null ) {
-            this._repo = GitHubRepositoryName.create(
-                "https://github.com/" + this.repo
-            ).resolve().iterator().next()
+            def GitHub github;
+            try {
+                github = GitHub.connect()
+            } catch (Throwable e) {
+                github = GitHub.connectAnonymously()
+            }
+            this._repo = github.getRepository()
         }
         return this._repo
     }
