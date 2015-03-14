@@ -12,7 +12,7 @@ def thr = Thread.currentThread()
 def build = thr?.executable
 
 // Common variable Definitions
-project = Raet()
+project = new Raet()
 
 // Job rotation defaults
 def default_days_to_keep = 90
