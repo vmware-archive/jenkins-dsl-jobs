@@ -98,10 +98,14 @@ freeStyleJob('maintenance/jenkins-seed') {
         default_artifact_nr_of_jobs_to_keep
     )
 
-    // Job Triggers
-    /*triggers {
-        githubPush()
-    }*/
+    scm {
+        github {
+            github_repo,
+            branch = '*/master'
+            protocol = 'https'
+        }
+    }
+    checkoutRetryCount(3)
 
     environmentVariables {
         template_context = [
