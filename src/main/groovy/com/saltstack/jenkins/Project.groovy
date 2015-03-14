@@ -2,6 +2,7 @@ package com.saltstack.jenkins
 
 import org.kohsuke.github.GitHub
 import org.kohsuke.github.GHRepository
+import com.cloudbees.jenkins.GitHubRepositoryName
 
 
 class Project {
@@ -16,15 +17,20 @@ class Project {
     private GHRepository _repo;
 
     def getRepository() {
-        if ( this._repo == null ) {
-            if ( this._github == null ) {
-                try {
-                    this._github = GitHub.connect()
-                } catch (Throwable e) {
-                    this._github = GitHub.connectAnonymously()
+        if ( this._repo == null && this._github == null ) {
+            try {
+                def github_repo_url = "https://github.com/${this.repo}"
+                this._repo = GitHubRepositoryName.create(github_repo_url).resolve().iterator().next()
+            } catch (Throwable e1) {
+                if ( this._github == null ) {
+                    try {
+                        this._github = GitHub.connect()
+                    } catch (Throwable e2) {
+                        this._github = GitHub.connectAnonymously()
+                    }
                 }
+                this._repo = this._github.getRepository(this.repo)
             }
-            this._repo = this._github.getRepository(this.repo)
         }
         return this._repo
     }
