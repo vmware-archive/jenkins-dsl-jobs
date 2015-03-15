@@ -107,17 +107,6 @@ freeStyleJob('maintenance/jenkins-seed') {
     }
     checkoutRetryCount(3)
 
-    environmentVariables {
-        template_context = [
-            projects: "'''${new JsonBuilder(projects).toString()}'''"
-        ]
-        script_template = template_engine.createTemplate(
-            readFileFromWorkspace('maintenance/jenkins-master-seed', 'master-build/templates/job-seed-envvars.groovy')
-        )
-        rendered_script_template = script_template.make(template_context.withDefault{ null })
-        groovy(rendered_script_template.toString())
-    }
-
     // Job Steps
     steps {
         gradle {
@@ -139,13 +128,8 @@ freeStyleJob('maintenance/jenkins-seed') {
     }
 
     publishers {
-        template_context = [
-            projects: "'''${new JsonBuilder(projects).toString()}'''"
-        ]
-        script_template = template_engine.createTemplate(
+        groovyPostBuild(
             readFileFromWorkspace('maintenance/jenkins-master-seed', 'master-build/templates/job-seed-post-build.groovy')
         )
-        rendered_script_template = script_template.make(template_context.withDefault{ null })
-        groovyPostBuild(rendered_script_template.toString())
     }
 }
