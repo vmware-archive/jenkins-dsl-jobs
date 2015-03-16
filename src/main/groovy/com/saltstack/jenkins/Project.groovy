@@ -75,10 +75,14 @@ class Project {
             if ( this._authenticated == false ) {
                 return hooks
             }
-            getAuthenticatedRepository().getHooks().each { hook ->
-                if ( hook.getName() == 'web' ) {
-                    hooks.add(hook)
+            try {
+                getAuthenticatedRepository().getHooks().each { hook ->
+                    if ( hook.getName() == 'web' ) {
+                        hooks.add(hook)
+                    }
                 }
+            } catch ( Throwable e ) {
+                return hooks
             }
         }
         return hooks
@@ -164,7 +168,8 @@ class Project {
             }
         }
         // Create pull request web hooks
-         try {
+        def webhooks_apitoken = User.get(this.webhooks_user).getProperty(ApiTokenProperty.class).getApiToken()
+        try {
             def webhook_url = pr_seed_job.getAbsoluteUrl() + 'build?token=' + pr_seed_job.getAuthToken().getToken()
             webhook_url = webhook_url.replace(
                 'https://', "https://${this.webhooks_user}:${webhooks_apitoken}@").replace(
