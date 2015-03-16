@@ -1,4 +1,14 @@
-defaultTasks 'libs'
+apply plugin: 'java'
+
+group = 'com.saltstack'
+version = '1.3-SNAPSHOT'
+
+description = "Jenkins DSL Jobs Project"
+
+defaultTasks 'jar'
+
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
 
 repositories {
     jcenter()
@@ -19,15 +29,16 @@ dependencies {
     libs 'org.codehaus.groovy.modules.http-builder:http-builder:0.7@jar'
 }
 
-task clean(type: Delete) {
-    delete 'lib'
-}
-
 task libs(type: Copy) {
-    into 'lib'
+    into 'build/libs'
     from configurations.libs
 }
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.2.1'
 }
+
+jar {
+    baseName = 'jenkins-dsl-jobs'
+}
+jar.dependsOn libs
