@@ -71,12 +71,12 @@ class Project {
 
     def getRepositoryWebHooks() {
         def hooks = []
-        if ( getAuthenticatedRepository() != null ) {
+        if ( this.getAuthenticatedRepository() != null ) {
             if ( this._authenticated == false ) {
                 return hooks
             }
             try {
-                getAuthenticatedRepository().getHooks().each { hook ->
+                this.getAuthenticatedRepository().getHooks().each { hook ->
                     if ( hook.getName() == 'web' ) {
                         hooks.add(hook)
                     }
@@ -122,7 +122,7 @@ class Project {
             webhook_url = webhook_url.replace(
                 'https://', "https://${this.webhooks_user}:${webhooks_apitoken}@").replace(
                     'http://', "http://${this.webhooks_user}:${webhooks_apitoken}@")
-            getAuthenticatedRepository().createWebHook(
+            this.getAuthenticatedRepository().createWebHook(
                 webhook_url.toURL(),
                 [GHEvent.CREATE, GHEvent.DELETE]
             )
@@ -174,7 +174,7 @@ class Project {
             webhook_url = webhook_url.replace(
                 'https://', "https://${this.webhooks_user}:${webhooks_apitoken}@").replace(
                     'http://', "http://${this.webhooks_user}:${webhooks_apitoken}@")
-            getAuthenticatedRepository().createWebHook(
+            this.getAuthenticatedRepository().createWebHook(
                 webhook_url.toURL(),
                 [GHEvent.PULL_REQUEST]
             )
