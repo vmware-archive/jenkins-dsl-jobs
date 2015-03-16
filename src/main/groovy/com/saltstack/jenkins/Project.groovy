@@ -122,7 +122,7 @@ class Project {
             webhook_url = webhook_url.replace(
                 'https://', "https://${this.webhooks_user}:${webhooks_apitoken}@").replace(
                     'http://', "http://${this.webhooks_user}:${webhooks_apitoken}@")
-            repo.createWebHook(
+            getAuthenticatedRepository().createWebHook(
                 webhook_url.toURL(),
                 [GHEvent.CREATE, GHEvent.DELETE]
             )
@@ -174,7 +174,7 @@ class Project {
             webhook_url = webhook_url.replace(
                 'https://', "https://${this.webhooks_user}:${webhooks_apitoken}@").replace(
                     'http://', "http://${this.webhooks_user}:${webhooks_apitoken}@")
-            repo.createWebHook(
+            getAuthenticatedRepository().createWebHook(
                 webhook_url.toURL(),
                 [GHEvent.PULL_REQUEST]
             )
