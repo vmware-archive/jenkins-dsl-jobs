@@ -142,7 +142,7 @@ class Project {
     def configurePullRequestsWebHooks(manager) {
         def running_job = manager.build.getProject()
         if ( running_job == null ) {
-            manager.listener.logger.println "This job's build.getProject() weirdly returns null. Not checking existing branches web hooks."
+            manager.listener.logger.println "This job's build.getProject() weirdly returns null. Not checking existing pull requests web hooks."
             return
         }
         def pr_seed_job = null
