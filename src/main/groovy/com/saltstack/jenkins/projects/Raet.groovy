@@ -4,9 +4,11 @@ import com.saltstack.jenkins.Project
 
 
 class Raet extends Project {
-    {
-        name = 'raet'
-        display_name = 'RAET'
-        repo = 'saltstack/raet'
+
+    Raet() {
+        super()
+        this.name = 'raet'
+        this.display_name = 'RAET'
+        this.repo = 'saltstack/raet'
     }
 }

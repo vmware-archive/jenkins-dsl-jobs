@@ -10,12 +10,12 @@ import com.cloudbees.jenkins.GitHubRepositoryName
 
 
 class Project {
-    protected static String name;
-    protected static String display_name;
-    protected static String repo;
-    protected static Boolean setup_push_hooks = false;
-    protected static Boolean create_branches_webhook = false;
-    protected static Boolean set_commit_status = false;
+    String name;
+    String display_name;
+    String repo;
+    Boolean setup_push_hooks = false;
+    Boolean create_branches_webhook = false;
+    Boolean set_commit_status = false; 
 
     protected static String webhooks_user = 'salt-testing';
 
@@ -23,30 +23,38 @@ class Project {
     private GHRepository _repo;
     private Boolean _authenticated;
 
-    def getRepository() {
-        if ( this._repo == null ) {
-            if ( this._github == null ) {
-                try {
-                    this._github = GitHub.connect()
-                    this._authenticated = true
-                } catch (Throwable e2) {
-                    this._github = GitHub.connectAnonymously()
-                    this._authenticated = false
-                }
+    Project() {
+        this.name;
+        this.display_name;
+        this.repo;
+        this.setup_push_hooks = false;
+        this.create_branches_webhook = false;
+        this.set_commit_status = false;
+    }
+
+    def GHRepository getRepository() {
+        if ( this._github == null ) {
+            try {
+                this._github = GitHub.connect()
+                this._authenticated = true
+            } catch (Throwable e2) {
+                this._github = GitHub.connectAnonymously()
+                this._authenticated = false
             }
+        }
+        if ( this._repo == null ) {
             this._repo = this._github.getRepository(this.repo)
         }
         return this._repo
     }
 
-    def getAuthenticatedRepository() {
-        if ( this._authenticated == false || this._authenticated == null ) {
+    def GHRepository getAuthenticatedRepository() {
+        if ( this._repo == null ) {
             try {
                 def github_repo_url = "https://github.com/${this.repo}"
                 this._repo = GitHubRepositoryName.create(github_repo_url).resolve().iterator().next()
-                this._authenticated = true
             } catch (Throwable e1) {
-                this._authenticated = false
+                return null
             }
         }
         return this._repo

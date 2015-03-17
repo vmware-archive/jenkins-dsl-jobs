@@ -4,9 +4,11 @@ import com.saltstack.jenkins.Project
 
 
 class LibNACL extends Project {
-    {
-        name = 'libnacl'
-        display_name = 'libnacl'
-        repo = 'saltstack/libnacl'
+
+    LibNACL() {
+        super()
+        this.name = 'libnacl'
+        this.display_name = 'libnacl'
+        this.repo = 'saltstack/libnacl'
     }
 }

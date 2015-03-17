@@ -7,6 +7,7 @@ import groovyx.net.http.ContentType
 class GitHubMarkup {
 
     def toHTML(String text, String context) {
+
         def http = new HTTPBuilder('https://api.github.com')
         http.request(POST) { req ->
             uri.path = '/markdown'
@@ -20,6 +21,7 @@ class GitHubMarkup {
                 return resp
             }
         }
+
     }
 
 }

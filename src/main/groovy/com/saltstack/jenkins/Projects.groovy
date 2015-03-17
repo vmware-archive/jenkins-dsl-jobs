@@ -15,7 +15,8 @@ class Projects {
     }
 
     def setup_projects_webhooks(manager) {
-        get_projects().each { project ->
+        this.get_projects().each() { project ->
+            manager.listener.logger.println "Setting up webhooks for ${project.display_name}"
             project.configureBranchesWebHooks(manager)
             project.configurePullRequestsWebHooks(manager)
         }
