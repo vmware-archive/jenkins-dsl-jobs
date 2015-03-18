@@ -1,44 +1,72 @@
-apply plugin: 'java'
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            url 'http://repo.jenkins-ci.org/releases/'
+        }
+    }
+    dependencies {
+        classpath 'org.jenkins-ci.tools:gradle-jpi-plugin:0.9.1'
+    }
+}
 
-group = 'com.saltstack'
-version = '1.3-SNAPSHOT'
-
-description = "Jenkins DSL Jobs Project"
-
-defaultTasks 'jar'
+apply plugin: 'maven'
+apply plugin: 'org.jenkins-ci.jpi'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
 
-repositories {
-    jcenter()
-    maven { url "http://repo.jenkins-ci.org/public/" }
-    maven { url "http://repo.jenkins-ci.org/releases/" }
-}
-
-configurations {
-    libs
-}
-
 dependencies {
-    libs 'com.fasterxml.jackson.core:jackson-databind:2.2.3'
-    libs 'org.jenkins-ci.main:jenkins-war:1.602'
-    libs 'org.jenkins-ci.main:jenkins-core:1.602'
-    libs 'org.kohsuke:github-api:1.63@jar'
-    libs 'com.coravy.hudson.plugins.github:github:1.11@jar'
-    libs 'org.codehaus.groovy.modules.http-builder:http-builder:0.7@jar'
+    jenkinsPlugins 'org.kohsuke:github-api:1.63@jar'
+    jenkinsPlugins 'com.coravy.hudson.plugins.github:github:1.11@jar'
+    compile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7@jar'
+    compile 'org.jenkins-ci.lib:dry-run-lib:0.1'
 }
 
-task libs(type: Copy) {
-    into 'build/libs'
-    from configurations.libs
+
+group = "com.saltstack"
+version = "1.0.0-SNAPSHOT"
+description = "SaltStack DSL Projects Helper Classes"
+
+jenkinsPlugin {
+    coreVersion = '1.596.1'                                               // Version of Jenkins core this plugin depends on.
+    shortName = 'saltstack-dsl-helpers'
+    compatibleSinceVersion = '1.596.1'
+    displayName = 'SaltStack Job DSL Helpers'                           // Human-readable name of plugin.
+    url = 'https://github.com/saltstack/jenkins-dsl-jobs'               // URL for plugin on Jenkins wiki or elsewhere.
+    gitHubUrl = 'https://github.com/saltstack/jenkins-dsl-jobs'         // Plugin URL on GitHub. Optional.
+
+    // The developers section is optional, and corresponds to the POM developers section.
+    developers {
+        developer {
+            id 's0undt3ch'
+            name 'Pedro Algarvio'
+            email 'pedro@algarvio.me'
+        }
+    }
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '2.2.1'
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(
+                id: 'jenkins.repo.release',
+                url: '${jenkins.repo.path}/releases'
+            )
+            snapshotRepository(
+                id: 'jenkins.repo.snapshot',
+                url: '${jenkins.repo.path}/snapshots'
+            )
+            pom.packaging = 'jpi'
+            pom.project {
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        distribution 'repo'
+                    }
+                }
+            }
+        }
+    }
 }
-
-jar {
-    baseName = 'jenkins-dsl-jobs'
-}
-jar.dependsOn libs
