@@ -109,10 +109,11 @@ freeStyleJob('maintenance/jenkins-seed') {
 
     // Job Steps
     steps {
-        copyArtifacts('maintenance/jenkins-master-seed', '*.jar', 'groovy-libs') {
-            latestSuccessful()
+        gradle {
+            gradleName('gradle')
+            useWrapper(false)
+            description('Build the required dependencies')
         }
-
         dsl {
             removeAction('DELETE')
             external('jobs/*.groovy')
