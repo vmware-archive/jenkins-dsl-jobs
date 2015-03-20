@@ -118,12 +118,6 @@ freeStyleJob('maintenance/jenkins-seed') {
         dsl {
             removeAction('DELETE')
             external('jobs/*.groovy')
-            additionalClasspath(
-            '''
-                lib/*
-                src/main/groovy
-            '''.stripIndent().trim()
-            )
         }
     }
 
