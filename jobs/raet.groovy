@@ -4,7 +4,7 @@ import groovy.text.*
 import com.saltstack.jenkins.JenkinsPerms
 import com.saltstack.jenkins.PullRequestAdmins
 import com.saltstack.jenkins.RandomString
-import com.saltstack.jenkins.projects.Raet
+import com.saltstack.jenkins.projects.RAET
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -12,7 +12,7 @@ def thr = Thread.currentThread()
 def build = thr?.executable
 
 // Common variable Definitions
-project = new Raet()
+project = new RAET()
 
 // Job rotation defaults
 def default_days_to_keep = 90

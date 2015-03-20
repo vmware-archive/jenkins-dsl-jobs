@@ -3,9 +3,9 @@ package com.saltstack.jenkins.projects
 import com.saltstack.jenkins.Project
 
 
-class Raet extends Project {
+class RAET extends Project {
 
-    Raet() {
+    RAET() {
         super()
         this.name = 'raet'
         this.display_name = 'RAET'
