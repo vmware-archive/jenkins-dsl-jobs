@@ -109,11 +109,6 @@ freeStyleJob('maintenance/jenkins-seed') {
 
     // Job Steps
     steps {
-        gradle {
-            gradleName('gradle')
-            useWrapper(false)
-            description('Build the required dependencies')
-        }
         dsl {
             removeAction('DELETE')
             external('jobs/*.groovy')
