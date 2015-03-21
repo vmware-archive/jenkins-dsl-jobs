@@ -7,8 +7,11 @@ import jenkins.security.ApiTokenProperty
 import org.kohsuke.github.GHEvent
 import org.kohsuke.github.GitHub
 import org.kohsuke.github.GHRepository
-import org.kohsuke.github.GHCommitState;
+import org.kohsuke.github.GHIssueState
+import org.kohsuke.github.GHCommitState
 import com.cloudbees.jenkins.GitHubRepositoryName
+
+import com.saltstack.jenkins.GitHubMarkup
 
 
 class Project {
@@ -238,6 +241,21 @@ class Project {
             msg = 'No git commit SHA information could be found. Not setting final commit status information.'
             manager.listener.logger.println(msg)
         }
+    }
+
+    def getOpenPullRequests() {
+        def prs = []
+        def markup_converter = new GitHubMarkup()
+        this.getAuthenticatedRepository().getPullRequests(GHIssueState.OPEN).each { pr ->
+            println '  * Processing PR #' + pr.number
+            prs.add([
+                number: pr.number,
+                title: pr.title,
+                body:  markup_converter.toHTML(pr.body, this.repo),
+                sha: pr.getHead().getSha()
+            ])
+        }
+        return prs
     }
 
 }
