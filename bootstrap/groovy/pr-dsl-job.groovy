@@ -38,7 +38,7 @@ folder("${project.name}/pr") {
     description = project.getRepositoryDescription()
 }
 
-projects.getOpenPullRequests().each() { pr ->
+project.getOpenPullRequests().each() { pr ->
     folder("${project.name}/pr/${pr.number}") {
         displayName("PR #${pr.number}")
         description = "<h1>${pr.title}</h1><br/>${pr.body}"
