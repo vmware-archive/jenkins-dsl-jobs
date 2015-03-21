@@ -115,8 +115,10 @@ project.getRepositoryBranches().each { job_branch ->
         checkoutRetryCount(3)
 
         // Job Triggers
-        triggers {
-            githubPush()
+        if ( project.setup_push_hooks ) {
+            triggers {
+                githubPush()
+            }
         }
 
         template_context = [

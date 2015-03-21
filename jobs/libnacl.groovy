@@ -111,8 +111,10 @@ def master_main_job = buildFlowJob('libnacl/master-main-build') {
     checkoutRetryCount(3)
 
     // Job Triggers
-    triggers {
-        githubPush()
+    if ( project.setup_push_hooks ) {
+        triggers {
+            githubPush()
+        }
     }
 
     buildFlow(
