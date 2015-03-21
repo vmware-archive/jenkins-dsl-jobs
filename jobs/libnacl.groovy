@@ -518,7 +518,7 @@ dsl_job = freeStyleJob('libnacl/pr/jenkins-seed') {
     // Job Steps
     steps {
         dsl {
-            removeAction('DELETE')
+            removeAction('DISABLE')
             text(
                 readFileFromWorkspace('maintenance/jenkins-seed', 'libnacl/groovy/pr-dsl-job.groovy')
             )
