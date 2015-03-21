@@ -345,7 +345,7 @@ project.getRepositoryBranches().each { job_branch ->
     }
 }
 
-dsl_job = freeStyleJob("${project.name}/pr/jenkins-seed") {
+freeStyleJob("${project.name}/pr/jenkins-seed") {
     displayName('PR Jenkins Seed')
 
     concurrentBuild(allowConcurrentBuild = false)
@@ -400,17 +400,6 @@ dsl_job = freeStyleJob("${project.name}/pr/jenkins-seed") {
         default_artifact_days_to_keep,
         default_artifact_nr_of_jobs_to_keep
     )
-
-    environmentVariables {
-        template_context = [
-            include_open_prs: true
-        ]
-        script_template = template_engine.createTemplate(
-            readFileFromWorkspace('maintenance/jenkins-seed', 'templates/pr-job-seed-envvars.groovy')
-        )
-        rendered_script_template = script_template.make(template_context.withDefault{ null })
-        groovy(rendered_script_template.toString())
-    }
 
     // Job Steps
     steps {
