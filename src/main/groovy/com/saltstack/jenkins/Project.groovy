@@ -1,11 +1,13 @@
 package com.saltstack.jenkins
 
 import hudson.model.User
+import hudson.model.Result;
 import jenkins.model.Jenkins
 import jenkins.security.ApiTokenProperty
 import org.kohsuke.github.GHEvent
 import org.kohsuke.github.GitHub
 import org.kohsuke.github.GHRepository
+import org.kohsuke.github.GHCommitState;
 import com.cloudbees.jenkins.GitHubRepositoryName
 
 
@@ -188,6 +190,53 @@ class Project {
             )
         } catch (pr_jenkins_seed_error) {
             manager.listener.logger.println 'Failed to setup pull requests webhook: ' + pr_jenkins_seed_error.toString()
+        }
+    }
+
+    def setCommitStatus(manager) {
+        manager.listener.logger.println "Setting Commit Status to the current build result"
+
+        def result = manager.build.getResult()
+
+        def commit_status_context = manager.envVars.get('COMMIT_STATUS_CONTEXT', 'default')
+        manager.listener.logger.println "GitHub commit status context: ${commit_status_context}"
+
+        def state = GHCommitState.ERROR;
+
+        if (result == null) { // Build is ongoing
+            state = GHCommitState.PENDING;
+            manager.listener.logger.println 'GitHub commit status is PENDING'
+        } else if (result.isBetterOrEqualTo(Result.SUCCESS)) {
+            state = GHCommitState.SUCCESS;
+            manager.listener.logger.println 'GitHub commit status is SUCCESS'
+        } else if (result.isBetterOrEqualTo(Result.UNSTABLE)) {
+            state = GHCommitState.FAILURE;
+            manager.listener.logger.println 'GitHub commit status is FAILURE'
+        } else {
+            manager.listener.logger.println 'GitHub commit status is ERROR'
+        }
+
+        def git_commit = manager.envVars.get('GIT_COMMIT', manager.envVars.get('ghprbActualCommit'))
+        if ( git_commit != null ) {
+            def status_result = this.getAuthenticatedRepository().createCommitStatus(
+                git_commit,
+                state,
+                manager.build.getAbsoluteUrl(),
+                manager.build.getFullDisplayName(),
+                commit_status_context
+            )
+            if ( ! status_result ) {
+                msg = 'Failed to set commit status on GitHub'
+                manager.addWarningBadge(msg)
+                manager.listener.logger.println msg
+            } else {
+                msg = "GitHub commit status successfuly set"
+                manager.addInfoBadge(msg)
+                manager.listener.logger.println(msg)
+            }
+        } else {
+            msg = 'No git commit SHA information could be found. Not setting final commit status information.'
+            manager.listener.logger.println(msg)
         }
     }
 
