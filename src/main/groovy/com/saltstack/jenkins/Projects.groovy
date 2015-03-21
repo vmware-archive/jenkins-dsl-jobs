@@ -8,7 +8,7 @@ class Projects {
         return [
             new Bootstrap(),
             new LibNACL(),
-            new Raet(),
+            new RAET(),
             new Salt(),
             new Sorbic()
         ]
