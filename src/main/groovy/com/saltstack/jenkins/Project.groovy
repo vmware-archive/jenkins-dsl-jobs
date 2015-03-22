@@ -249,7 +249,7 @@ class Project {
             println '  * Processing PR #' + pr.number
             prs.add([
                 number: pr.number,
-                title: pr.title,
+                title: """<br/><h2><img src="/static/70d2b86b/plugin/github/logov3.png"/>&nbsp;<a href="${pr.getIssueUrl()}">#${pr.number}</a> &mdash; ${pr.title}</h2>""",
                 body: new GitHubMarkup(pr.body, this.repo),
                 sha: pr.getHead().getSha()
             ])
