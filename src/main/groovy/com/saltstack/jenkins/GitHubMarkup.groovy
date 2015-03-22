@@ -2,23 +2,33 @@ package com.saltstack.jenkins
 
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.ContentType
+import static groovyx.net.http.Method.*
 
 
 class GitHubMarkup {
 
-    def toHTML(String text, String context) {
+    String text
+    String Context
+
+    GitHubMarkup(String text, String context) {
+        this.text = text
+        this.context = context
+    }
+
+    def toHTML() {
 
         def http = new HTTPBuilder('https://api.github.com')
-        http.request(POST) { req ->
+        http.request(POST, ContentType.TEXT) { req ->
             uri.path = '/markdown'
+            headers.'User-Agent' = 'Mozilla/5.0'
             requestContentType = ContentType.JSON
             body = [
-                text: text,
+                text: this.text,
                 mode: 'gfm',
-                context: context
+                context: this.context
             ]
-            response.success = { resp ->
-                return resp
+            response.success = { resp, reader ->
+                return reader.text
             }
         }
 

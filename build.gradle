@@ -20,6 +20,9 @@ dependencies {
     jenkinsPlugins 'org.kohsuke:github-api:1.63@jar'
     jenkinsPlugins 'com.coravy.hudson.plugins.github:github:1.11@jar'
     compile 'org.codehaus.groovy.modules.http-builder:http-builder:0.7@jar'
+    compile 'net.sourceforge.nekohtml:nekohtml:1.9.13'
+    compile 'xml-resolver:xml-resolver:1.2'
+    compile 'org.apache.httpcomponents:httpclient:4.2.1'
     compile 'org.jenkins-ci.lib:dry-run-lib:0.1'
 }
 
