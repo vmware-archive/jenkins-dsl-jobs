@@ -245,13 +245,12 @@ class Project {
 
     def getOpenPullRequests() {
         def prs = []
-        def markup_converter = new GitHubMarkup()
         this.getAuthenticatedRepository().getPullRequests(GHIssueState.OPEN).each { pr ->
             println '  * Processing PR #' + pr.number
             prs.add([
                 number: pr.number,
                 title: pr.title,
-                body:  markup_converter.toHTML(pr.body, this.repo),
+                body: new GitHubMarkup(pr.body, this.repo),
                 sha: pr.getHead().getSha()
             ])
         }
