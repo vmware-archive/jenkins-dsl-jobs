@@ -39,10 +39,6 @@ folder("${project.name}/pr") {
 }
 
 project.getOpenPullRequests().each() { pr ->
-    folder("${project.name}/pr/${pr.number}") {
-        displayName("PR #${pr.number}")
-        description = "<h1>${pr.title}</h1><br/>${pr.body}"
-    }
 
     try {
         existing_job = Jenkins.instance.getJob(project.name).getJob('pr').getJob("${pr.number}").getJob('main-build')
@@ -54,10 +50,15 @@ project.getOpenPullRequests().each() { pr ->
         new_prs[pr.number] = pr.sha
     }
 
+    folder("${project.name}/pr/${pr.number}") {
+        displayName("PR #${pr.number}")
+        description = "<h1>${pr.title}</h1><br/>${pr.body.toHTML()}"
+    }
+
     // PR Main Job
     buildFlowJob("${project.name}/pr/${pr.number}/main-build") {
         displayName("Main Build")
-        description("<h1>${pr.title}</h1><br/>${pr.body}")
+        description("<h1>${pr.title}</h1><br/>${pr.body.toHTML()}")
         label('worker')
         concurrentBuild(allowConcurrentBuild = false)
 
@@ -178,7 +179,7 @@ project.getOpenPullRequests().each() { pr ->
         displayName("Clone Repository")
 
         concurrentBuild(allowConcurrentBuild = true)
-        description("<h1>${pr.title}</h1><br/>${pr.body}")
+        description("<h1>${pr.title}</h1><br/>${pr.body.toHTML()}")
         label('worker')
 
         parameters {
@@ -278,7 +279,7 @@ project.getOpenPullRequests().each() { pr ->
     freeStyleJob("${project.name}/pr/${pr.number}/lint") {
         displayName("Lint")
         concurrentBuild(allowConcurrentBuild = true)
-        description("<h1>${pr.title}</h1><br/>${pr.body}")
+        description("<h1>${pr.title}</h1><br/>${pr.body.toHTML()}")
         label('container')
 
         // Parameters Definition
