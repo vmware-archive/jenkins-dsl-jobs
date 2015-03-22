@@ -32,11 +32,11 @@ def template_engine = new SimpleTemplateEngine()
 // Define the folder structure
 folder(project.name) {
     displayName(project.display_name)
-    description = project.getRepositoryDescription()
+    description(project.getRepositoryDescription())
 }
 folder("${project.name}/pr") {
     displayName('Pull Requests')
-    description = project.getRepositoryDescription()
+    description(project.getRepositoryDescription())
 }
 
 project.getOpenPullRequests().each() { pr ->
@@ -53,7 +53,7 @@ project.getOpenPullRequests().each() { pr ->
 
     folder("${project.name}/pr/${pr.number}") {
         displayName("PR #${pr.number}")
-        description = RenderUI.renderPullRequestDescription(pr)
+        description(RenderUI.renderPullRequestDescription(pr))
     }
 
     // PR Main Job
