@@ -30,7 +30,11 @@ class Projects {
                 github_repo_url = github_repo_url[0..-1]
             }
             if ( github_repo_url == "https://github.com/${project.repo}" ) {
-                project.setCommitStatus(manager)
+                if ( project.set_commit_status ) {
+                    project.setCommitStatus(manager)
+                } else {
+                    manager.listener.logger.println "Setting commit status for project ${project.display_name} is disabled. Skipping..."
+                }
             }
         }
     }
