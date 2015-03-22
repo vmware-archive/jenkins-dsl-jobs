@@ -13,7 +13,7 @@ public class RenderUI {
             ${pr.title}
         <h3>
         <br/>
-        ${GitHubMarkup.toHTML(pr.body, pr.owner.getFullName())}
+        ${GitHubMarkup.toHTML(pr.body, pr.repo)}
         """.stripIndent()
     }
 }

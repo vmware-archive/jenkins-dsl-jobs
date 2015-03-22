@@ -251,6 +251,7 @@ class Project {
                 url: pr.getIssueUrl(),
                 body: pr.body,
                 sha: pr.getHead().getSha()
+                repo: this.repo
             ])
         }
         return prs
