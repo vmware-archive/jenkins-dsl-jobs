@@ -26,9 +26,10 @@ dependencies {
     compile 'org.jenkins-ci.lib:dry-run-lib:0.1'
 }
 
+import java.text.SimpleDateFormat
 
 group = "com.saltstack"
-version = "1.0.0-SNAPSHOT"
+version = new SimpleDateFormat("yyyy.MM.dd").format(new Date()).toString()
 description = "SaltStack DSL Projects Helper Classes"
 
 jenkinsPlugin {
