@@ -64,16 +64,16 @@ class Project {
     }
 
     def getRepositoryDescription() {
-        if ( getRepository() != null ) {
-            return getRepository().getDescription()
+        if ( getAuthenticatedRepository() != null ) {
+            return getAuthenticatedRepository().getDescription()
         }
         return null
     }
 
     def getRepositoryBranches() {
         def branches = []
-        if ( getRepository() != null ) {
-            getRepository().getBranches().each { branch_name, branch_data ->
+        if ( getAuthenticatedRepository() != null ) {
+            getAuthenticatedRepository().getBranches().each { branch_name, branch_data ->
                 branches.add(branch_name)
             }
         }
