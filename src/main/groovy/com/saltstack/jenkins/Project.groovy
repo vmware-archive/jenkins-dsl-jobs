@@ -248,9 +248,9 @@ class Project {
             prs.add([
                 number: pr.number,
                 title: pr.title,
-                url: pr.getIssueUrl(),
+                url: pr.getHtmlUrl(),
                 body: pr.body,
-                sha: pr.getHead().getSha()
+                sha: pr.getHead().getSha(),
                 repo: this.repo
             ])
         }
