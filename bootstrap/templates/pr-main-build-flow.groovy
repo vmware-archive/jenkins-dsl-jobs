@@ -13,11 +13,11 @@ guard {
                          GIT_COMMIT: params['ghprbActualCommit'],
                          CLONE_BUILD_ID: clone.build.number)
         },
-        {
-            unit = build('${project}/pr/${pr_number}/tests',
-                         GIT_COMMIT: params['ghprbActualCommit'],
-                         CLONE_BUILD_ID: clone.build.number)
-        }
+        //{
+        //    unit = build('${project}/pr/${pr_number}/tests',
+        //                 GIT_COMMIT: params['ghprbActualCommit'],
+        //                 CLONE_BUILD_ID: clone.build.number)
+        //}
     )
 
 } rescue {
@@ -29,9 +29,9 @@ guard {
     local_lint_workspace_copy.mkdirs()
     toolbox.copyFiles(lint.workspace, local_lint_workspace_copy)
 
-    local_unit_workspace_copy = build.workspace.child('unit')
-    local_unit_workspace_copy.mkdirs()
-    toolbox.copyFiles(unit.workspace, local_unit_workspace_copy)
+    //local_unit_workspace_copy = build.workspace.child('unit')
+    //local_unit_workspace_copy.mkdirs()
+    //toolbox.copyFiles(unit.workspace, local_unit_workspace_copy)
 
     /*
      *  Copy the clone build changelog.xml into this jobs root for proper changelog report
@@ -47,6 +47,6 @@ guard {
 
     // Delete the child workspaces directory
     lint.workspace.deleteRecursive()
-    unit.workspace.deleteRecursive()
+    //unit.workspace.deleteRecursive()
     clone.workspace.deleteRecursive()
 }
