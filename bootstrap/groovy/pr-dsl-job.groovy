@@ -2,6 +2,7 @@
 import groovy.json.*
 import groovy.text.*
 import jenkins.model.Jenkins
+import com.saltstack.jenkins.RenderUI
 import com.saltstack.jenkins.PullRequestAdmins
 import com.saltstack.jenkins.projects.Bootstrap
 
@@ -52,13 +53,13 @@ project.getOpenPullRequests().each() { pr ->
 
     folder("${project.name}/pr/${pr.number}") {
         displayName("PR #${pr.number}")
-        description = "<h1>${pr.title}</h1><br/>${pr.body.toHTML()}"
+        description = RenderUI.renderPullRequestDescription(pr)
     }
 
     // PR Main Job
     buildFlowJob("${project.name}/pr/${pr.number}/main-build") {
         displayName("Main Build")
-        description("<h1>${pr.title}</h1><br/>${pr.body.toHTML()}")
+        description(RenderUI.renderPullRequestDescription(pr))
         label('worker')
         concurrentBuild(allowConcurrentBuild = false)
 
@@ -179,7 +180,7 @@ project.getOpenPullRequests().each() { pr ->
         displayName("Clone Repository")
 
         concurrentBuild(allowConcurrentBuild = true)
-        description("<h1>${pr.title}</h1><br/>${pr.body.toHTML()}")
+        description(RenderUI.renderPullRequestDescription(pr))
         label('worker')
 
         parameters {
@@ -279,7 +280,7 @@ project.getOpenPullRequests().each() { pr ->
     freeStyleJob("${project.name}/pr/${pr.number}/lint") {
         displayName("Lint")
         concurrentBuild(allowConcurrentBuild = true)
-        description("<h1>${pr.title}</h1><br/>${pr.body.toHTML()}")
+        description(RenderUI.renderPullRequestDescription(pr))
         label('container')
 
         // Parameters Definition

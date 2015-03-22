@@ -11,8 +11,6 @@ import org.kohsuke.github.GHIssueState
 import org.kohsuke.github.GHCommitState
 import com.cloudbees.jenkins.GitHubRepositoryName
 
-import com.saltstack.jenkins.GitHubMarkup
-
 
 class Project {
     String name;
@@ -249,8 +247,9 @@ class Project {
             println '  * Processing PR #' + pr.number
             prs.add([
                 number: pr.number,
-                title: """<br/><h2><img src="/static/70d2b86b/plugin/github/logov3.png"/>&nbsp;<a href="${pr.getIssueUrl()}">#${pr.number}</a> &mdash; ${pr.title}</h2>""",
-                body: new GitHubMarkup(pr.body, this.repo),
+                title: pr.title,
+                url: pr.getIssueUrl(),
+                body: pr.body,
                 sha: pr.getHead().getSha()
             ])
         }

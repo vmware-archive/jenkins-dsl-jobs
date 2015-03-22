@@ -7,15 +7,7 @@ import static groovyx.net.http.Method.*
 
 class GitHubMarkup {
 
-    String text
-    String Context
-
-    GitHubMarkup(String text, String context) {
-        this.text = text
-        this.context = context
-    }
-
-    def toHTML() {
+    static def toHTML(text, context) {
 
         def http = new HTTPBuilder('https://api.github.com')
         http.request(POST, ContentType.TEXT) { req ->
@@ -24,9 +16,9 @@ class GitHubMarkup {
             headers.'Accept' = 'application/json'
             requestContentType = ContentType.JSON
             body = [
-                text: this.text,
+                text: text,
                 mode: 'gfm',
-                context: this.context
+                context: context
             ]
             response.success = { resp, reader ->
                 return reader.text
