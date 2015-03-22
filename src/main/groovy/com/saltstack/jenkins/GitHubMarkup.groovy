@@ -21,6 +21,7 @@ class GitHubMarkup {
         http.request(POST, ContentType.TEXT) { req ->
             uri.path = '/markdown'
             headers.'User-Agent' = 'Mozilla/5.0'
+            headers.'Accept' = 'application/json'
             requestContentType = ContentType.JSON
             body = [
                 text: this.text,
