@@ -26,7 +26,7 @@ class Projects {
     def setCommitStatus(manager) {
         this.get_projects().each() { project ->
             def github_repo_url = manager.build.getProject().getProperty(GithubProjectProperty.class).getProjectUrl()
-            if ( github_repo_url.endsWith('/') ) {
+            if ( github_repo_url[-1] == '/' ) {
                 github_repo_url = github_repo_url[0..-1]
             }
             if ( github_repo_url == "https://github.com/${project.repo}" ) {
