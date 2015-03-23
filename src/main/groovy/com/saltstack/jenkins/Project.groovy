@@ -313,7 +313,7 @@ class Project {
     }
 
     def triggerPullRequestJobs(manager) {
-        new_prs_file = manager.build.getWorkspace().child('new-prs.txt')
+        def new_prs_file = manager.build.getWorkspace().child('new-prs.txt')
         if ( new_prs_file.exists() == false ) {
             manager.listener.logger.println "The 'new-prs.txt' file was not found in ${manager.build.getWorkspace().toString()}. Not triggering PR jobs."
             return
