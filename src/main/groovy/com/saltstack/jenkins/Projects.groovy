@@ -24,15 +24,19 @@ class Projects {
     }
 
     def filterOutProject(build) {
-        this.get_projects().each() { project ->
+        def match = null
+        this.get_projects().find() { project ->
             def github_repo_url = build.getProject().getProperty(GithubProjectProperty.class).getProjectUrl().toString()
             if ( github_repo_url[-1] == '/' ) {
                 github_repo_url = github_repo_url[0..-1]
             }
             if ( github_repo_url == "https://github.com/${project.repo}" ) {
-                return project
+                match = project
+                return true
             }
+            return false
         }
+        return match
     }
 
     def setCommitStatusPre(currentBuild, commit_status_context, out) {
