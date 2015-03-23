@@ -165,7 +165,7 @@ project.getOpenPullRequests().each() { pr ->
                 commit_status_context: 'ci'
             ]
             script_template = template_engine.createTemplate(
-                readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -282,7 +282,7 @@ project.getOpenPullRequests().each() { pr ->
             }
 
             script_template = template_engine.createTemplate(
-                readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -379,7 +379,7 @@ project.getOpenPullRequests().each() { pr ->
             }
 
             script_template = template_engine.createTemplate(
-                readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -479,7 +479,7 @@ project.getOpenPullRequests().each() { pr ->
             }
 
             script_template = template_engine.createTemplate(
-                readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
 
