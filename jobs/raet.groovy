@@ -132,7 +132,7 @@ def master_main_job = buildFlowJob("${project.name}/master-main-build") {
         }
 
         template_context = [
-            commit_status_context: "default"
+            commit_status_context: 'ci'
         ]
         script_template = template_engine.createTemplate(
             readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')

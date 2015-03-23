@@ -199,7 +199,7 @@ class Project {
 
         def result = manager.build.getResult()
 
-        def commit_status_context = manager.envVars.get('COMMIT_STATUS_CONTEXT', 'default')
+        def commit_status_context = manager.envVars.get('COMMIT_STATUS_CONTEXT', 'ci')
         manager.listener.logger.println "GitHub commit status context: ${commit_status_context}"
 
         def state = GHCommitState.ERROR;

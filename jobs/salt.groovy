@@ -155,7 +155,7 @@ project.getRepositoryBranches().each { branch_name ->
         checkoutRetryCount(3)
 
         template_context = [
-            commit_status_context: 'default',
+            commit_status_context: 'ci',
             github_repo: project.repo,
             branch_name: branch_name,
             branch_name_l: branch_name_l,
@@ -400,7 +400,7 @@ project.getRepositoryBranches().each { branch_name ->
                     }
 
                     template_context = [
-                        commit_status_context: "default"
+                        commit_status_context: 'ci'
                     ]
                     script_template = template_engine.createTemplate(
                         readFileFromWorkspace('maintenance/jenkins-seed', 'templates/post-build-set-commit-status.groovy')
