@@ -504,17 +504,6 @@ dsl_job = freeStyleJob('libnacl/pr/jenkins-seed') {
         default_artifact_nr_of_jobs_to_keep
     )
 
-    environmentVariables {
-        template_context = [
-            include_open_prs: true
-        ]
-        script_template = template_engine.createTemplate(
-            readFileFromWorkspace('maintenance/jenkins-seed', 'templates/pr-job-seed-envvars.groovy')
-        )
-        rendered_script_template = script_template.make(template_context.withDefault{ null })
-        groovy(rendered_script_template.toString())
-    }
-
     // Job Steps
     steps {
         dsl {
