@@ -1,5 +1,6 @@
 package com.saltstack.jenkins
 
+import groovy.json.*
 import hudson.model.User
 import hudson.model.Result
 import jenkins.model.Jenkins
@@ -312,19 +313,19 @@ class Project {
     }
 
     def triggerPullRequestJobs(manager) {
-        def triggered = []
-        def slurper = new JsonSlurper()
         new_prs_file = manager.build.getWorkspace().child('new-prs.txt')
         if ( new_prs_file.exists() == false ) {
             manager.listener.logger.println "The 'new-prs.txt' file was not found in ${manager.build.getWorkspace().toString()}. Not triggering PR jobs."
             return
         }
+        def triggered = []
+        def slurper = new JsonSlurper()
         new_prs = slurper.parseText(new_prs_file.readToString())
         new_prs.each { pr_id, commit_sha ->
             if ( triggered.contains(pr_id) == false) {
                 try {
                     pr_job = Jenkins.instance.getJob(this.name).getJob('pr').getJob(pr_id).getJob('main-build')
-                    manager.listener.logger.println("Triggering build for ${pr_job.getFullDisplayName()} @ ${commit_sha})
+                    manager.listener.logger.println "Triggering build for ${pr_job.getFullDisplayName()} @ ${commit_sha})"
                     try {
                         this.getAuthenticatedRepository().createCommitStatus(
                             commit_sha,
