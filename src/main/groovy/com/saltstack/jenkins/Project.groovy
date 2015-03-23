@@ -320,11 +320,11 @@ class Project {
         }
         def triggered = []
         def slurper = new JsonSlurper()
-        new_prs = slurper.parseText(new_prs_file.readToString())
+        def new_prs = slurper.parseText(new_prs_file.readToString())
         new_prs.each { pr_id, commit_sha ->
             if ( triggered.contains(pr_id) == false) {
                 try {
-                    pr_job = Jenkins.instance.getJob(this.name).getJob('pr').getJob(pr_id).getJob('main-build')
+                    def pr_job = Jenkins.instance.getJob(this.name).getJob('pr').getJob(pr_id).getJob('main-build')
                     manager.listener.logger.println "Triggering build for ${pr_job.getFullDisplayName()} @ ${commit_sha})"
                     try {
                         this.getAuthenticatedRepository().createCommitStatus(
@@ -337,9 +337,9 @@ class Project {
                     } catch(create_commit_error) {
                         manager.listener.logger.println "Failed to set commit status: " + create_commit_error.toString()
                     }
-                    trigger = pr_job.triggers.iterator().next().value
-                    ghprb_repo = trigger.getRepository()
-                    pull_req = ghprb_repo.getPullRequest(pr_id.toInteger())
+                    def trigger = pr_job.triggers.iterator().next().value
+                    def ghprb_repo = trigger.getRepository()
+                    def pull_req = ghprb_repo.getPullRequest(pr_id.toInteger())
                     ghprb_repo.check(pull_req)
                     pull_req = ghprb_repo.pulls.get(pr_id.toInteger())
                     ghprb_repo.helper.builds.build(pull_req, pull_req.author, 'Job Created. Start Initial Build')
