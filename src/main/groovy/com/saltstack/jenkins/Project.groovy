@@ -1,7 +1,7 @@
 package com.saltstack.jenkins
 
 import hudson.model.User
-import hudson.model.Result;
+import hudson.model.Result
 import jenkins.model.Jenkins
 import jenkins.security.ApiTokenProperty
 import org.kohsuke.github.GHEvent
@@ -309,6 +309,45 @@ class Project {
         }
 
         return prs
+    }
+
+    def triggerPullRequestJobs(manager) {
+        def triggered = []
+        def slurper = new JsonSlurper()
+        new_prs_file = manager.build.getWorkspace().child('new-prs.txt')
+        if ( new_prs_file.exists() == false ) {
+            manager.listener.logger.println "The 'new-prs.txt' file was not found in ${manager.build.getWorkspace().toString()}. Not triggering PR jobs."
+            return
+        }
+        new_prs = slurper.parseText(new_prs_file.readToString())
+        new_prs.each { pr_id, commit_sha ->
+            if ( triggered.contains(pr_id) == false) {
+                try {
+                    pr_job = Jenkins.instance.getJob(this.name).getJob('pr').getJob(pr_id).getJob('main-build')
+                    manager.listener.logger.println("Triggering build for ${pr_job.getFullDisplayName()} @ ${commit_sha})
+                    try {
+                        this.getAuthenticatedRepository().createCommitStatus(
+                            commit_sha,
+                            GHCommitState.SUCCESS,
+                            pr_job.getAbsoluteUrl(),
+                            "Create Jobs For PR #${pr_id}",
+                            'ci/create-jobs'
+                        )
+                    } catch(create_commit_error) {
+                        manager.listener.logger.println "Failed to set commit status: " + create_commit_error.toString()
+                    }
+                    trigger = pr_job.triggers.iterator().next().value
+                    ghprb_repo = trigger.getRepository()
+                    pull_req = ghprb_repo.getPullRequest(pr_id.toInteger())
+                    ghprb_repo.check(pull_req)
+                    pull_req = ghprb_repo.pulls.get(pr_id.toInteger())
+                    ghprb_repo.helper.builds.build(pull_req, pull_req.author, 'Job Created. Start Initial Build')
+                } catch(e) {
+                    manager.listener.logger.println "Failed to get Job ${this.name}/pr/${pr_id}/main-build: ${e.toString()}"
+                }
+                triggered.add(pr_id)
+            }
+        }
     }
 
 }
