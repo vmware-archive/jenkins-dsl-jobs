@@ -515,13 +515,8 @@ dsl_job = freeStyleJob('libnacl/pr/jenkins-seed') {
     }
 
     publishers {
-        template_context = [
-            project: 'libnacl'
-        ]
-        script_template = template_engine.createTemplate(
-            readFileFromWorkspace('maintenance/jenkins-seed', 'templates/pr-job-seed-post-build.groovy')
+        groovyPostBuild(
+            readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/pr-job-seed-post-build.groovy')
         )
-        rendered_script_template = script_template.make(template_context.withDefault{ null })
-        groovyPostBuild(rendered_script_template.toString())
     }
 }
