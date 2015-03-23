@@ -243,17 +243,22 @@ class Project {
 
     def getOpenPullRequests() {
         def prs = []
-        this.getAuthenticatedRepository().getPullRequests(GHIssueState.OPEN).each { pr ->
-            println '  * Processing PR #' + pr.number
-            prs.add([
-                number: pr.number,
-                title: pr.title,
-                url: pr.getHtmlUrl(),
-                body: pr.body,
-                sha: pr.getHead().getSha(),
-                repo: this.repo
-            ])
+        if ( this.getAuthenticatedRepository() != null ) {
+            this.getAuthenticatedRepository().getPullRequests(GHIssueState.OPEN).each { pr ->
+                println '  * Processing PR #' + pr.number
+                prs.add([
+                    number: pr.number,
+                    title: pr.title,
+                    url: pr.getHtmlUrl(),
+                    body: pr.body,
+                    sha: pr.getHead().getSha(),
+                    repo: this.repo
+                ])
+            }
+        } else {
+            println "Unable to load the authenticated repository instance for ${this.display_name}"
         }
+
         return prs
     }
 
