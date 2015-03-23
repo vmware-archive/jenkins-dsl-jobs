@@ -1,67 +1,9 @@
-import hudson.model.Result;
-import org.kohsuke.github.GHCommitState;
-import com.cloudbees.jenkins.GitHubRepositoryName;
-import com.coravy.hudson.plugins.github.GithubProjectProperty;
+import com.saltstack.jenkins.Projects
+
+def projects = new Projects()
+projects.setCommitStatusPre(currentBuild, '$commit_status_context', out)
 
 def build_env_vars = currentBuild.getEnvironment()
-def result = currentBuild.getResult()
-
-def state = GHCommitState.ERROR;
-
-if (result == null) { // Build is ongoing
-    state = GHCommitState.PENDING;
-    out.println 'GitHub commit status is PENDING'
-} else if (result.isBetterOrEqualTo(Result.SUCCESS)) {
-    state = GHCommitState.SUCCESS;
-    out.println 'GitHub commit status is SUCCESS'
-} else if (result.isBetterOrEqualTo(Result.UNSTABLE)) {
-    state = GHCommitState.FAILURE;
-    out.println 'GitHub commit status is FAILURE'
-} else {
-    out.println 'GitHub commit status is ERROR'
-}
-
-def github_repo_url = currentJob.getProperty(GithubProjectProperty.class).getProjectUrl()
-
-if ( github_repo_url != null ) {
-    out.println 'GitHub Repository URL: ' + github_repo_url
-    repo = GitHubRepositoryName.create(github_repo_url.toString())
-    if ( repo != null ) {
-        def git_commit = build_env_vars.get('GIT_COMMIT', build_env_vars.get('ghprbActualCommit'))
-        if ( git_commit != null ) {
-            repo.resolve().each {
-                try {
-                    def status_result = it.createCommitStatus(
-                        git_commit,
-                        state,
-                        currentBuild.getAbsoluteUrl(),
-                        currentBuild.getFullDisplayName(),
-                        '$commit_status_context'
-                    )
-                    if ( ! status_result ) {
-                        msg = 'Failed to set commit status on GitHub'
-                        out.println msg
-                    } else {
-                        msg = "GitHub commit status successfuly set"
-                        out.println(msg)
-                    }
-                } catch(commit_status_error) {
-                    msg = 'Failed to set commit status on GitHub: ' + commit_status_error
-                    out.println msg
-                }
-            }
-        } else {
-            out.println('No git commit SHA information could be found. Not setting initial commit status information.')
-
-        }
-    } else {
-        msg = "Failed to resolve the github GIT repo URL from " + github_repo_url
-        out.println msg
-    }
-} else {
-    msg = "Unable to find the GitHub project URL from the build's properties"
-    out.println msg
-}
 
 <% if ( vm_name_nodots != null ) { %>
 def build_number = build_env_vars['BUILD_NUMBER'].padLeft(4, '0')

@@ -23,7 +23,7 @@ class Projects {
         }
     }
 
-    def setCommitStatus(manager) {
+    def setCommitStatusPre(currentBuild, commit_status_context, out) {
         this.get_projects().each() { project ->
             def github_repo_url = manager.build.getProject().getProperty(GithubProjectProperty.class).getProjectUrl().toString()
             if ( github_repo_url[-1] == '/' ) {
@@ -31,7 +31,23 @@ class Projects {
             }
             if ( github_repo_url == "https://github.com/${project.repo}" ) {
                 if ( project.set_commit_status ) {
-                    project.setCommitStatus(manager)
+                    project.setCommitStatusPre(currentBuild, commit_status_context, out)
+                } else {
+                    manager.listener.logger.println "Setting commit status for project ${project.display_name} is disabled. Skipping..."
+                }
+            }
+        }
+    }
+
+    def setCommitStatusPost(manager) {
+        this.get_projects().each() { project ->
+            def github_repo_url = manager.build.getProject().getProperty(GithubProjectProperty.class).getProjectUrl().toString()
+            if ( github_repo_url[-1] == '/' ) {
+                github_repo_url = github_repo_url[0..-1]
+            }
+            if ( github_repo_url == "https://github.com/${project.repo}" ) {
+                if ( project.set_commit_status ) {
+                    project.setCommitStatusPost(manager)
                 } else {
                     manager.listener.logger.println "Setting commit status for project ${project.display_name} is disabled. Skipping..."
                 }

@@ -194,7 +194,56 @@ class Project {
         }
     }
 
-    def setCommitStatus(manager) {
+    def setCommitStatusPre(currentBuild, commit_status_context, out) {
+        if ( this.set_commit_status != true ) {
+            out.println "Not setting commit status for ${this.display_name} because it's currently disabled"
+            return
+        }
+        out.println "Setting Initial Commit Status to the current build"
+
+        def build_env_vars = currentBuild.getEnvironment()
+        def result = currentBuild.getResult()
+
+        def state = GHCommitState.ERROR;
+
+        if (result == null) { // Build is ongoing
+            state = GHCommitState.PENDING;
+            out.println 'GitHub commit status is PENDING'
+        } else if (result.isBetterOrEqualTo(Result.SUCCESS)) {
+            state = GHCommitState.SUCCESS;
+            out.println 'GitHub commit status is SUCCESS'
+        } else if (result.isBetterOrEqualTo(Result.UNSTABLE)) {
+            state = GHCommitState.FAILURE;
+            out.println 'GitHub commit status is FAILURE'
+        } else {
+            out.println 'GitHub commit status is ERROR'
+        }
+
+        def git_commit = build_env_vars.get('GIT_COMMIT', build_env_vars.get('ghprbActualCommit'))
+        if ( git_commit != null ) {
+            def status_result = this.getAuthenticatedRepository().createCommitStatus(
+                git_commit,
+                state,
+                currentBuild.getAbsoluteUrl(),
+                currentBuild.getFullDisplayName(),
+                commit_status_context
+            )
+            if ( ! status_result ) {
+                out.println "Failed to set commit status on GitHub for ${this.repo}@${git_commit}"
+                manager.listener.logger.println msg
+            } else {
+                out.println "GitHub commit status successfuly set for for ${this.repo}@${git_commit}"
+            }
+        } else {
+            out.println 'No git commit SHA information could be found. Not setting final commit status information.'
+        }
+    }
+
+    def setCommitStatusPost(manager) {
+        if ( this.set_commit_status != true ) {
+            manager.listener.logger.println "Not setting commit status for ${this.display_name} because it's currently disabled"
+            return
+        }
         manager.listener.logger.println "Setting Commit Status to the current build result"
 
         def result = manager.build.getResult()
@@ -227,11 +276,11 @@ class Project {
                 commit_status_context
             )
             if ( ! status_result ) {
-                msg = 'Failed to set commit status on GitHub'
+                msg = "Failed to set commit status on GitHub for ${this.repo}@${git_commit}"
                 manager.addWarningBadge(msg)
                 manager.listener.logger.println msg
             } else {
-                msg = "GitHub commit status successfuly set"
+                msg = "GitHub commit status successfuly set for for ${this.repo}@${git_commit}"
                 manager.addInfoBadge(msg)
                 manager.listener.logger.println(msg)
             }
