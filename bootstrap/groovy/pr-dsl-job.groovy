@@ -1,4 +1,4 @@
-// $project Jenkins jobs seed script
+// Salt Bootstrap Jenkins jobs seed script
 import groovy.json.*
 import groovy.text.*
 import jenkins.model.Jenkins
