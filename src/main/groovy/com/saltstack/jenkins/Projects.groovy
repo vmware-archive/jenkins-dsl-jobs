@@ -25,7 +25,7 @@ class Projects {
 
     def filterOutProject(build) {
         def match = null
-        this.get_projects().find() { project ->
+        this.get_projects().find { project ->
             def github_repo_url = build.getProject().getProperty(GithubProjectProperty.class).getProjectUrl().toString()
             if ( github_repo_url[-1] == '/' ) {
                 github_repo_url = github_repo_url[0..-1]
