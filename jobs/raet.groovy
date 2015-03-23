@@ -405,9 +405,6 @@ def master_unit_job = freeStyleJob("${project.name}/master/unit") {
         // Setup the required virtualenv
         shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
 
-        // Set initial commit status
-        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/set-commit-status.sh'))
-
         // Copy the workspace artifact
         copyArtifacts("${project.name}/master/clone", 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
