@@ -40,7 +40,7 @@ class Projects {
         if ( project.set_commit_status ) {
             project.setCommitStatusPre(currentBuild, commit_status_context, out)
         } else {
-            manager.listener.logger.println "Setting commit status for project ${project.display_name} is disabled. Skipping..."
+            out.println "Setting commit status for project ${project.display_name} is disabled. Skipping..."
         }
     }
 
