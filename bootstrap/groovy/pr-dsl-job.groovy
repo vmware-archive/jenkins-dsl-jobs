@@ -4,7 +4,6 @@ import groovy.text.*
 import jenkins.model.Jenkins
 import com.saltstack.jenkins.RenderUI
 import com.saltstack.jenkins.PullRequestAdmins
-import com.saltstack.jenkins.projects.Bootstrap
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -13,7 +12,7 @@ def thr = Thread.currentThread()
 def build = thr?.executable
 
 // Common variable Definitions
-def project = new Bootstrap()
+def project = new JsonSlurper().parseText(build.getEnvironment().SEED_DATA
 
 // Job rotation defaults
 def default_days_to_keep = 90
@@ -32,14 +31,14 @@ def template_engine = new SimpleTemplateEngine()
 // Define the folder structure
 folder(project.name) {
     displayName(project.display_name)
-    description(project.getRepositoryDescription())
+    description(project.description)
 }
 folder("${project.name}/pr") {
     displayName('Pull Requests')
-    description(project.getRepositoryDescription())
+    description(project.description)
 }
 
-project.getOpenPullRequests().each() { pr ->
+project.pull_requests.each() { pr ->
 
     try {
         existing_job = Jenkins.instance.getJob(project.name).getJob('pr').getJob("${pr.number}").getJob('main-build')

@@ -5,7 +5,6 @@ import com.saltstack.jenkins.JenkinsPerms
 import com.saltstack.jenkins.PullRequestAdmins
 import com.saltstack.jenkins.RandomString
 import com.saltstack.jenkins.GitHubMarkup
-import com.saltstack.jenkins.projects.Bootstrap
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -13,7 +12,7 @@ def thr = Thread.currentThread()
 def build = thr?.executable
 
 // Common variable Definitions
-def project = new Bootstrap()
+def project = new JsonSlurper().parseText(build.getEnvironment().SEED_PROJECTS.bootstrap
 
 // Job rotation defaults
 def default_days_to_keep = 90
@@ -31,24 +30,24 @@ def template_engine = new SimpleTemplateEngine()
 // Define the folder structure
 folder(project.name) {
     displayName(project.display_name)
-    description = project.getRepositoryDescription()
+    description = project.description
 }
-project.getRepositoryBranches().each { job_branch ->
+project.branches.each { job_branch ->
     folder("${project.name}/${job_branch}") {
         displayName("${job_branch.capitalize()} Branch")
-        description = project.getRepositoryDescription()
+        description = project.description
     }
 }
 folder("${project.name}/pr") {
     displayName('Pull Requests')
-    description = project.getRepositoryDescription()
+    description = project.description
 }
 
-project.getRepositoryBranches().each { job_branch ->
+project.branches.each { job_branch ->
     // Branch Main Job
     buildFlowJob("${project.name}/${job_branch}-main-build") {
         displayName("${job_branch.capitalize()} Branch Main Build")
-        description(project.getRepositoryDescription())
+        description(project.description)
         label('worker')
         concurrentBuild(allowConcurrentBuild = true)
 
@@ -159,7 +158,7 @@ project.getRepositoryBranches().each { job_branch ->
         displayName('Clone Repository')
 
         concurrentBuild(allowConcurrentBuild = true)
-        description(project.getRepositoryDescription() + ' - Clone Repository')
+        description(project.description + ' - Clone Repository')
         label('worker')
 
         configure {
@@ -250,7 +249,7 @@ project.getRepositoryBranches().each { job_branch ->
     freeStyleJob("${project.name}/${job_branch}/lint") {
         displayName('Lint')
         concurrentBuild(allowConcurrentBuild = true)
-        description(project.getRepositoryDescription() + ' - Code Lint')
+        description(project.description + ' - Code Lint')
         label('container')
 
         // Parameters Definition
@@ -400,6 +399,15 @@ freeStyleJob("${project.name}/pr/jenkins-seed") {
         default_artifact_days_to_keep,
         default_artifact_nr_of_jobs_to_keep
     )
+
+    environmentVariables {
+        groovy('''
+        import com.saltstack.jenkins.projects.Bootstrap
+
+        return [SEED_DATA: new Bootstrap().toJSON(include_branches = false, include_prs = true)]
+        '''.trim().stripIndent())
+    }
+
 
     // Job Steps
     steps {
