@@ -1,5 +1,6 @@
 package com.saltstack.jenkins
 
+import groovy.json.*
 import com.saltstack.jenkins.projects.*
 import com.coravy.hudson.plugins.github.GithubProjectProperty
 
@@ -13,6 +14,18 @@ class Projects {
             new Salt(),
             new Sorbic()
         ]
+    }
+
+    static def toMap(Boolean include_branches = false, Boolean include_prs = false) {
+        def data = [:]
+        this.get_projects().each() { project ->
+            data[project.name] = project.toMap(include_branches, include_prs)
+        }
+        return data
+    }
+
+    static def toJSON(Boolean include_branches = false, Boolean include_prs = false) {
+        return new JsonBuilder(this.toMap(include_branches, include_prs)).toString()
     }
 
     def setup_projects_webhooks(manager) {

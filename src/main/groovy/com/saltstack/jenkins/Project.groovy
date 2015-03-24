@@ -64,6 +64,30 @@ class Project {
         return this._repo
     }
 
+    def toMap(Boolean include_branches = false, Boolean include_prs = false) {
+        def data = [
+            name: this.name,
+            display_name: this.display_name,
+            description: this.getProjectDescription(),
+            repo: this.repo,
+            setup_push_hooks: this.setup_push_hooks,
+            create_branches_webhook: this.create_branches_webhook,
+            set_commit_status: this.set_commit_status
+        ]
+        if ( include_branches ) {
+            data['branches'] = this.getRepositoryBranches()
+        }
+        if ( include_prs ) {
+            data['pull_requests'] = this.getOpenPullRequests()
+        }
+        return data
+    }
+
+    def toJSON(Boolean include_branches = false, Boolean include_prs = false) {
+        return new JsonBuilder(this.toMap(include_branches, include_prs)).toString()
+    }
+
+
     def getRepositoryDescription() {
         if ( getAuthenticatedRepository() != null ) {
             return getAuthenticatedRepository().getDescription()
