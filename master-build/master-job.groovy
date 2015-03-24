@@ -107,6 +107,14 @@ freeStyleJob('maintenance/jenkins-seed') {
     }
     checkoutRetryCount(3)
 
+    environmentVariables {
+        groovy('''
+        import com.saltstack.jenkins.Projects
+
+        return [SEED_PROJECTS: Projects.toJSON(include_branches = true, include_prs = false)]
+        '''.trim().stripIndent())
+    }
+
     // Job Steps
     steps {
         dsl {
