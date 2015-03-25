@@ -1,6 +1,7 @@
 package com.saltstack.jenkins
 
 import groovy.json.*
+import hudson.Functions
 import hudson.model.User
 import hudson.model.Result
 import jenkins.model.Jenkins
@@ -13,6 +14,8 @@ import org.kohsuke.github.GHIssueState
 import org.kohsuke.github.GHCommitState
 import org.kohsuke.github.Requester
 import com.cloudbees.jenkins.GitHubRepositoryName
+
+import com.saltstack.jenkins.GitHubMarkup
 
 
 class Project {
@@ -322,18 +325,25 @@ class Project {
     def getOpenPullRequests() {
         def prs = []
         if ( this.getAuthenticatedRepository() != null ) {
+            def gh_auth_user = this.getAuthenticatedRepository().root.login
+            def gh_auth_token = this.getAuthenticatedRepository().root.encodedAuthorization.split()[-1]
             this.getAuthenticatedRepository().getPullRequests(GHIssueState.OPEN).each { pr ->
                 println '  * Processing PR #' + pr.number
                 prs.add([
                     number: pr.number,
                     title: pr.title,
                     url: pr.getHtmlUrl(),
-                    body: this.renderMarkup(
-                        pr.body,
-                        this.repo,
-                        this.getAuthenticatedRepository().root.login,
-                        this.getAuthenticatedRepository().root.encodedAuthorization.split()[-1]
-                    ),
+                    body: pr.body.
+                    rendered_description: """
+                        <h3>
+                            <img src="${hudson.Functions.getResourcePath()}/plugin/github/logov3.png"/>
+                            <a href="${pr.url}" title="${pr.title}" alt="${pr.title}">#${pr.number}</a>
+                            &mdash;
+                            ${pr.title}
+                        <h3>
+                        <br/>
+                        ${GitHubMarkup.toHTML(pr.body, pr.repo, gh_auth_user, gh_auth_token)}
+                        """.stripIndent(),
                     sha: pr.getHead().getSha(),
                     repo: this.repo
                 ])
