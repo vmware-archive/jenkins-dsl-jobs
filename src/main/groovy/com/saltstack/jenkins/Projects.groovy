@@ -36,6 +36,12 @@ class Projects {
         }
     }
 
+    def trigger_projects_pull_request_seed_jobs(manager) {
+        this.get_projects().each() { project ->
+            project.triggerPullRequestSeedJob(manager)
+        }
+    }
+
     def filterOutProject(build) {
         def match = null
         this.get_projects().find { project ->

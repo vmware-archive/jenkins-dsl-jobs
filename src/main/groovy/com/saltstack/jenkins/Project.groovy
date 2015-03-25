@@ -3,6 +3,7 @@ package com.saltstack.jenkins
 import groovy.json.*
 import hudson.Functions
 import hudson.model.User
+import hudson.model.Cause
 import hudson.model.Result
 import jenkins.model.Jenkins
 import jenkins.security.ApiTokenProperty
@@ -354,6 +355,19 @@ class Project {
         }
 
         return prs
+    }
+
+    def triggerPullRequestSeedJob(manager) {
+        try {
+            def job = Jenkins.instance.getJob(this.name).getJob('pr').getJob('jenkins-seed')
+            if ( job != null ) {
+                job.scheduleBuild(new Cause.UserIdCause())
+            } else {
+                manager.listener.logger.println "Failed to trigger Pull Requests seed job for ${this.display_name}. Not found..."
+            }
+        } catch ( Throwable e ) {
+            manager.listener.logger.println "Failed to trigger Pull Requests seed job for ${this.display_name}: ${e.toString()}"
+        }
     }
 
     def triggerPullRequestJobs(manager) {
