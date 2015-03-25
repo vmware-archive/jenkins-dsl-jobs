@@ -343,7 +343,7 @@ class Project {
                             ${pr.title}
                         <h3>
                         <br/>
-                        ${GitHubMarkup.toHTML(pr.body, pr.repo, gh_auth_user, gh_auth_token)}
+                        ${GitHubMarkup.toHTML(pr.body, this.repo, gh_auth_user, gh_auth_token)}
                         """.stripIndent(),
                     sha: pr.getHead().getSha(),
                     repo: this.repo
