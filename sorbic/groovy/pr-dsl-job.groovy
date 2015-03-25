@@ -2,9 +2,7 @@
 import groovy.json.*
 import groovy.text.*
 import jenkins.model.Jenkins
-import com.saltstack.jenkins.RenderUI
 import com.saltstack.jenkins.PullRequestAdmins
-import com.saltstack.jenkins.projects.Sorbic
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -40,7 +38,7 @@ folder("${project.name}/pr") {
 project.pull_requests.each() { pr ->
     folder("${project.name}/pr/${pr.number}") {
         displayName("PR #${pr.number}")
-        description(RenderUI.renderPullRequestDescription(pr))
+        description(pr.rendered_description)
     }
 
     try {
@@ -56,7 +54,7 @@ project.pull_requests.each() { pr ->
     // PR Main Job
     buildFlowJob("${project.name}/pr/${pr.number}/main-build") {
         displayName("Main Build")
-        description(RenderUI.renderPullRequestDescription(pr))
+        description(pr.rendered_description)
         label('worker')
         concurrentBuild(allowConcurrentBuild = false)
 
@@ -182,7 +180,7 @@ project.pull_requests.each() { pr ->
         displayName("Clone Repository")
 
         concurrentBuild(allowConcurrentBuild = true)
-        description(RenderUI.renderPullRequestDescription(pr))
+        description(pr.rendered_description)
         label('worker')
 
         parameters {
@@ -296,7 +294,7 @@ project.pull_requests.each() { pr ->
     freeStyleJob("${project.name}/pr/${pr.number}/lint") {
         displayName("Lint")
         concurrentBuild(allowConcurrentBuild = true)
-        description(RenderUI.renderPullRequestDescription(pr))
+        description(pr.rendered_description)
         label('worker')
 
         // Parameters Definition
@@ -398,7 +396,7 @@ project.pull_requests.each() { pr ->
     freeStyleJob("${project.name}/pr/${pr.number}/tests") {
         displayName("Tests")
         concurrentBuild(allowConcurrentBuild = true)
-        description(RenderUI.renderPullRequestDescription(pr))
+        description(pr.rendered_description)
         label('worker')
 
         // Parameters Definition
