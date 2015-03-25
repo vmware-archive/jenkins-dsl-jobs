@@ -4,7 +4,6 @@ import groovy.text.*
 import com.saltstack.jenkins.JenkinsPerms
 import com.saltstack.jenkins.PullRequestAdmins
 import com.saltstack.jenkins.RandomString
-import com.saltstack.jenkins.projects.RAET
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -12,7 +11,7 @@ def thr = Thread.currentThread()
 def build = thr?.executable
 
 // Common variable Definitions
-project = new RAET()
+def project = new JsonSlurper().parseText(build.getEnvironment().SEED_PROJECTS).raet
 
 // Job rotation defaults
 def default_days_to_keep = 90
@@ -30,21 +29,21 @@ def template_engine = new SimpleTemplateEngine()
 // Define the folder structure
 folder(project.name) {
     displayName(project.display_name)
-    description = project.getRepositoryDescription()
+    description = project.description
 }
 folder("${project.name}/master") {
     displayName('Master Branch')
-    description = project.getRepositoryDescription()
+    description = project.description
 }
 folder("${project.name}/pr") {
     displayName('Pull Requests')
-    description = project.getRepositoryDescription()
+    description = project.description
 }
 
 // Main master branch job
 def master_main_job = buildFlowJob("${project.name}/master-main-build") {
     displayName('Master Branch Main Build')
-    description(project.getRepositoryDescription())
+    description(project.description)
     label('worker')
     concurrentBuild(allowConcurrentBuild = true)
 
@@ -151,7 +150,7 @@ def master_clone_job = freeStyleJob("${project.name}/master/clone") {
     displayName('Clone Repository')
 
     concurrentBuild(allowConcurrentBuild = true)
-    description(project.getRepositoryDescription() + ' - Clone Repository')
+    description(project.description + ' - Clone Repository')
     label('worker')
 
     configure {
@@ -250,7 +249,7 @@ def master_clone_job = freeStyleJob("${project.name}/master/clone") {
 def master_lint_job = freeStyleJob("${project.name}/master/lint") {
     displayName('Lint')
     concurrentBuild(allowConcurrentBuild = true)
-    description(project.getRepositoryDescription() + ' - Code Lint')
+    description(project.description + ' - Code Lint')
     label('worker')
 
     // Parameters Definition
@@ -347,7 +346,7 @@ def master_lint_job = freeStyleJob("${project.name}/master/lint") {
 def master_unit_job = freeStyleJob("${project.name}/master/unit") {
     displayName('Unit')
     concurrentBuild(allowConcurrentBuild = true)
-    description(project.getRepositoryDescription() + ' - Unit Tests')
+    description(project.description + ' - Unit Tests')
     label('worker')
 
     // Parameters Definition
