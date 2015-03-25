@@ -68,7 +68,7 @@ class Project {
         def data = [
             name: this.name,
             display_name: this.display_name,
-            description: this.getProjectDescription(),
+            description: this.getRepositoryDescription(),
             repo: this.repo,
             setup_push_hooks: this.setup_push_hooks,
             create_branches_webhook: this.create_branches_webhook,
