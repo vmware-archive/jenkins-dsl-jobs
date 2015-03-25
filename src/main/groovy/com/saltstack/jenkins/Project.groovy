@@ -326,7 +326,12 @@ class Project {
                     number: pr.number,
                     title: pr.title,
                     url: pr.getHtmlUrl(),
-                    body: this.renderMarkup(pr.body),
+                    body: this.renderMarkup(
+                        pr.body,
+                        this.repo,
+                        this.getAuthenticatedRepository().root.login,
+                        this.getAuthenticatedRepository().root.encodedAuthorization.split()[-1]
+                    ),
                     sha: pr.getHead().getSha(),
                     repo: this.repo
                 ])
@@ -375,17 +380,6 @@ class Project {
                 triggered.add(pr_id)
             }
         }
-    }
-
-    def renderMarkup(String text) {
-        def reader = new InputStreamReader(
-            new Requester(this.getAuthenticatedRepository().root)
-                .with("text", text)
-                .with("mode", "gfm")
-                .with("context", this.repo)
-                .asStream("/markdown"),
-            "UTF-8")
-        return reader.read()
     }
 
 }
