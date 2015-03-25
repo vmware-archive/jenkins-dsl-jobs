@@ -2,7 +2,6 @@
 import groovy.json.*
 import groovy.text.*
 import com.saltstack.jenkins.PullRequestAdmins
-import com.saltstack.jenkins.projects.Salt
 
 // get current thread / Executor
 def thr = Thread.currentThread()
