@@ -503,6 +503,14 @@ freeStyleJob('libnacl/pr/jenkins-seed') {
         default_artifact_nr_of_jobs_to_keep
     )
 
+    environmentVariables {
+        groovy('''
+        import com.saltstack.jenkins.projects.LibNACL
+
+        return [SEED_DATA: new LibNACL().toJSON(include_branches = false, include_prs = true)]
+        '''.trim().stripIndent())
+    }
+
     // Job Steps
     steps {
         dsl {

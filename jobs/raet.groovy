@@ -502,6 +502,14 @@ dsl_job = freeStyleJob("${project.name}/pr/jenkins-seed") {
         default_artifact_nr_of_jobs_to_keep
     )
 
+    environmentVariables {
+        groovy('''
+        import com.saltstack.jenkins.projects.RAET
+
+        return [SEED_DATA: new RAET().toJSON(include_branches = false, include_prs = true)]
+        '''.trim().stripIndent())
+    }
+
     // Job Steps
     steps {
         dsl {

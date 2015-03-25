@@ -443,7 +443,7 @@ def master_unit_job = freeStyleJob("${project.name}/master/unit") {
     }
 }
 
-dsl_job = freeStyleJob("${project.name}/pr/jenkins-seed") {
+freeStyleJob("${project.name}/pr/jenkins-seed") {
     displayName('PR Jenkins Seed')
 
     concurrentBuild(allowConcurrentBuild = false)
@@ -502,6 +502,14 @@ dsl_job = freeStyleJob("${project.name}/pr/jenkins-seed") {
         default_artifact_days_to_keep,
         default_artifact_nr_of_jobs_to_keep
     )
+
+    environmentVariables {
+        groovy('''
+        import com.saltstack.jenkins.projects.Salt
+
+        return [SEED_DATA: new Salt().toJSON(include_branches = false, include_prs = true)]
+        '''.trim().stripIndent())
+    }
 
     // Job Steps
     steps {
