@@ -12,7 +12,7 @@ def thr = Thread.currentThread()
 def build = thr?.executable
 
 // Common variable Definitions
-def project = new JsonSlurper().parseText(build.getEnvironment().SEED_PROJECTS.bootstrap
+def project = new JsonSlurper().parseText(build.getEnvironment().SEED_PROJECTS).bootstrap
 
 // Job rotation defaults
 def default_days_to_keep = 90
