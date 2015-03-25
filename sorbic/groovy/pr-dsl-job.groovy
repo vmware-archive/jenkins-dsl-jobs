@@ -124,7 +124,7 @@ project.pull_requests.each() { pr ->
         }
 
         template_context = [
-            project: 'project.name,
+            project: project.name,
             pr_number: pr.number
         ]
         script_template = template_engine.createTemplate(
