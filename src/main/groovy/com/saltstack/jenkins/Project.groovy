@@ -24,7 +24,8 @@ class Project {
     String repo;
     Boolean setup_push_hooks = false;
     Boolean create_branches_webhook = false;
-    Boolean set_commit_status = false; 
+    Boolean set_commit_status = false;
+    Boolean trigger_new_prs = false;
 
     protected static String webhooks_user = 'salt-testing';
 
@@ -333,7 +334,7 @@ class Project {
                     number: pr.number,
                     title: pr.title,
                     url: pr.getHtmlUrl(),
-                    body: pr.body.
+                    body: pr.body,
                     rendered_description: """
                         <h3>
                             <img src="${hudson.Functions.getResourcePath()}/plugin/github/logov3.png"/>
