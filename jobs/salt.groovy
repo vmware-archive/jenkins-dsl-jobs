@@ -10,7 +10,8 @@ def thr = Thread.currentThread()
 def build = thr?.executable
 
 // Common variable Definitions
-def project = new Salt()
+def project = new JsonSlurper().parseText(build.getEnvironment().SEED_PROJECTS).salt
+
 
 // Job rotation defaults
 def default_days_to_keep = 90
@@ -50,14 +51,14 @@ def template_engine = new SimpleTemplateEngine()
 // Define the folder structure
 folder(project.name) {
     displayName(project.display_name)
-    description = project.getRepositoryDescription()
+    description = project.description
 }
 
-project.getRepositoryBranches().each { branch_name ->
+project.branches.each { branch_name ->
     def branch_folder_name = "salt/${branch_name.toLowerCase()}"
     folder(branch_folder_name) {
         displayName("${branch_name.capitalize()} Branch")
-        description = project.getRepositoryDescription()
+        description = project.description
     }
 
     salt_build_types.each { build_type, vm_names ->
@@ -68,7 +69,7 @@ project.getRepositoryBranches().each { branch_name ->
             def build_type_folder_name = "${branch_folder_name}/${build_type_l}"
             folder(build_type_folder_name) {
                 displayName("${build_type} Builds")
-                description = project.getRepositoryDescription()
+                description = project.description
             }
 
             if (build_type_l == 'cloud') {
@@ -79,7 +80,7 @@ project.getRepositoryBranches().each { branch_name ->
                     cloud_provider_folder_name = "${build_type_folder_name}/${provider_name_l}"
                     folder(cloud_provider_folder_name) {
                         displayName(provider_name)
-                        description = project.getRepositoryDescription()
+                        description = project.description
                     }
                 }
             }
@@ -88,7 +89,7 @@ project.getRepositoryBranches().each { branch_name ->
 }
 
 
-project.getRepositoryBranches().each { branch_name ->
+project.branches.each { branch_name ->
 
     def branch_name_l = branch_name.toLowerCase()
 
@@ -97,7 +98,7 @@ project.getRepositoryBranches().each { branch_name ->
         displayName('Clone Repository')
 
         concurrentBuild(allowConcurrentBuild = true)
-        description(project.getRepositoryDescription() + ' - Clone Repository')
+        description(project.description + ' - Clone Repository')
         label('worker')
 
         configure {
@@ -199,7 +200,7 @@ project.getRepositoryBranches().each { branch_name ->
     freeStyleJob("salt/${branch_name_l}/lint") {
         displayName('Lint')
         concurrentBuild(allowConcurrentBuild = true)
-        description(project.getRepositoryDescription() + ' - Code Lint')
+        description(project.description + ' - Code Lint')
         label('worker')
 
         // Parameters Definition
@@ -302,7 +303,7 @@ project.getRepositoryBranches().each { branch_name ->
         if ( vm_names != [] ) {
             buildFlowJob("salt/${branch_name.toLowerCase()}-${build_type_l}-main-build") {
                 displayName("${branch_name.capitalize()} Branch ${build_type} Main Build")
-                description(project.getRepositoryDescription())
+                description(project.description)
                 label('worker')
                 concurrentBuild(allowConcurrentBuild = true)
 
@@ -425,7 +426,7 @@ project.getRepositoryBranches().each { branch_name ->
                         freeStyleJob("salt/${branch_name_l}/${build_type_l}/${provider_name_l}/${job_name}") {
                             displayName(vm_name)
                             concurrentBuild(allowConcurrentBuild = true)
-                            description("${project.getRepositoryDescription()} - ${build_type} - ${provider_name} - ${vm_name}")
+                            description("${project.description} - ${build_type} - ${provider_name} - ${vm_name}")
                             label('cloud')
 
                             // Parameters Definition
@@ -532,7 +533,7 @@ project.getRepositoryBranches().each { branch_name ->
                     freeStyleJob("salt/${branch_name}/${build_type_l}/${job_name}") {
                         displayName(vm_name)
                         concurrentBuild(allowConcurrentBuild = true)
-                        description("${project.getRepositoryDescription()} - ${build_type} - ${vm_name}")
+                        description("${project.description} - ${build_type} - ${vm_name}")
                         label('container')
 
                         configure {
