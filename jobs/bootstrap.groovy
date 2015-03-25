@@ -4,7 +4,6 @@ import groovy.text.*
 import com.saltstack.jenkins.JenkinsPerms
 import com.saltstack.jenkins.PullRequestAdmins
 import com.saltstack.jenkins.RandomString
-import com.saltstack.jenkins.GitHubMarkup
 
 // get current thread / Executor
 def thr = Thread.currentThread()
