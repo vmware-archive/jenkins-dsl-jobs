@@ -5,11 +5,13 @@ import hudson.model.User
 import hudson.model.Result
 import jenkins.model.Jenkins
 import jenkins.security.ApiTokenProperty
+import java.io.InputStreamReader
 import org.kohsuke.github.GHEvent
 import org.kohsuke.github.GitHub
 import org.kohsuke.github.GHRepository
 import org.kohsuke.github.GHIssueState
 import org.kohsuke.github.GHCommitState
+import org.kohsuke.github.Requester
 import com.cloudbees.jenkins.GitHubRepositoryName
 
 
@@ -324,7 +326,7 @@ class Project {
                     number: pr.number,
                     title: pr.title,
                     url: pr.getHtmlUrl(),
-                    body: pr.body,
+                    body: this.renderMarkup(pr.body),
                     sha: pr.getHead().getSha(),
                     repo: this.repo
                 ])
@@ -373,6 +375,17 @@ class Project {
                 triggered.add(pr_id)
             }
         }
+    }
+
+    def renderMarkup(String text) {
+        def reader = new InputStreamReader(
+            new Requester(this.getAuthenticatedRepository().root)
+                .with("text", text)
+                .with("mode", "gfm")
+                .with("context", this.repo)
+                .asStream("/markdown"),
+            "UTF-8")
+        return reader.read()
     }
 
 }
