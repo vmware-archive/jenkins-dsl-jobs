@@ -36,6 +36,7 @@ class Project {
         this.setup_push_hooks = false;
         this.create_branches_webhook = false;
         this.set_commit_status = false;
+        this.trigger_new_prs = false;
     }
 
     def GHRepository getRepository() {
@@ -74,7 +75,8 @@ class Project {
             repo: this.repo,
             setup_push_hooks: this.setup_push_hooks,
             create_branches_webhook: this.create_branches_webhook,
-            set_commit_status: this.set_commit_status
+            set_commit_status: this.set_commit_status,
+            trigger_new_prs: this.trigger_new_prs
         ]
         if ( include_branches ) {
             data['branches'] = this.getRepositoryBranches()
@@ -344,6 +346,10 @@ class Project {
     }
 
     def triggerPullRequestJobs(manager) {
+        if ( ! this.trigger_new_prs ) {
+            manager.listener.logger.println "Not triggering builds for new pull-requests because it's disabled."
+            return
+        }
         def new_prs_file = manager.build.getWorkspace().child('new-prs.txt')
         if ( new_prs_file.exists() == false ) {
             manager.listener.logger.println "The 'new-prs.txt' file was not found in ${manager.build.getWorkspace().toString()}. Not triggering PR jobs."
