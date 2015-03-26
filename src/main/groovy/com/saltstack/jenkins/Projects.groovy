@@ -79,4 +79,8 @@ class Projects {
     def triggerPullRequestJobs(manager) {
         this.filterOutProject(manager.build).triggerPullRequestJobs(manager)
     }
+
+    def cleanOldPullRequests(manager, howOld=7) {
+        this.filterOutProject(manager.build).cleanOldPullRequests(manager, howOld)
+    }
 }
