@@ -139,9 +139,6 @@ def master_main_job = buildFlowJob('libnacl/master-main-build') {
         rendered_script_template = script_template.make(template_context.withDefault{ null })
 
         groovyPostBuild(rendered_script_template.toString())
-
-        // Cleanup workspace
-        wsCleanup()
     }
 }
 

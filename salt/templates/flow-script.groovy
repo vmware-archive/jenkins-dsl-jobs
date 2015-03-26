@@ -45,8 +45,8 @@ guard {
     build_changelog.copyFrom(clone_changelog)
 
     // Delete the child workspaces directory
-    lint.workspace.deleteRecursive()
+    //lint.workspace.deleteRecursive()
 
     <% vm_names.each { name, job_name -> %>
-    ${name}.workspace.deleteRecursive()<% } %>
+    //${name}.workspace.deleteRecursive()<% } %>
 }

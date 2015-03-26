@@ -145,9 +145,6 @@ project.branches.each { job_branch ->
             rendered_script_template = script_template.make(template_context.withDefault{ null })
 
             groovyPostBuild(rendered_script_template.toString())
-
-            // Cleanup workspace
-            wsCleanup()
         }
     }
 

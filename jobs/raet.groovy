@@ -138,10 +138,6 @@ def master_main_job = buildFlowJob("${project.name}/master-main-build") {
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovyPostBuild(rendered_script_template.toString())
-
-
-        // Cleanup workspace
-        wsCleanup()
     }
 }
 

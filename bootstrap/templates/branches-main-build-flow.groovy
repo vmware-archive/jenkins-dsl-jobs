@@ -36,6 +36,6 @@ guard {
     //toolbox.slurpArtifacts(unit)
 
     // Delete the child workspaces directory
-    lint.workspace.deleteRecursive()
-    clone.workspace.deleteRecursive()
+    //lint.workspace.deleteRecursive()
+    //clone.workspace.deleteRecursive()
 }
