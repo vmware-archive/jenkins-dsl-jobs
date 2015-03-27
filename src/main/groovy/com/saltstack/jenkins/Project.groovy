@@ -438,7 +438,7 @@ class Project {
     }
 
     def addBuildSummary(manager) {
-        if ( manager.build.class.canonicalName == 'com.cloudbees.plugins.flow.BuildFlow' ) {
+        if ( manager.build.class.canonicalName == 'com.cloudbees.plugins.flow.FlowRun' ) {
             def summary = manager.createSummary('/plugin/buildgraph-view/images/48x48/chain.png')
             summary.appendText("<p>Triggered Builds</p>", false)
             summary.appendText("<dl>", false)
