@@ -1,7 +1,6 @@
 import groovy.json.*
 import groovy.text.*
 import org.apache.commons.lang.RandomStringUtils
-import com.saltstack.jenkins.JenkinsPerms
 
 def github_repo = 'saltstack/jenkins-dsl-jobs'
 
@@ -12,7 +11,7 @@ def default_artifact_days_to_keep = default_days_to_keep
 def default_artifact_nr_of_jobs_to_keep = default_nr_of_jobs_to_keep
 
 def template_engine = new SimpleTemplateEngine()
-
+def jenkins_perms = new JsonSlurper().parseText(build.getEnvironment().JENKINS_PERMS)
 
 folder('maintenance') {
     displayName('Jenkins Maintenance Jobs')
@@ -22,8 +21,8 @@ folder('maintenance') {
         auth_matrix_prop = folder_properties.appendNode(
             'com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty'
         )
-        JenkinsPerms.usernames.each { username ->
-            JenkinsPerms.folder.each { permname ->
+        jenkins_perms.usernames.each { username ->
+            jenkins_perms.folder.each { permname ->
                 auth_matrix_prop.appendNode('permission').setValue(
                     "${permname}:${username}"
                 )
@@ -49,8 +48,8 @@ freeStyleJob('maintenance/jenkins-seed') {
     }
 
     authorization {
-        JenkinsPerms.usernames.each { username ->
-            JenkinsPerms.project.each { permname ->
+        jenkins_perms.usernames.each { username ->
+            jenkins_perms.project.each { permname ->
                 permission("${permname}:${username}")
             }
         }
