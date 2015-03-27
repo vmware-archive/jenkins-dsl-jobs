@@ -8,23 +8,6 @@ def build = thr?.executable
 
 def jenkins_perms = new JsonSlurper().parseText(build.getEnvironment().JENKINS_PERMS)
 
-folder('maintenance') {
-    displayName('Jenkins Maintenance Jobs')
-
-    configure {
-        folder_properties = it.get('properties').get(0)
-        auth_matrix_prop = folder_properties.appendNode(
-            'com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty'
-        )
-        jenkins_perms.usernames.each { username ->
-            jenkins_perms.folder.each { permname ->
-                auth_matrix_prop.appendNode('permission').setValue(
-                    "${permname}:${username}"
-                )
-            }
-        }
-    }
-}
 
 freeStyleJob('maintenance/update-bootstrap') {
     displayName('Update Bootstrap Script')
