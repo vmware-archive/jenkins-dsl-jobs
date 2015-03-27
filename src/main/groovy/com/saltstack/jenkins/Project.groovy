@@ -372,20 +372,21 @@ class Project {
     }
 
     def cleanOldPullRequests(manager, howOld=7) {
-        def pr_folder = Jenkins.instance.getJob(this.name).getJob('pr')
-        pr_folder.getItems().each { folder ->
-            if ( folder.disabled ) {
-                // We only delete disabled folders, which are closed/merged pull requests
-                def last_build_date = folder.getJob('main-build').getLastBuild().timestamp.clone()
+        def prs_folder = Jenkins.instance.getJob(this.name).getJob('pr')
+        prs_folder.getItems().each { folder ->
+            def folder_main_build = folder.getJob('main-build')
+            if ( folder_main_build.disabled ) {
+                // We only delete folders with disabled jobs, which are closed/merged pull requests
+                def last_build_date = folder_main_build.getLastBuild().timestamp.clone()
                 last_build_date.add(GregorianCalendar.DATE, howOld)
                 def current_date = new GregorianCalendar();
                 current_date.set(Calendar.HOUR_OF_DAY, 0);
                 current_date.set(Calendar.MINUTE, 0);
                 current_date.set(Calendar.SECOND, 0);
                 if ( last_build_date < current_date ) {
-                    manager.listener.logger.println "Last build of ${this.repo} #${folder.name} is older than ${howOld}. Deleting it..."
-                    pr_folder.delete()
-                    pr_folder.save()
+                    manager.listener.logger.println "Last build of ${this.repo} #${folder.name} is older than ${howOld} days. Deleting it..."
+                    folder.delete()
+                    folder.save()
                 }
             }
         }
