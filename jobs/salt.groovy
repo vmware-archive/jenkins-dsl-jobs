@@ -1,6 +1,7 @@
 // Salt Jenkins jobs seed script
 import groovy.json.*
 import groovy.text.*
+import org.apache.commons.lang.RandomStringUtils
 import com.saltstack.jenkins.PullRequestAdmins
 
 // get current thread / Executor
