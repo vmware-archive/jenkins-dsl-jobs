@@ -13,33 +13,6 @@ def default_artifact_nr_of_jobs_to_keep = default_nr_of_jobs_to_keep
 
 def template_engine = new SimpleTemplateEngine()
 
-projects = [
-    libnacl: [
-        display_name: 'libnacl',
-        github_repo: 'saltstack/libnacl',
-        create_branches_webhook: false
-    ],
-    raet: [
-        display_name: 'RAET',
-        github_repo: 'saltstack/raet',
-        create_branches_webhook: false
-    ],
-    salt: [
-        display_name: 'Salt',
-        github_repo: 'saltstack/salt',
-        create_branches_webhook: true
-    ],
-    sorbic: [
-        display_name: 'Sorbic',
-        github_repo: 'thatch45/sorbic',
-        create_branches_webhook: false
-    ],
-    bootstrap: [
-        display_name: 'Salt Bootstrap',
-        github_repo: 'saltstack/salt-bootstrap',
-        create_branches_webhook: false
-    ]
-]
 
 folder('maintenance') {
     displayName('Jenkins Maintenance Jobs')
@@ -58,6 +31,7 @@ folder('maintenance') {
         }
     }
 }
+
 
 freeStyleJob('maintenance/jenkins-seed') {
     displayName('Jenkins Jobs Seed')
