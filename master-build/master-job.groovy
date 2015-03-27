@@ -1,7 +1,7 @@
 import groovy.json.*
 import groovy.text.*
+import org.apache.commons.lang.RandomStringUtils
 import com.saltstack.jenkins.JenkinsPerms
-import com.saltstack.jenkins.RandomString
 
 def github_repo = 'saltstack/jenkins-dsl-jobs'
 
@@ -66,7 +66,7 @@ freeStyleJob('maintenance/jenkins-seed') {
 
     configure {
         job_properties = it.get('properties').get(0)
-        job_properties.appendNode('authToken').setValue(RandomString.generate())
+        job_properties.appendNode('authToken').setValue(new RandomStringUtils().randomAlphanumeric(16))
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
         github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
