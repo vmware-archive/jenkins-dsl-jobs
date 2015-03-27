@@ -448,7 +448,7 @@ class Project {
                       <img src='${hudson.Functions.getResourcePath()}/images/32x32/${it.getBuild().getIconColor()}.png'/>
                       <a href='${it.getProject().getAbsoluteUrl()}'>${it.getProject().getDisplayName()}</a>
                     </dt>
-                    """.trim().stripIndent(), false)
+                    """.stripIndent().trim(), false)
             }
         }
         summary.appendText("</dl>", false)

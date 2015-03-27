@@ -492,7 +492,7 @@ freeStyleJob("${project.name}/pr/jenkins-seed") {
             JENKINS_PERMS: JenkinsPerms.toJSON(),
             PULL_REQUEST_ADMINS: PullRequestAdmins.toJSON()
         ]
-        '''.trim().stripIndent())
+        '''.stripIndent().trim())
     }
 
     // Job Steps

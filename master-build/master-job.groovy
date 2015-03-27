@@ -97,7 +97,7 @@ freeStyleJob('maintenance/jenkins-seed') {
             JENKINS_PERMS: JenkinsPerms.toJSON(),
             PULL_REQUEST_ADMINS: PullRequestAdmins.toJSON()
         ]
-        '''.trim().stripIndent())
+        '''.stripIndent().trim())
     }
 
     // Job Steps
