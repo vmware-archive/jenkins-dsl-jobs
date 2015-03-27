@@ -373,7 +373,7 @@ class Project {
 
     def cleanOldPullRequests(manager, howOld=7) {
         def pr_folder = Jenkins.instance.getJob(this.name).getJob('pr')
-        for pr_folder.getItems().each { folder ->
+        pr_folder.getItems().each { folder ->
             if ( folder.disabled ) {
                 // We only delete disabled folders, which are closed/merged pull requests
                 def last_build_date = folder.getJob('main-build').getLastBuild().timestamp.clone()
