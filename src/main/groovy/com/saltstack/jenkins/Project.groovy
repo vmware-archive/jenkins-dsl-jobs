@@ -373,20 +373,23 @@ class Project {
 
     def cleanOldPullRequests(manager, howOld=7) {
         def prs_folder = Jenkins.instance.getJob(this.name).getJob('pr')
-        prs_folder.getItems().each { folder ->
-            def folder_main_build = prs_folder.getJob(folder.getName()).getJob('main-build')
-            if ( folder_main_build.disabled ) {
-                // We only delete folders with disabled jobs, which are closed/merged pull requests
-                def last_build_date = folder_main_build.getLastBuild().timestamp.clone()
-                last_build_date.add(GregorianCalendar.DATE, howOld)
-                def current_date = new GregorianCalendar();
-                current_date.set(Calendar.HOUR_OF_DAY, 0);
-                current_date.set(Calendar.MINUTE, 0);
-                current_date.set(Calendar.SECOND, 0);
-                if ( last_build_date < current_date ) {
-                    manager.listener.logger.println "Last build of ${this.repo} #${folder.name} is older than ${howOld} days. Deleting it..."
-                    folder.delete()
-                    folder.save()
+        prs_folder.getItems().find { folder ->
+            if ( folder.class.canonicalName == 'com.cloudbees.hudson.plugins.folder.Folder' ) {
+                def folder_main_build = Jenkins.instance.getJob(this.name).getJob('pr').getJob(folder.getName()).getJob('main-build')
+                def folder_main_build = prs_folder.getJob(folder.getName()).getJob('main-build')
+                if ( folder_main_build.disabled ) {
+                    // We only delete folders with disabled jobs, which are closed/merged pull requests
+                    def last_build_date = folder_main_build.getLastBuild().timestamp.clone()
+                    last_build_date.add(GregorianCalendar.DATE, howOld)
+                    def current_date = new GregorianCalendar();
+                    current_date.set(Calendar.HOUR_OF_DAY, 0);
+                    current_date.set(Calendar.MINUTE, 0);
+                    current_date.set(Calendar.SECOND, 0);
+                    if ( last_build_date < current_date ) {
+                        manager.listener.logger.println "Last build of ${this.repo} #${folder.name} is older than ${howOld} days. Deleting it..."
+                        folder.delete()
+                        folder.save()
+                    }
                 }
             }
         }
