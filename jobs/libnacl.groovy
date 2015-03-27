@@ -65,7 +65,7 @@ def master_main_job = buildFlowJob('libnacl/master-main-build') {
         slack_notifications.appendNode('notifyBackToNormal').setValue(true)
         job_publishers.appendNode(
             'jenkins.plugins.slack.SlackNotifier',
-            [plugin: 'slack@1.2']
+            [plugin: 'slack@latest']
         )
     }
 

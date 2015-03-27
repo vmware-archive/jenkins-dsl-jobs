@@ -316,7 +316,7 @@ project.branches.each { branch_name ->
                     job_publishers = it.get('publishers').get(0)
                     job_publishers.appendNode(
                         'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
-                        [plugin: 'build-flow-test-aggregator@1.1-SNAPSHOT']
+                        [plugin: 'build-flow-test-aggregator@latest']
                     )
                     job_properties = it.get('properties').get(0)
                     github_project_property = job_properties.appendNode(
@@ -333,7 +333,7 @@ project.branches.each { branch_name ->
                     slack_notifications.appendNode('notifyBackToNormal').setValue(true)
                     job_publishers.appendNode(
                         'jenkins.plugins.slack.SlackNotifier',
-                        [plugin: 'slack@1.2']
+                        [plugin: 'slack@latest']
                     )
                 }
 
