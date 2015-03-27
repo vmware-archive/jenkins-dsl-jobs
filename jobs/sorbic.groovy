@@ -372,7 +372,7 @@ def master_unit_job = freeStyleJob("${project.name}/master/unit") {
         github_repo: project.repo,
         sudo_salt_call: true,
         virtualenv_name: 'sorbic-master',
-        virtualenv_setup_state_name: 'projects.sornic.unit'
+        virtualenv_setup_state_name: 'projects.sorbic.unit'
     ]
     script_template = template_engine.createTemplate(
         readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
