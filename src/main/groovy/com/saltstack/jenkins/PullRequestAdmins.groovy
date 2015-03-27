@@ -1,6 +1,8 @@
 package com.saltstack.jenkins
 
+import groovy.json.*
 import com.saltstack.jenkins.JenkinsPerms
+
 
 class PullRequestAdmins {
 
@@ -17,7 +19,7 @@ class PullRequestAdmins {
         ]
     }
 
-    def static toJson() {
+    def static toJSON() {
         return new JsonBuilder(PullRequestAdmins.toMap()).toString()
     }
 

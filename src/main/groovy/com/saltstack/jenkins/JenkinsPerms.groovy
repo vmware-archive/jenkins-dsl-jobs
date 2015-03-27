@@ -1,5 +1,6 @@
 package com.saltstack.jenkins
 
+import groovy.json.*
 import hudson.security.Permission
 
 
@@ -76,7 +77,7 @@ class JenkinsPerms {
         ]
     }
 
-    def static toJson() {
+    def static toJSON() {
         return new JsonBuilder(JenkinsPerms.toMap()).toString()
     }
 }
