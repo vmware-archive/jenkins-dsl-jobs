@@ -158,8 +158,10 @@ project.branches.each { branch_name ->
         template_context = [
             commit_status_context: 'ci',
             github_repo: project.repo,
+            sudo_salt_call: true,
             branch_name: branch_name,
             branch_name_l: branch_name_l,
+            sudo_salt_call: true,
             virtualenv_name: "salt-${branch_name_l}",
             virtualenv_setup_state_name: 'projects.clone'
         ]
@@ -247,6 +249,7 @@ project.branches.each { branch_name ->
         template_context = [
             commit_status_context: 'ci/lint',
             github_repo: project.repo,
+            sudo_salt_call: true,
             branch_name: branch_name,
             branch_name_l: branch_name_l,
             virtualenv_name: "salt-${branch_name_l}",
@@ -461,6 +464,7 @@ project.branches.each { branch_name ->
                             template_context = [
                                 commit_status_context: "ci/${job_name}",
                                 github_repo: project.repo,
+                                sudo_salt_call: true,
                                 branch_name: branch_name,
                                 branch_name_l: branch_name_l,
                                 build_vm_name: "${provider_name_l}_${vm_name_nodots}",
@@ -564,12 +568,14 @@ project.branches.each { branch_name ->
                         template_context = [
                             commit_status_context: "ci/${job_name}",
                             github_repo: project.repo,
+                            sudo_salt_call: true,
                             branch_name: branch_name,
                             branch_name_l: branch_name_l,
                             build_vm_name: "${provider_name_l}_${vm_name_nodots}",
                             vm_name_nodots: vm_name_nodots,
                             virtualenv_name: "salt-remote-testrun",
                             virtualenv_setup_state_name: "projects.salt.cloud-testrun",
+                            sudo_salt_call: true,
                             system_site_packages: true
                         ]
                         script_template = template_engine.createTemplate(

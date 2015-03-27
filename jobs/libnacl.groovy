@@ -188,6 +188,7 @@ def master_clone_job = freeStyleJob('libnacl/master/clone') {
     template_context = [
         commit_status_context: 'ci/clone',
         github_repo: project.repo,
+        sudo_salt_call: true,
         virtualenv_name: 'libnacl-master',
         virtualenv_setup_state_name: 'projects.clone'
     ]
@@ -275,6 +276,7 @@ def master_lint_job = freeStyleJob('libnacl/master/lint') {
     template_context = [
         commit_status_context: 'ci/lint',
         github_repo: project.repo,
+        sudo_salt_call: true,
         virtualenv_name: 'libnacl-master',
         virtualenv_setup_state_name: 'projects.libnacl.lint'
     ]
@@ -365,6 +367,7 @@ def master_unit_job = freeStyleJob('libnacl/master/unit') {
     template_context = [
         commit_status_context: 'ci/unit',
         github_repo: project.repo,
+        sudo_salt_call: true,
         virtualenv_name: 'libnacl-master',
         virtualenv_setup_state_name: 'projects.libnacl.unit'
     ]

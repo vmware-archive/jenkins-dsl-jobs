@@ -34,7 +34,7 @@ freeStyleJob('maintenance/update-bootstrap') {
 
     // Job Steps
     steps {
-        shell('wget -O /etc/salt/cloud.deploy.d/bootstrap-salt.sh https://raw.github.com/${REPOSITORY}/salt-bootstrap/${BRANCH}/bootstrap-salt.sh')
+        shell('sudo wget -O /etc/salt/cloud.deploy.d/bootstrap-salt.sh https://raw.github.com/${REPOSITORY}/salt-bootstrap/${BRANCH}/bootstrap-salt.sh')
     }
 
     publishers {
