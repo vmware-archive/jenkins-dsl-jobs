@@ -2,8 +2,6 @@
 import groovy.json.*
 import groovy.text.*
 import org.apache.commons.lang.RandomStringUtils
-import com.saltstack.jenkins.JenkinsPerms
-import com.saltstack.jenkins.PullRequestAdmins
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -12,6 +10,7 @@ def build = thr?.executable
 
 // Common variable Definitions
 def project = new JsonSlurper().parseText(build.getEnvironment().SEED_PROJECTS).sorbic
+def jenkins_perms = new JsonSlurper().parseText(build.getEnvironment().JENKINS_PERMS)
 
 // Job rotation defaults
 def default_days_to_keep = 90
@@ -442,8 +441,8 @@ freeStyleJob("${project.name}/pr/jenkins-seed") {
     }
 
     authorization {
-        JenkinsPerms.usernames.each { username ->
-            JenkinsPerms.project.each { permname ->
+        jenkins_perms.usernames.each { username ->
+            jenkins_perms.project.each { permname ->
                 permission("${permname}:${username}")
             }
         }
@@ -484,9 +483,15 @@ freeStyleJob("${project.name}/pr/jenkins-seed") {
 
     environmentVariables {
         groovy('''
+        import com.saltstack.jenkins.JenkinsPerms
+        import com.saltstack.jenkins.PullRequestAdmins
         import com.saltstack.jenkins.projects.Salt
 
-        return [SEED_DATA: new Salt().toJSON(include_branches = false, include_prs = true)]
+        return [
+            SEED_DATA: new Salt().toJSON(include_branches = false, include_prs = true),
+            JENKINS_PERMS: JenkinsPerms.toJSON(),
+            PULL_REQUEST_ADMINS: PullRequestAdmins.toJSON()
+        ]
         '''.trim().stripIndent())
     }
 

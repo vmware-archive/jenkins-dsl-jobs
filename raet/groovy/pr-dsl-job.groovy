@@ -2,7 +2,6 @@
 import groovy.json.*
 import groovy.text.*
 import jenkins.model.Jenkins
-import com.saltstack.jenkins.PullRequestAdmins
 
 
 // get current thread / Executor
@@ -12,7 +11,7 @@ def build = thr?.executable
 
 // Common variable Definitions
 def project = new JsonSlurper().parseText(build.getEnvironment().SEED_DATA)
-
+def pull_request_admins = new JsonSlurper().parseText(build.getEnvironment().PULL_REQUEST_ADMINS)
 
 // Job rotation defaults
 def default_days_to_keep = 90
@@ -121,7 +120,7 @@ project.pull_requests.each() { pr ->
                 useGitHubHooks()
                 permitAll()
                 triggerPhrase('Go Go Jenkins!')
-                admins(PullRequestAdmins.usernames)
+                admins(pull_request_admins.usernames)
             }
         }
 

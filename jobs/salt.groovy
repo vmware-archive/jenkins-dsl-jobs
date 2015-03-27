@@ -2,7 +2,6 @@
 import groovy.json.*
 import groovy.text.*
 import org.apache.commons.lang.RandomStringUtils
-import com.saltstack.jenkins.PullRequestAdmins
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -11,6 +10,7 @@ def build = thr?.executable
 
 // Common variable Definitions
 def project = new JsonSlurper().parseText(build.getEnvironment().SEED_PROJECTS).salt
+def jenkins_perms = new JsonSlurper().parseText(build.getEnvironment().JENKINS_PERMS)
 
 
 // Job rotation defaults

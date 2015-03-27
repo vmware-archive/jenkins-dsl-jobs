@@ -84,8 +84,14 @@ freeStyleJob('maintenance/jenkins-seed') {
     environmentVariables {
         groovy('''
         import com.saltstack.jenkins.Projects
+        import com.saltstack.jenkins.JenkinsPerms
+        import com.saltstack.jenkins.PullRequestAdmins
 
-        return [SEED_PROJECTS: Projects.toJSON(include_branches = true, include_prs = false)]
+        return [
+            SEED_PROJECTS: Projects.toJSON(include_branches = true, include_prs = false),
+            JENKINS_PERMS: JenkinsPerms.toJSON(),
+            PULL_REQUEST_ADMINS: PullRequestAdmins.toJSON()
+        ]
         '''.trim().stripIndent())
     }
 

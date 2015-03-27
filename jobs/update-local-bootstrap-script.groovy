@@ -1,5 +1,12 @@
 // Update the bootstrap script
-import com.saltstack.jenkins.JenkinsPerms
+
+// get current thread / Executor
+def thr = Thread.currentThread()
+
+// get current build
+def build = thr?.executable
+
+def jenkins_perms = new JsonSlurper().parseText(build.getEnvironment().JENKINS_PERMS)
 
 folder('maintenance') {
     displayName('Jenkins Maintenance Jobs')
@@ -9,8 +16,8 @@ folder('maintenance') {
         auth_matrix_prop = folder_properties.appendNode(
             'com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty'
         )
-        JenkinsPerms.usernames.each { username ->
-            JenkinsPerms.folder.each { permname ->
+        jenkins_perms.usernames.each { username ->
+            jenkins_perms.folder.each { permname ->
                 auth_matrix_prop.appendNode('permission').setValue(
                     "${permname}:${username}"
                 )
@@ -34,8 +41,8 @@ freeStyleJob('maintenance/update-bootstrap') {
     }
 
     authorization {
-        JenkinsPerms.usernames.each { username ->
-            JenkinsPerms.project.each { permname ->
+        jenkins_perms.usernames.each { username ->
+            jenkins_perms.project.each { permname ->
                 permission("${permname}:${username}")
             }
         }
