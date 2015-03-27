@@ -50,11 +50,6 @@ def master_main_job = buildFlowJob('libnacl/master-main-build') {
     configure {
         it.appendNode('buildNeedsWorkspace').setValue(true)
         job_publishers = it.get('publishers').get(0)
-        job_publishers.appendNode(
-            'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
-            [plugin: 'build-flow-test-aggregator@1.1-SNAPSHOT']
-        )
-        job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
         github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
@@ -121,24 +116,9 @@ def master_main_job = buildFlowJob('libnacl/master-main-build') {
     )
 
     publishers {
-        // Report Coverage
-        cobertura('unit/coverage.xml') {
-            failNoReports = false
-        }
-        // Report Violations
-        violations {
-            pylint(10, 999, 999, 'lint/pylint-report*.xml')
-        }
-
-        template_context = [
-            commit_status_context: 'ci'
-        ]
-        script_template = template_engine.createTemplate(
+        groovyPostBuild(
             readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
         )
-        rendered_script_template = script_template.make(template_context.withDefault{ null })
-
-        groovyPostBuild(rendered_script_template.toString())
     }
 }
 
