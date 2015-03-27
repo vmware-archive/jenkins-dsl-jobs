@@ -2,6 +2,12 @@ import groovy.json.*
 import groovy.text.*
 import org.apache.commons.lang.RandomStringUtils
 
+// get current thread / Executor
+def thr = Thread.currentThread()
+
+// get current build
+def build = thr?.executable
+
 def github_repo = 'saltstack/jenkins-dsl-jobs'
 
 // Job rotation defaults
