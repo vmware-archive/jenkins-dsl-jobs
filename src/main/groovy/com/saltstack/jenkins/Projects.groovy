@@ -83,4 +83,8 @@ class Projects {
     def cleanOldPullRequests(manager, howOld=7) {
         this.filterOutProject(manager.build).cleanOldPullRequests(manager, howOld)
     }
+
+    def addBuildSummary(manager) {
+        this.filterOutProject(manager.build).addBuildSummary(manager)
+    }
 }
