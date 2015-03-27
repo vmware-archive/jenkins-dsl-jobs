@@ -66,4 +66,17 @@ class JenkinsPerms {
         'hudson.model.Run.Update',
         'hudson.scm.SCM.Tag'
     ].findAll { permission -> available.contains(permission) } as Set
+
+    def static toMap() {
+        return [
+            usernames: JenkinsPerms.usernames,
+            available: JenkinsPerms.available,
+            folder: JenkinsPerms.folder,
+            project: JenkinsPerms.project
+        ]
+    }
+
+    def static toJson() {
+        return new JsonBuilder(JenkinsPerms.toMap()).toString()
+    }
 }

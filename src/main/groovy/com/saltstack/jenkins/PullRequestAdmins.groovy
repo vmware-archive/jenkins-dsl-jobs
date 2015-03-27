@@ -10,4 +10,15 @@ class PullRequestAdmins {
 
     static usernames = [
     ] + JenkinsPerms.usernames as Set
+
+    def static toMap() {
+        return [
+            usernames: PullRequestAdmins.usernames
+        ]
+    }
+
+    def static toJson() {
+        return new JsonBuilder(PullRequestAdmins.toMap()).toString()
+    }
+
 }
