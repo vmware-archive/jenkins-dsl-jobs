@@ -434,4 +434,21 @@ class Project {
         }
     }
 
+    def addBuildSummary(manager) {
+        def summary = manager.createSummary('/plugin/buildgraph-view/images/48x48/chain.png')
+        summary.appendText("<p>Triggered Builds</p>", false)
+        summary.appendText("<dl>", false)
+        manager.build.getJobsGraph().vertexSet().each {
+            if ( it.getProject().getAbsoluteUrl() != manager.build.getProject().getAbsoluteUrl() ) {
+                summary.appendText("""
+                    <dt style="font-weight: normal;">
+                      <img src='${hudson.Functions.getResourcePath()}/images/32x32/${it.getBuild().getIconColor()}.png'/>
+                      <a href='${it.getProject().getAbsoluteUrl()}'>${it.getProject().getDisplayName()}</a>
+                    </dt>
+                    """.trim().stripIndent(), false)
+            }
+        }
+        summary.appendText("</dl>", false)
+    }
+
 }
