@@ -28,6 +28,10 @@ def new_prs = [:]
 def template_engine = new SimpleTemplateEngine()
 
 // Define the folder structure
+folder(project.name) {
+    displayName(project.display_name)
+    description(project.description)
+}
 folder("${project.name}/pr") {
     displayName('Pull Requests')
     description(project.description)
