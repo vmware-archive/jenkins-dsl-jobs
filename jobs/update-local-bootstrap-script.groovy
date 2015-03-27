@@ -1,4 +1,5 @@
 // Update the bootstrap script
+import groovy.json.*
 
 // get current thread / Executor
 def thr = Thread.currentThread()
