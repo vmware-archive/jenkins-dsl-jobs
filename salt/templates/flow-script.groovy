@@ -17,7 +17,7 @@ guard {
         {
             ${name} = build(
                 "salt/${branch_name}/${build_type_l}/<%
-                    if ( build_type_l == 'cloud') { %>params["PROVIDER"].toLowerCase()/<% }
+                    if ( build_type_l == 'cloud') { %>${params["PROVIDER"].toLowerCase()}/<% }
                 %>${job_name}",
                 GIT_COMMIT: params["GIT_COMMIT"]
             )
