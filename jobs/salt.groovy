@@ -276,7 +276,7 @@ project.branches.each { branch_name ->
             shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/decompress-workspace.sh'))
 
             // Run Lint Code
-            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'libnacl/scripts/run-lint.sh'))
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'salt/scripts/run-lint.sh'))
         }
 
         publishers {
