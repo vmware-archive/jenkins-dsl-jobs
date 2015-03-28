@@ -21,7 +21,7 @@ guard {
                 "salt/${branch_name}/${build_type_l}/<%
                     if ( build_type_l == 'cloud') { %>" + provider + "/<% }
                 %>${job_name}",
-                GIT_COMMIT: clone.environment.get("GIT_REVISION")
+                GIT_COMMIT: clone.environment['GIT_COMMIT']
             )
         },<% } %>
     )
