@@ -1,5 +1,7 @@
 import hudson.FilePath
 
+def provider = params["PROVIDER"].toLowerCase()
+
 guard {
     retry(3) {
         clone = build("salt/${branch_name}/clone")
@@ -17,7 +19,7 @@ guard {
         {
             ${name} = build(
                 "salt/${branch_name}/${build_type_l}/<%
-                    if ( build_type_l == 'cloud') { %>${params["PROVIDER"].toLowerCase()}/<% }
+                    if ( build_type_l == 'cloud') { %>" + provider + "/<% }
                 %>${job_name}",
                 GIT_COMMIT: params["GIT_COMMIT"]
             )
