@@ -3,7 +3,14 @@
 # Random 1-10 seconds sleep to split the server load
 sleep $(($RANDOM % 10))
 
-salt-jenkins-build \
+if [ "${SUDO_SALT_CALL_REQUIRED:-0}" -eq 1 ] && [ "$(id -u)" -ne 0 ]; then
+    # Non root users must sudo
+    SUDO="sudo -E"
+else
+    SUDO=""
+fi
+
+${SUDO} $(which salt-jenkins-build) \
   --output-columns=160 \
   --vm-source ${BUILD_VM_NAME} \
   --cloud-deploy \
