@@ -512,7 +512,7 @@ project.branches.each { branch_name ->
                                 }
 
                                 // Junit Reports
-                                archiveJunit('artifacts/unittests/*.xml') {
+                                archiveJunit('artifacts/xml-unittests-output/*.xml') {
                                     retainLongStdout(true)
                                     testDataPublishers {
                                         publishTestStabilityData()
@@ -610,7 +610,7 @@ project.branches.each { branch_name ->
                             }
 
                             // Junit Reports
-                            archiveJunit('artifacts/unittests/*.xml') {
+                            archiveJunit('artifacts/xml-unittests-output/*.xml') {
                                 retainLongStdout(true)
                                 testDataPublishers {
                                     publishTestStabilityData()

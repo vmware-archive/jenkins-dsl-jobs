@@ -2,8 +2,8 @@
 
 salt-jenkins-build \
   --output-columns=160 \
-  --download-artifact '/tmp/xml-unittests-output/*.xml' artifacts/unittests \
-  --download-artifact '/tmp/coverage.xml' artifacts/coverage \
+  --download-artifact tmp/xml-unittests-output artifacts \
+  --download-artifact /tmp/coverage.xml artifacts/coverage \
   --download-artifact /var/log/salt/minion artifacts/logs \
   --download-artifact /tmp/salt-runtests.log artifacts/logs ${JENKINS_SALTCLOUD_VM_NAME}
 
