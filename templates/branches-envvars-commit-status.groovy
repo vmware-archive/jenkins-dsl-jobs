@@ -1,13 +1,10 @@
-import com.saltstack.jenkins.Projects
+import com.saltstack.jenkins.Projects<% if ( generate_vm_name != null ) { %>
+import com.saltstack.jenkins.VmName<% } %>
 
 def projects = new Projects()
 projects.setCommitStatusPre(currentBuild, '$commit_status_context', out)
 
 def build_env_vars = currentBuild.getEnvironment()
-
-<% if ( vm_name_nodots != null ) { %>
-def build_number = build_env_vars['BUILD_NUMBER'].padLeft(4, '0')
-<% } %>
 
 return [<%
     if ( sudo_salt_call != null ) { %>
@@ -20,9 +17,7 @@ return [<%
     SYSTEM_SITE_PACKAGES: true,<% } %><%
     if ( branch_name != null ) { %>
     BRANCH_NAME: '$branch_name',<% } %><%
-    if (build_vm_name != null) { %>
-    BUILD_VM_NAME: '$build_vm_name',<% } %><%
-    if (vm_name_nodots != null) { %>
-    JENKINS_VM_NAME: build_env_vars['JENKINS_VM_NAME_PREFIX'] + '_' + '$vm_name_nodots' + '_' + build_number,<% } %>
+    if (generate_vm_name != null) { %>
+    JENKINS_VM_NAME: VmName.generate(currentBuild),<% } %>
     COMMIT_STATUS_CONTEXT: '$commit_status_context'
 ]
