@@ -393,15 +393,6 @@ project.branches.each { branch_name ->
                 buildFlow(flow_script_template_text.toString())
 
                 publishers {
-                    // Report Coverage
-                    //cobertura('unit/coverage.xml') {
-                    //    failNoReports = false
-                    //}
-                    // Report Violations
-                    violations {
-                        pylint(10, 999, 999, 'lint/pylint-report*.xml')
-                    }
-
                     template_context = [
                         commit_status_context: 'ci'
                     ]
