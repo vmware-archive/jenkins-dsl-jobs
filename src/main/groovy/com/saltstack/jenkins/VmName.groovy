@@ -38,14 +38,14 @@ class VmName {
             String salt_vm_name = "${vm_name_prefix}-${vm_name_suffix}-${build_number}";
 
             if ( limit > 0 ) {
-                def local_replacements = replacements().collect()
+                def local_replacements = replacements.collect()
                 while ( true ) {
                     if ( local_replacements.size() <= 0 ) {
                         break
                     }
                     def replacement = local_replacements.pop()
                     salt_vm_name = salt_vm_name.replace(replacement[0], replacement[1])
-                    if ( salt_vm_name <= limit ) {
+                    if ( salt_vm_name.size() <= limit ) {
                         break
                     }
                 }
