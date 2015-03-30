@@ -43,7 +43,7 @@ class VmName {
                     if ( local_replacements.size() <= 0 ) {
                         break
                     }
-                    replacement = local_replacements.pop()
+                    def replacement = local_replacements.pop()
                     salt_vm_name = salt_vm_name.replace(replacement[0], replacement[1])
                     if ( salt_vm_name <= limit ) {
                         break
