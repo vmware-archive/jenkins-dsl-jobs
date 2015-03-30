@@ -467,6 +467,7 @@ project.branches.each { branch_name ->
                                 branch_name: branch_name,
                                 branch_name_l: branch_name_l,
                                 build_vm_source: "${provider_name_l}_${vm_name_nodots}",
+                                provider_name_upper: provider_name.toUpperCase(),
                                 virtualenv_name: "salt-remote-testrun",
                                 virtualenv_setup_state_name: "projects.salt.cloud-testrun",
                                 system_site_packages: true
@@ -570,6 +571,7 @@ project.branches.each { branch_name ->
                             branch_name: branch_name,
                             branch_name_l: branch_name_l,
                             build_vm_source: "${provider_name_l}_${vm_name_nodots}",
+                            provider_name_upper: provider_name.toUpperCase(),
                             virtualenv_name: "salt-remote-testrun",
                             virtualenv_setup_state_name: "projects.salt.cloud-testrun",
                             sudo_salt_call: true,
