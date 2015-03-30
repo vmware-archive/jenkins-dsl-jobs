@@ -16,15 +16,26 @@ class VmName {
     static RACKSPACE_MAX_SIZE = 256
 
     static private def replacements = [
-      ['lin', 'l'],
-      ['bs', 'bootstrap'],
-      ['slt', 's'],
-      ['salt', 'slt'],
-      ['develop', 'devel'],
-      ['salt-cloud', 's-cloud'],
-      ['nightly', 'ntly'],
-      ['linode', 'lin'],
-      ['rackspace', 'rs']
+        ['slt', 's'],
+        ['dev', 'd'],
+        ['cld', 'c'],
+        ['lin', 'l'],
+        ['salt', 'slt'],
+        ['cloud', 'cld'],
+        ['s-cloud', 'cld'],
+        ['devel', 'dev'],
+        ['bs', 'bootstrap'],
+        ['develop', 'devel'],
+        ['salt-cloud', 's-cloud'],
+        ['nightly', 'ntly'],
+        ['freebsd', 'fbsd'],
+        ['centos-', 'cent'],
+        ['ubuntu', 'ubtu'],
+        ['debian', 'deb'],
+        ['fedora-', 'f'],
+        ['opensuse', 'osuse'],
+        ['linode', 'lin'],
+        ['rackspace', 'rs'],
     ]
 
     static def generate(build, limit = 0) {
@@ -33,7 +44,7 @@ class VmName {
         try {
             build_env_vars = build.getEnvironment();
             String vm_name_prefix = build_env_vars.get("JENKINS_VM_NAME_PREFIX", "Z");
-            String vm_name_suffix = build_env_vars.get("JOB_NAME").replace("/", "-");
+            String vm_name_suffix = build_env_vars.get("JOB_NAME").replace("/", "-").replace(".", "_");
             String build_number = build_env_vars.get("BUILD_NUMBER").padLeft(4, '0');
             String salt_vm_name = "${vm_name_prefix}-${vm_name_suffix}-${build_number}";
 
