@@ -1,4 +1,4 @@
-import com.saltstack.jenkins.Projects<% if ( generate_vm_name != null ) { %>
+import com.saltstack.jenkins.Projects<% if ( build_vm_source != null ) { %>
 import com.saltstack.jenkins.VmName<% } %>
 
 def projects = new Projects()
@@ -17,7 +17,8 @@ return [<%
     SYSTEM_SITE_PACKAGES: true,<% } %><%
     if ( branch_name != null ) { %>
     BRANCH_NAME: '$branch_name',<% } %><%
-    if (generate_vm_name != null) { %>
+    if (build_vm_source != null) { %>
+    BUILD_VM_SOURCE: '$build_vm_source',
     JENKINS_VM_NAME: VmName.generate(currentBuild),<% } %>
     COMMIT_STATUS_CONTEXT: '$commit_status_context'
 ]

@@ -5,7 +5,7 @@ sleep $(($RANDOM % 10))
 
 salt-jenkins-build \
   --output-columns=160 \
-  --vm-source ${BUILD_VM_NAME} \
+  --vm-source ${BUILD_VM_SOURCE} \
   --cloud-deploy \
   --test-prep-sls=projects.salt.${BRANCH_NAME}.unit \
   --test-git-commit ${GIT_COMMIT} \

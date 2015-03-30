@@ -161,7 +161,6 @@ project.branches.each { branch_name ->
             sudo_salt_call: true,
             branch_name: branch_name,
             branch_name_l: branch_name_l,
-            sudo_salt_call: true,
             virtualenv_name: "salt-${branch_name_l}",
             virtualenv_setup_state_name: 'projects.clone'
         ]
@@ -467,7 +466,7 @@ project.branches.each { branch_name ->
                                 sudo_salt_call: true,
                                 branch_name: branch_name,
                                 branch_name_l: branch_name_l,
-                                generate_vm_name: true,
+                                build_vm_source: "${provider_name_l}_${vm_name_nodots}",
                                 virtualenv_name: "salt-remote-testrun",
                                 virtualenv_setup_state_name: "projects.salt.cloud-testrun",
                                 system_site_packages: true
@@ -570,7 +569,7 @@ project.branches.each { branch_name ->
                             sudo_salt_call: true,
                             branch_name: branch_name,
                             branch_name_l: branch_name_l,
-                            generate_vm_name: true,
+                            build_vm_source: "${provider_name_l}_${vm_name_nodots}",
                             virtualenv_name: "salt-remote-testrun",
                             virtualenv_setup_state_name: "projects.salt.cloud-testrun",
                             sudo_salt_call: true,
