@@ -1,5 +1,5 @@
 import com.saltstack.jenkins.Projects<% if ( build_vm_source != null ) { %>
-import com.saltstack.jenkins.VmName<% } %>
+import com.saltstack.jenkins.vmname.${provider_name}<% } %>
 
 def projects = new Projects()
 projects.setCommitStatusPre(currentBuild, '$commit_status_context', out)
@@ -19,6 +19,6 @@ return [<%
     BRANCH_NAME: '$branch_name',<% } %><%
     if (build_vm_source != null) { %>
     BUILD_VM_SOURCE: '$build_vm_source',
-    JENKINS_VM_NAME: VmName.generate(currentBuild, VmName.${provider_name_upper}_MAX_SIZE),<% } %>
+    JENKINS_VM_NAME: ${provider_name}.generate(currentBuild),<% } %>
     COMMIT_STATUS_CONTEXT: '$commit_status_context'
 ]
