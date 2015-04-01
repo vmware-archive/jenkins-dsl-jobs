@@ -13,31 +13,34 @@ class VmName {
      */
 
     static MAX_SIZE = 256
+    def replacements;
 
-    static def replacements = [
-        ['slt', 's'],
-        ['dev', 'd'],
-        ['cld', 'c'],
-        ['salt', 'slt'],
-        ['s-cloud', 'cld'],
-        ['2015.2', '15_2'],
-        ['2014.7', '14_7'],
-        ['2014.1', '14_1'],
-        ['devel', 'dev'],
-        ['bs', 'bootstrap'],
-        ['develop', 'devel'],
-        ['salt-cloud', 's-cloud'],
-        ['nightly', 'ntly'],
-        ['freebsd', 'fbsd'],
-        ['centos-', 'cent'],
-        ['ubuntu', 'ubtu'],
-        ['debian', 'deb'],
-        ['fedora-', 'f'],
-        ['opensuse', 'osuse'],
-        ['-cloud-', '-'],
-    ]
+    VmName() {
+        replacements = [
+            ['slt', 's'],
+            ['dev', 'd'],
+            ['cld', 'c'],
+            ['salt', 'slt'],
+            ['s-cloud', 'cld'],
+            ['2015.2', '15_2'],
+            ['2014.7', '14_7'],
+            ['2014.1', '14_1'],
+            ['devel', 'dev'],
+            ['bs', 'bootstrap'],
+            ['develop', 'devel'],
+            ['salt-cloud', 's-cloud'],
+            ['nightly', 'ntly'],
+            ['freebsd', 'fbsd'],
+            ['centos-', 'cent'],
+            ['ubuntu', 'ubtu'],
+            ['debian', 'deb'],
+            ['fedora-', 'f'],
+            ['opensuse', 'osuse'],
+            ['-cloud-', '-'],
+        ]
+    }
 
-    static def generate(build) {
+    def generate(build) {
         LOGGER.info("Injecting SALT_VM_NAME");
         EnvVars build_env_vars = new EnvVars();
         try {

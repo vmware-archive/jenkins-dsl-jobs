@@ -5,8 +5,11 @@ import com.saltstack.jenkins.VmName
 
 class Rackspace extends VmName {
 
-    static private def replacements = VmName.replacements + [
-        'rackspace', 'rs'
-    ]
+    Rackspace() {
+        super()
+        replacements = this.replacements + [
+            'rackspace', 'rs'
+        ]
+    }
 
 }

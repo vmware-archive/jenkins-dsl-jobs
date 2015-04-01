@@ -19,6 +19,6 @@ return [<%
     BRANCH_NAME: '$branch_name',<% } %><%
     if (build_vm_source != null) { %>
     BUILD_VM_SOURCE: '$build_vm_source',
-    JENKINS_VM_NAME: ${provider_name}.generate(currentBuild),<% } %>
+    JENKINS_VM_NAME: new ${provider_name}().generate(currentBuild),<% } %>
     COMMIT_STATUS_CONTEXT: '$commit_status_context'
 ]
