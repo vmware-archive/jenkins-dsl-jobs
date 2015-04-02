@@ -412,6 +412,7 @@ project.branches.each { branch_name ->
 
                     vm_names.each { vm_name ->
                         def job_name = vm_name.toLowerCase().replace(' ', '-')
+                        def source_vm_name = vm_name.toLowerCase().replace(' ', '_')
                         def vm_name_nodots = vm_name.replace(' ', '_').replace('.', '_').toLowerCase()
                         freeStyleJob("salt/${branch_name_l}/${build_type_l}/${provider_name_l}/${job_name}") {
                             displayName(vm_name)
@@ -457,7 +458,7 @@ project.branches.each { branch_name ->
                                 sudo_salt_call: true,
                                 branch_name: branch_name,
                                 branch_name_l: branch_name_l,
-                                build_vm_source: "${provider_name_l}_${vm_name}",
+                                build_vm_source: "${provider_name_l}_${source_vm_name}",
                                 provider_name: provider_name,
                                 virtualenv_name: "salt-remote-testrun",
                                 virtualenv_setup_state_name: "projects.salt.cloud-testrun",
@@ -521,6 +522,7 @@ project.branches.each { branch_name ->
             } else {
                 vm_names.each { vm_name ->
                     def job_name = vm_name.toLowerCase().replace(' ', '-')
+                    def source_vm_name = vm_name.toLowerCase().replace(' ', '_')
                     freeStyleJob("salt/${branch_name}/${build_type_l}/${job_name}") {
                         displayName(vm_name)
                         concurrentBuild(allowConcurrentBuild = true)
@@ -561,7 +563,7 @@ project.branches.each { branch_name ->
                             sudo_salt_call: true,
                             branch_name: branch_name,
                             branch_name_l: branch_name_l,
-                            build_vm_source: "${provider_name_l}_${vm_name}",
+                            build_vm_source: "${provider_name_l}_${source_vm_name}",
                             provider_name: provider_name,
                             virtualenv_name: "salt-remote-testrun",
                             virtualenv_setup_state_name: "projects.salt.cloud-testrun",
