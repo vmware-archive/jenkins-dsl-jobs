@@ -32,10 +32,12 @@ def salt_build_types = [
         'CentOS 7',
         'Debian 7',
         'Fedora 20',
+        'Fedora 21',
         'openSUSE 13',
         'Ubuntu 10.04',
         'Ubuntu 12.04',
-        'Ubuntu 14.04'
+        'Ubuntu 14.04',
+        'Ubuntu 14.10'
     ],
     'KVM': [
     ]
