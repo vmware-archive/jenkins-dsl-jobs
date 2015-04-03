@@ -34,7 +34,6 @@ def salt_build_types = [
         'Fedora 20',
         'Fedora 21',
         'openSUSE 13',
-        'Ubuntu 10.04',
         'Ubuntu 12.04',
         'Ubuntu 14.04',
         'Ubuntu 14.10'
