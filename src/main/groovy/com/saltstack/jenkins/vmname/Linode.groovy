@@ -4,10 +4,10 @@ import com.saltstack.jenkins.VmName
 
 
 class Linode extends VmName {
-    static MAX_SIZE = 32
 
     def Linode() {
         super()
+        MAX_SIZE = 32
         replacements = [
             ['lin', 'l']
         ] + this.replacements + [

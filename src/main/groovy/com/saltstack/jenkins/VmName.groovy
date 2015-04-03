@@ -12,7 +12,7 @@ class VmName {
      * The replacements order is replace last item first
      */
 
-    static MAX_SIZE = 256
+    static MAX_SIZE;
     def replacements;
 
     VmName() {
