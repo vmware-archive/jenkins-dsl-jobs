@@ -401,7 +401,14 @@ project.branches.each { branch_name ->
                     )
                     rendered_script_template = script_template.make(template_context.withDefault{ null })
 
-                    groovyPostBuild(rendered_script_template.toString())
+                    groovyPostBuild(
+                        rendered_script_template.toString() +
+                        '''
+                        manager.addBadge(
+                            "/plugin/saltstack-dsl-helpers/images/16x16/${manager.build.buildVariables['PROVIDER'].toLowerCase()}.png",
+                            "${manager.build.buildVariables['PROVIDER']} build")
+                        '''.stripIndent()
+                    )
                 }
             }
 
