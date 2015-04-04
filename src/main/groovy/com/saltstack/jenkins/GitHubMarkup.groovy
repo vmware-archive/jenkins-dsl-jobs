@@ -23,7 +23,10 @@ class GitHubMarkup {
                 context: context
             ]
             response.success = { resp, reader ->
-                return reader.text
+                if ( reader != null ) {
+                    return reader.text
+                }
+                return ''
             }
         }
 
