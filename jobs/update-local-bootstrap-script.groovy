@@ -25,8 +25,8 @@ freeStyleJob('maintenance/update-bootstrap') {
     }
 
     authorization {
-        jenkins_perms.usernames.each { username ->
-            jenkins_perms.project.each { permname ->
+        for ( username in jenkins_perms.usernames ) {
+            for ( permname in jenkins_perms.project ) {
                 permission("${permname}:${username}")
             }
         }
