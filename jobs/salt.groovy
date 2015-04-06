@@ -407,7 +407,8 @@ project.branches.each { branch_name ->
                         '''
                         manager.addBadge(
                             "/plugin/saltstack-dsl-helpers/images/16x16/${manager.build.buildVariables['PROVIDER'].toLowerCase()}.png",
-                            "${manager.build.buildVariables['PROVIDER']} build")
+                            "${manager.build.buildVariables['PROVIDER']} build"
+                        )
                         '''.stripIndent()
                     )
                 }
