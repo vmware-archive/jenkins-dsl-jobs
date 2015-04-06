@@ -88,8 +88,10 @@ class Project {
     }
 
     def GHRepository getAuthenticatedRepository() {
+        LOGGER.fine("Iterating through SystemCredentialsProvider.getInstance().getCredentials(Domain.global())")
         SystemCredentialsProvider.getInstance().getCredentials(Domain.global()).find { creds ->
-            if ( creds.id == this.repo ) {
+            LOGGER.fine("Credentials ID: ${creds.id}")
+            if ( creds.id == this.name ) {
                 LOGGER.fine("Found global credentials matching this repo as it's ID. Using those credentials")
                 getRepository(creds.username, creds.password)
                 return true
