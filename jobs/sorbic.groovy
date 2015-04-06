@@ -488,10 +488,10 @@ freeStyleJob("${project.name}/pr/jenkins-seed") {
         groovy('''
         import com.saltstack.jenkins.JenkinsPerms
         import com.saltstack.jenkins.PullRequestAdmins
-        import com.saltstack.jenkins.projects.Salt
+        import com.saltstack.jenkins.projects.Sorbic
 
         return [
-            SEED_DATA: new Salt().toJSON(include_branches = false, include_prs = true),
+            SEED_DATA: new Sorbic().toJSON(include_branches = false, include_prs = true),
             JENKINS_PERMS: JenkinsPerms.toJSON(),
             PULL_REQUEST_ADMINS: PullRequestAdmins.toJSON()
         ]
