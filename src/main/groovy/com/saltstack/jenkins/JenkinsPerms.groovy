@@ -55,7 +55,6 @@ class JenkinsPerms {
         'hudson.model.Item.Build',
         'hudson.model.Item.Cancel',
         'hudson.model.Item.Configure',
-        'hudson.model.Item.Create',
         'hudson.model.Item.Delete',
         'hudson.model.Item.Discover',
         'hudson.model.Item.Move',
