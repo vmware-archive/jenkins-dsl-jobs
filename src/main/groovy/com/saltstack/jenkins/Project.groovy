@@ -1,6 +1,7 @@
 package com.saltstack.jenkins
 
 import java.util.*
+import java.util.logging.Level
 import java.util.logging.Logger
 import groovy.json.*
 import hudson.Functions
@@ -48,6 +49,8 @@ class Project {
         this.create_branches_webhook = false;
         this.set_commit_status = false;
         this.trigger_new_prs = false;
+        this._repo = null
+        this._github = null
     }
 
     def GHRepository getRepository() {
@@ -66,22 +69,26 @@ class Project {
         return this._repo
     }
 
-    def GHRepository getRepository(username, authtoken) {
-        LOGGER.fine("Project.getRepository with username and auth token")
+    def GHRepository getRepository(authtoken) {
+        LOGGER.fine("Project.getRepository with auth token")
         if ( this._github == null ) {
             LOGGER.fine("Class level _github object is null. Populating")
             try {
-                this._github = GitHub.connect(username, authtoken)
+                this._github = GitHub.connectUsingOAuth(authtoken)
                 this._authenticated = true
-                LOGGER.fine("Project.getRepository with username and auth token authentication successfull.")
+                LOGGER.fine("Project.getRepository with auth token authentication successfull.")
             } catch (Throwable e2) {
                 this._github = GitHub.connectAnonymously()
                 this._authenticated = false
-                LOGGER.fine("Project.getRepository with username and auth token authentication failed. Connected annonymously.")
+                LOGGER.log(
+                    Level.SEVERE,
+                    "Project.getRepository with auth token authentication failed. Connected annonymously.",
+                    e2
+                )
             }
         }
         if ( this._repo == null ) {
-            LOGGER.fine("Project.getRepository with username and auth token returning from cached _github connection")
+            LOGGER.fine("Project.getRepository with auth token returning from cached _github connection")
             this._repo = this._github.getRepository(this.repo)
         }
         return this._repo
@@ -93,7 +100,8 @@ class Project {
             LOGGER.fine("Credentials ID: ${creds.id}")
             if ( creds.id == this.name ) {
                 LOGGER.fine("Found global credentials matching this repo as it's ID. Using those credentials")
-                getRepository(creds.username, creds.password)
+                resetRepoGitHub()
+                getRepository(creds.password.toString())
                 return true
             }
             return false
@@ -104,11 +112,21 @@ class Project {
                 def github_repo_url = "https://github.com/${this.repo}"
                 this._repo = GitHubRepositoryName.create(github_repo_url).resolve().iterator().next()
             } catch (Throwable e1) {
-                LOGGER.severe("Failed to load authenticated repository using GitHubRepositoryName.create()", e1)
+                LOGGER.log(
+                    Level.SEVERE,
+                    "Failed to load authenticated repository using GitHubRepositoryName.create()",
+                    e1
+                )
                 return null
             }
         }
         return this._repo
+    }
+
+    def resetRepoGitHub() {
+        LOGGER.fine("Reseting cached _repo and _github instances")
+        this._repo = null
+        this._github = null
     }
 
     def toMap(Boolean include_branches = false, Boolean include_prs = false) {

@@ -24,7 +24,9 @@ folder('maintenance') {
 
     authorization {
         for ( username in jenkins_perms.usernames ) {
+            println "Processing username ${username}"
             for ( permname in jenkins_perms.folder ) {
+                println "Processing folder permission ${permname}"
                 permission("${permname}:${username}")
             }
         }
@@ -49,7 +51,9 @@ freeStyleJob('maintenance/jenkins-seed') {
 
     authorization {
         for ( username in jenkins_perms.usernames ) {
+            println "Processing username ${username}"
             for ( permname in jenkins_perms.project ) {
+                println "Processing project permission ${permname}"
                 permission("${permname}:${username}")
             }
         }
