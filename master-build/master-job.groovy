@@ -22,16 +22,10 @@ def jenkins_perms = new JsonSlurper().parseText(build.getEnvironment().JENKINS_P
 folder('maintenance') {
     displayName('Jenkins Maintenance Jobs')
 
-    configure {
-        folder_properties = it.get('properties').get(0)
-        auth_matrix_prop = folder_properties.appendNode(
-            'com.cloudbees.hudson.plugins.folder.properties.AuthorizationMatrixProperty'
-        )
-        jenkins_perms.usernames.each { username ->
-            jenkins_perms.folder.each { permname ->
-                auth_matrix_prop.appendNode('permission').setValue(
-                    "${permname}:${username}"
-                )
+    authorization {
+        for ( username in jenkins_perms.usernames ) {
+            for ( permname in jenkins_perms.folder ) {
+                permission("${permname}:${username}")
             }
         }
     }
@@ -54,8 +48,8 @@ freeStyleJob('maintenance/jenkins-seed') {
     }
 
     authorization {
-        jenkins_perms.usernames.each { username ->
-            jenkins_perms.project.each { permname ->
+        for ( username in jenkins_perms.usernames ) {
+            for ( permname in jenkins_perms.project ) {
                 permission("${permname}:${username}")
             }
         }
