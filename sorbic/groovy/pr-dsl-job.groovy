@@ -1,4 +1,4 @@
-// $project Jenkins jobs seed script
+// Sorbic Jenkins jobs seed script
 import groovy.json.*
 import groovy.text.*
 import jenkins.model.Jenkins
@@ -28,7 +28,7 @@ def template_engine = new SimpleTemplateEngine()
 
 // Define the folder structure
 folder(project.name) {
-    displayName(roject.display_name)
+    displayName(project.display_name)
     description(project.description)
 }
 folder("${project.name}/pr") {
