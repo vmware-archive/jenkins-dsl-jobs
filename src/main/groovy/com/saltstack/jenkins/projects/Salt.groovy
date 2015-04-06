@@ -10,6 +10,7 @@ class Salt extends Project {
     ]
 
     Salt() {
+        super()
         this.name = 'salt'
         this.display_name = 'Salt'
         this.repo = 'saltstack/salt'
