@@ -44,8 +44,7 @@ folder("${project.name}/pr") {
 
 project.branches.each { job_branch ->
     // Branch Main Job
-    def job_name = "${project.name}/${job_branch}-main-build"
-    def build_flow_job = buildFlowJob(job_name) {
+    def build_flow_job = buildFlowJob("${project.name}/${job_branch}-main-build") {
         displayName("${job_branch.capitalize()} Branch Main Build")
         description(project.description)
         label('worker')
@@ -110,11 +109,6 @@ project.branches.each { job_branch ->
         }
         checkoutRetryCount(3)
 
-        // Job Triggers
-        if ( project.setup_push_hooks ) {
-            new PushHooksRecorder(build).record(job_name)
-        }
-
         template_context = [
             job_branch: job_branch,
         ]
@@ -133,8 +127,10 @@ project.branches.each { job_branch ->
         }
     }
 
-    println build_flow_job.dump()
-
+    // Main Build Job Triggers
+    if ( project.setup_push_hooks ) {
+        new PushHooksRecorder(build).record(build_flow_job.name)
+    }
 
     // Clone Job
     freeStyleJob("bootstrap/${job_branch}/clone") {
