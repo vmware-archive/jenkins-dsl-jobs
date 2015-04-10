@@ -46,7 +46,7 @@ class Project {
         this.name;
         this.display_name;
         this.repo;
-        this.setup_push_hooks = false;
+        this.setup_push_hooks = true;
         this.create_branches_webhook = false;
         this.set_commit_status = false;
         this.trigger_new_prs = false;
