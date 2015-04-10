@@ -51,7 +51,7 @@ project.branches.each { job_branch ->
         concurrentBuild(allowConcurrentBuild = true)
 
         configure {
-            it.appendNode('authToken').setValue(new RandomStringUtils().randomAlphanumeric(16))
+            it.appendNode('authToken').setValue(new RandomStringUtils().randomAlphanumeric(32))
             it.appendNode('buildNeedsWorkspace').setValue(true)
             job_properties = it.get('properties').get(0)
             job_publishers = it.get('publishers').get(0)
@@ -333,7 +333,7 @@ freeStyleJob("${project.name}/pr/jenkins-seed") {
     label('worker')
 
     configure {
-        it.appendNode('authToken').setValue(new RandomStringUtils().randomAlphanumeric(16))
+        it.appendNode('authToken').setValue(new RandomStringUtils().randomAlphanumeric(32))
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
