@@ -10,15 +10,18 @@ class PushHooksRecorder {
 
     def load() {
         try {
-            return new JsonSlurper().parseText(this.cachefile.readToString()) as Set
+            return new JsonSlurper().parseText(this.cachefile.readToString())
         } catch (Throwable e) {
-            return [] as Set
+            return [:]
         }
     }
 
-    def record(job_name) {
+    def record(project_name, job_name) {
         data = load()
-        data.add(job_name.split('/'))
+        if ( ! data.contains(project_name) ) {
+            data[project_name] = new HashSet()
+        }
+        data[project_name].add(job_name)
         this.cachefile.write(new JsonBuilder(data).toString(), 'UTF-8')
     }
 
