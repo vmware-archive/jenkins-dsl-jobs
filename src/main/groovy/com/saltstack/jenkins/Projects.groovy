@@ -53,7 +53,7 @@ class Projects {
                 if ( project.name != project_name ) {
                     continue
                 }
-                job_names.each { job_name ->
+                job_names.unique().each { job_name ->
                     project.configurePushWebHook(manager, job_name)
                 }
                 break
