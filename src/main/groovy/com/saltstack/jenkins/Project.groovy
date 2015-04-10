@@ -8,6 +8,7 @@ import hudson.Functions
 import hudson.model.User
 import hudson.model.Cause
 import hudson.model.Result
+import hudson.model.AbstractProject
 import jenkins.model.Jenkins
 import jenkins.security.ApiTokenProperty
 import java.io.InputStreamReader
