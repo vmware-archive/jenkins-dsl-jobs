@@ -47,7 +47,7 @@ class Projects {
         this.get_projects().find { project ->
             def github_project_property = build.getProject().getProperty(GithubProjectProperty.class)
             if ( github_project_property != null ) {
-                def github_repo_url = .getProjectUrl().toString()
+                def github_repo_url = github_project_property.getProjectUrl().toString()
                 if ( github_repo_url[-1] == '/' ) {
                     github_repo_url = github_repo_url[0..-2]
                 }
