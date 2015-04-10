@@ -217,7 +217,7 @@ class Project {
             }
             // Create hooks
             try {
-                def webhook_url = "${Jenkins.instance.getRootUrl()}buildByToken/build\\?job=${project.getFullName()}&token=${project.getAuthToken().getToken()}"
+                def webhook_url = "${Jenkins.instance.getRootUrl()}buildByToken/build?job=${project.getFullName()}&token=${project.getAuthToken().getToken()}"
                 this.getAuthenticatedRepository().createWebHook(
                     webhook_url.toURL(),
                     [GHEvent.PUSH]
@@ -257,9 +257,8 @@ class Project {
             }
         }
         // Create hooks
-        def webhooks_apitoken = User.get(this.webhooks_user).getProperty(ApiTokenProperty.class).getApiToken()
         try {
-            def webhook_url = "${Jenkins.instance.getRootUrl()}buildByToken/build\\?job=${project.getFullName()}&token=${project.getAuthToken().getToken()}"
+            def webhook_url = "${Jenkins.instance.getRootUrl()}buildByToken/build?job=${project.getFullName()}&token=${project.getAuthToken().getToken()}"
             this.getAuthenticatedRepository().createWebHook(
                 webhook_url.toURL(),
                 [GHEvent.CREATE, GHEvent.DELETE]
@@ -306,9 +305,8 @@ class Project {
             }
         }
         // Create pull request web hooks
-        def webhooks_apitoken = User.get(this.webhooks_user).getProperty(ApiTokenProperty.class).getApiToken()
         try {
-            def webhook_url = pr_seed_job.getAbsoluteUrl() + 'build?token=' + pr_seed_job.getAuthToken().getToken()
+            def webhook_url = "${Jenkins.instance.getRootUrl()}buildByToken/build?job=${pr_seed_job.getFullName()}&token=${pr_seed_job.getAuthToken().getToken()}"
             this.getAuthenticatedRepository().createWebHook(
                 webhook_url.toURL(),
                 [GHEvent.PULL_REQUEST]
