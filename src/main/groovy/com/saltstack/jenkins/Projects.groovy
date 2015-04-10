@@ -1,10 +1,14 @@
 package com.saltstack.jenkins
 
 import groovy.json.*
+import java.util.logging.Level
+import java.util.logging.Logger
 import com.saltstack.jenkins.projects.*
 import com.coravy.hudson.plugins.github.GithubProjectProperty
 
 class Projects {
+
+    private static final Logger LOGGER = Logger.getLogger(Project.class.getName());
 
     static def get_projects() {
         return [
@@ -56,6 +60,8 @@ class Projects {
                     return true
                 }
                 return false
+            } else {
+                LOGGER.log(Level.FINE, "Project ${project.getFullDisplayName()} does not have the GithubProjectProperty defined")
             }
             return false
         }
