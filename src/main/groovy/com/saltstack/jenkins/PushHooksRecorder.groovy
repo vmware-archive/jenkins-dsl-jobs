@@ -1,10 +1,13 @@
 package com.saltstack.jenkins
 
 import groovy.json.*
+import java.util.logging.Level
+import java.util.logging.Logger
 
 class PushHooksRecorder {
 
     def cachefile;
+    private static final Logger LOGGER = Logger.getLogger(Project.class.getName());
 
     PushHooksRecorder(build) {
         this.cachefile = build.getWorkspace().child('push-hooks.cache')
@@ -19,6 +22,7 @@ class PushHooksRecorder {
     }
 
     def record(project_name, job_name) {
+        LOGGER.log(Level.INFO, "Recording job name '${job_name}' for project '${project_name}'")
         data = load()
         if ( ! data.contains(project_name) ) {
             data[project_name] = new HashSet()
