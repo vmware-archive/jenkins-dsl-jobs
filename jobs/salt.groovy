@@ -411,7 +411,7 @@ project.branches.each { branch_name ->
 
             // Main Build Push Trigger
             if ( project.setup_push_hooks ) {
-                new PushHooksRecorder(build).record(build_flow_job.name)
+                new PushHooksRecorder(build).record(project.name, build_flow_job.name)
             }
 
             if (build_type_l == 'cloud') {

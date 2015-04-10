@@ -41,8 +41,7 @@ folder("${project.name}/pr") {
 }
 
 // Main master branch job
-def job_name = "${project.name}/master-main-build"
-def master_main_job = buildFlowJob(job_name) {
+def build_flow_job = buildFlowJob("${project.name}/master-main-build") {
     displayName('Master Branch Main Build')
     description(project.description)
     label('worker')
@@ -112,7 +111,7 @@ def master_main_job = buildFlowJob(job_name) {
         // Make sure it runs once every Sunday to get coverage reports
         cron('H * * * 0')
         if ( project.setup_push_hooks ) {
-            new PushHooksRecorder(build).record(job_name)
+            new PushHooksRecorder(build).record(project.name, build_flow_job.name)
         }
     }
 
