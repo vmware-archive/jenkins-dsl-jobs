@@ -190,6 +190,48 @@ class Project {
         return hooks
     }
 
+    def configurePushWebHook(manager, job_name) {
+        for ( project in Jenkins.instance.getAllItems(AbstractProject.class) ) {
+            if ( ! project.isBuildable() ) {
+                continue
+            }
+            if ( project.getFullName() != job_name ) {
+                continue
+            }
+            // Delete existing hooks
+            def hook_url_regex = 'http(s?)://(.*)@' + running_job.getAbsoluteUrl().replace('https://', '').replace('http://', '') + 'build(.*)'
+            def hook_url_pattern = ~hook_url_regex
+            manager.listener.logger.println 'Existing webhook regex: ' + hook_url_regex
+
+            this.getRepositoryWebHooks().each { hook ->
+                try {
+                    def hook_config = hook.getConfig()
+                    if ( hook_url_pattern.matcher(hook_config.url).getCount() > 0 ) {
+                        manager.listener.logger.println 'Deleting web hook: ' + hook_config.url
+                        hook.delete()
+                    }
+                } catch(Throwable e1) {
+                    manager.listener.logger.println 'Failed to delete existing webhook:' + e1.toString()
+                }
+            }
+            // Create hooks
+            def webhooks_apitoken = User.get(this.webhooks_user).getProperty(ApiTokenProperty.class).getApiToken()
+            try {
+                def webhook_url = project.getAbsoluteUrl() + 'build?token=' + project.getAuthToken().getToken()
+                webhook_url = webhook_url.replace(
+                    'https://', "https://${this.webhooks_user}:${webhooks_apitoken}@").replace(
+                        'http://', "http://${this.webhooks_user}:${webhooks_apitoken}@")
+                this.getAuthenticatedRepository().createWebHook(
+                    webhook_url.toURL(),
+                    [GHEvent.PUSH]
+                )
+            } catch(Throwable e2) {
+                manager.listener.logger.println 'Failed to setup create webhook: ' + e2.toString()
+            }
+            break
+        }
+    }
+
     def configureBranchesWebHooks(manager) {
         if ( this.create_branches_webhook != true ) {
             manager.listener.logger.println "Not setting up branches web hooks for ${this.display_name}"
