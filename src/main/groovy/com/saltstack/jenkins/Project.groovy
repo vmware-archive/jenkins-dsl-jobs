@@ -200,7 +200,7 @@ class Project {
                 continue
             }
             // Delete existing hooks
-            def hook_url_regex = "${Jenkins.instance.getRootUrl()}buildByToken/build?job=${project.getFullName()}&token=(.*)"
+            def hook_url_regex = "${Jenkins.instance.getRootUrl()}buildByToken/build\\?job=${project.getFullName()}&token=(.*)"
             def hook_url_pattern = ~hook_url_regex
             manager.listener.logger.println 'Existing webhook regex: ' + hook_url_regex
 
@@ -217,7 +217,7 @@ class Project {
             }
             // Create hooks
             try {
-                def webhook_url = "${Jenkins.instance.getRootUrl()}buildByToken/build?job=${project.getFullName()}&token=${project.getAuthToken().getToken()}"
+                def webhook_url = "${Jenkins.instance.getRootUrl()}buildByToken/build\\?job=${project.getFullName()}&token=${project.getAuthToken().getToken()}"
                 this.getAuthenticatedRepository().createWebHook(
                     webhook_url.toURL(),
                     [GHEvent.PUSH]
@@ -241,7 +241,7 @@ class Project {
         }
         manager.listener.logger.println "Setting up branches create/delete webhook for ${this.display_name} ..."
         // Delete existing hooks
-        def hook_url_regex = "${Jenkins.instance.getRootUrl()}buildByToken/build?job=${project.getFullName()}&token=(.*)"
+        def hook_url_regex = "${Jenkins.instance.getRootUrl()}buildByToken/build\\?job=${project.getFullName()}&token=(.*)"
         def hook_url_pattern = ~hook_url_regex
         manager.listener.logger.println 'Existing webhook regex: ' + hook_url_regex
 
@@ -259,7 +259,7 @@ class Project {
         // Create hooks
         def webhooks_apitoken = User.get(this.webhooks_user).getProperty(ApiTokenProperty.class).getApiToken()
         try {
-            def webhook_url = "${Jenkins.instance.getRootUrl()}buildByToken/build?job=${project.getFullName()}&token=${project.getAuthToken().getToken()}"
+            def webhook_url = "${Jenkins.instance.getRootUrl()}buildByToken/build\\?job=${project.getFullName()}&token=${project.getAuthToken().getToken()}"
             this.getAuthenticatedRepository().createWebHook(
                 webhook_url.toURL(),
                 [GHEvent.CREATE, GHEvent.DELETE]
@@ -290,7 +290,7 @@ class Project {
         manager.listener.logger.println "Setting up pull requests webhook for ${this.display_name} ..."
 
         // Delete existing hooks
-        def hook_url_regex = "${Jenkins.instance.getRootUrl()}buildByToken/build?job=${pr_seed_job.getFullName()}&token=(.*)"
+        def hook_url_regex = "${Jenkins.instance.getRootUrl()}buildByToken/build\\?job=${pr_seed_job.getFullName()}&token=(.*)"
         def hook_url_pattern = ~hook_url_regex
         manager.listener.logger.println 'Existing webhook regex: ' + hook_url_regex
 
