@@ -4,6 +4,8 @@ import groovy.json.*
 
 class PushHooksRecorder {
 
+    def cachefile;
+
     PushHooksRecorder(build) {
         this.cachefile = build.getWorkspace().child('push-hooks.cache')
     }
