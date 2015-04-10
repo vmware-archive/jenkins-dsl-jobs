@@ -24,7 +24,7 @@ class PushHooksRecorder {
     def record(project_name, job_name) {
         LOGGER.log(Level.INFO, "Recording job name '${job_name}' for project '${project_name}'")
         data = load()
-        if ( ! data.contains(project_name) ) {
+        if ( ! data.containsKey(project.name) ) {
             data[project_name] = []
         }
         data[project_name].add(job_name)

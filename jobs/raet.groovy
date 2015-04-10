@@ -114,7 +114,7 @@ def build_flow_job = buildFlowJob("${project.name}/master-main-build") {
         } catch (Throwable e) {
             data = [:]
         }
-        if ( ! data.contains(project.name) ) {
+        if ( ! data.containsKey(project.name) ) {
             data[project.name] = []
         }
         data[project_name].add(build_flow_job.name)
