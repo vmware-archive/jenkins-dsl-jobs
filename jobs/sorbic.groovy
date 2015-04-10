@@ -109,20 +109,6 @@ def build_flow_job = buildFlowJob("${project.name}/master-main-build") {
     triggers {
         // Make sure it runs once every Sunday to get coverage reports
         cron('H * * * 0')
-        if ( project.setup_push_hooks ) {
-            cachefile = build.getWorkspace().child('push-hooks.cache')
-            def data;
-            try {
-                data = new JsonSlurper().parseText(cachefile.readToString())
-            } catch (Throwable e) {
-                data = [:]
-            }
-            if ( ! data.containsKey(project.name) ) {
-                data[project.name] = []
-            }
-            data[project_name].add(build_flow_job.name)
-            cachefile.write(new JsonBuilder(data).toString(), 'UTF-8')
-        }
     }
 
     buildFlow(
@@ -134,6 +120,24 @@ def build_flow_job = buildFlowJob("${project.name}/master-main-build") {
             readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
         )
     }
+}
+
+// Main Build Push Trigger
+if ( project.setup_push_hooks ) {
+    cachefile = build.getWorkspace().child('push-hooks.cache')
+    def data;
+    try {
+        data = new JsonSlurper().parseText(cachefile.readToString())
+    } catch (Throwable e) {
+        data = [:]
+    }
+    if ( ! data.containsKey(project.name) ) {
+        data[project.name] = []
+    }
+    if ( ! data[project.name].contains(build_flow_job.name) ) {
+        data[project.name].add(build_flow_job.name)
+    }
+    cachefile.write(new JsonBuilder(data).toString(), 'UTF-8')
 }
 
 // Clone Master Job

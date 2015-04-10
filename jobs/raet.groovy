@@ -105,22 +105,6 @@ def build_flow_job = buildFlowJob("${project.name}/master-main-build") {
     }
     checkoutRetryCount(3)
 
-    // Job Triggers
-    if ( project.setup_push_hooks ) {
-        cachefile = build.getWorkspace().child('push-hooks.cache')
-        def data;
-        try {
-            data = new JsonSlurper().parseText(cachefile.readToString())
-        } catch (Throwable e) {
-            data = [:]
-        }
-        if ( ! data.containsKey(project.name) ) {
-            data[project.name] = []
-        }
-        data[project_name].add(build_flow_job.name)
-        cachefile.write(new JsonBuilder(data).toString(), 'UTF-8')
-    }
-
     buildFlow(
         readFileFromWorkspace('maintenance/jenkins-seed', 'raet/groovy/master-main-build-flow.groovy')
     )
@@ -131,6 +115,24 @@ def build_flow_job = buildFlowJob("${project.name}/master-main-build") {
 
         )
     }
+}
+
+// Main Build Push Trigger
+if ( project.setup_push_hooks ) {
+    cachefile = build.getWorkspace().child('push-hooks.cache')
+    def data;
+    try {
+        data = new JsonSlurper().parseText(cachefile.readToString())
+    } catch (Throwable e) {
+        data = [:]
+    }
+    if ( ! data.containsKey(project.name) ) {
+        data[project.name] = []
+    }
+    if ( ! data[project.name].contains(build_flow_job.name) ) {
+        data[project.name].add(build_flow_job.name)
+    }
+    cachefile.write(new JsonBuilder(data).toString(), 'UTF-8')
 }
 
 // Clone Master Job
