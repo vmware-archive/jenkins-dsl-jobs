@@ -28,7 +28,7 @@ class Project {
     String name;
     String display_name;
     String repo;
-    Boolean setup_push_hooks = false;
+    Boolean setup_push_hooks = true;
     Boolean create_branches_webhook = false;
     Boolean set_commit_status = false;
     Boolean trigger_new_prs = false;
