@@ -200,7 +200,7 @@ class Project {
                 continue
             }
             // Delete existing hooks
-            def hook_url_regex = 'http(s?)://(.*)@' + running_job.getAbsoluteUrl().replace('https://', '').replace('http://', '') + 'build(.*)'
+            def hook_url_regex = "${Jenkins.instance.getRootUrl()}buildByToken/build?job=${project.getFullName()}&token=(.*)"
             def hook_url_pattern = ~hook_url_regex
             manager.listener.logger.println 'Existing webhook regex: ' + hook_url_regex
 
@@ -216,12 +216,8 @@ class Project {
                 }
             }
             // Create hooks
-            def webhooks_apitoken = User.get(this.webhooks_user).getProperty(ApiTokenProperty.class).getApiToken()
             try {
-                def webhook_url = project.getAbsoluteUrl() + 'build?token=' + project.getAuthToken().getToken()
-                webhook_url = webhook_url.replace(
-                    'https://', "https://${this.webhooks_user}:${webhooks_apitoken}@").replace(
-                        'http://', "http://${this.webhooks_user}:${webhooks_apitoken}@")
+                def webhook_url = "${Jenkins.instance.getRootUrl()}buildByToken/build?job=${project.getFullName()}&token=${project.getAuthToken().getToken()}"
                 this.getAuthenticatedRepository().createWebHook(
                     webhook_url.toURL(),
                     [GHEvent.PUSH]
@@ -238,14 +234,14 @@ class Project {
             manager.listener.logger.println "Not setting up branches web hooks for ${this.display_name}"
             return
         }
-        def running_job = manager.build.getProject()
-        if ( running_job == null ) {
+        def project = manager.build.getProject()
+        if ( project == null ) {
             manager.listener.logger.println "This job's build.getProject() weirdly returns null. Not checking existing branches web hooks."
             return
         }
         manager.listener.logger.println "Setting up branches create/delete webhook for ${this.display_name} ..."
         // Delete existing hooks
-        def hook_url_regex = 'http(s?)://(.*)@' + running_job.getAbsoluteUrl().replace('https://', '').replace('http://', '') + 'build(.*)'
+        def hook_url_regex = "${Jenkins.instance.getRootUrl()}buildByToken/build?job=${project.getFullName()}&token=(.*)"
         def hook_url_pattern = ~hook_url_regex
         manager.listener.logger.println 'Existing webhook regex: ' + hook_url_regex
 
@@ -263,10 +259,7 @@ class Project {
         // Create hooks
         def webhooks_apitoken = User.get(this.webhooks_user).getProperty(ApiTokenProperty.class).getApiToken()
         try {
-            def webhook_url = running_job.getAbsoluteUrl() + 'build?token=' + running_job.getAuthToken().getToken()
-            webhook_url = webhook_url.replace(
-                'https://', "https://${this.webhooks_user}:${webhooks_apitoken}@").replace(
-                    'http://', "http://${this.webhooks_user}:${webhooks_apitoken}@")
+            def webhook_url = "${Jenkins.instance.getRootUrl()}buildByToken/build?job=${project.getFullName()}&token=${project.getAuthToken().getToken()}"
             this.getAuthenticatedRepository().createWebHook(
                 webhook_url.toURL(),
                 [GHEvent.CREATE, GHEvent.DELETE]
@@ -277,8 +270,8 @@ class Project {
     }
 
     def configurePullRequestsWebHooks(manager) {
-        def running_job = manager.build.getProject()
-        if ( running_job == null ) {
+        def project = manager.build.getProject()
+        if ( project == null ) {
             manager.listener.logger.println "This job's build.getProject() weirdly returns null. Not checking existing pull requests web hooks."
             return
         }
@@ -297,7 +290,7 @@ class Project {
         manager.listener.logger.println "Setting up pull requests webhook for ${this.display_name} ..."
 
         // Delete existing hooks
-        def hook_url_regex = 'https://(.*)@' + pr_seed_job.getAbsoluteUrl().replace('https://', '').replace('http://', '') + 'build(.*)'
+        def hook_url_regex = "${Jenkins.instance.getRootUrl()}buildByToken/build?job=${pr_seed_job.getFullName()}&token=(.*)"
         def hook_url_pattern = ~hook_url_regex
         manager.listener.logger.println 'Existing webhook regex: ' + hook_url_regex
 
@@ -316,9 +309,6 @@ class Project {
         def webhooks_apitoken = User.get(this.webhooks_user).getProperty(ApiTokenProperty.class).getApiToken()
         try {
             def webhook_url = pr_seed_job.getAbsoluteUrl() + 'build?token=' + pr_seed_job.getAuthToken().getToken()
-            webhook_url = webhook_url.replace(
-                'https://', "https://${this.webhooks_user}:${webhooks_apitoken}@").replace(
-                    'http://', "http://${this.webhooks_user}:${webhooks_apitoken}@")
             this.getAuthenticatedRepository().createWebHook(
                 webhook_url.toURL(),
                 [GHEvent.PULL_REQUEST]
