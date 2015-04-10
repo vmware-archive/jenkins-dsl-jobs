@@ -25,7 +25,7 @@ class PushHooksRecorder {
         LOGGER.log(Level.INFO, "Recording job name '${job_name}' for project '${project_name}'")
         data = load()
         if ( ! data.contains(project_name) ) {
-            data[project_name] = new HashSet()
+            data[project_name] = []
         }
         data[project_name].add(job_name)
         this.cachefile.write(new JsonBuilder(data).toString(), 'UTF-8')

@@ -418,7 +418,7 @@ project.branches.each { branch_name ->
                     data = [:]
                 }
                 if ( ! data.contains(project.name) ) {
-                    data[project.name] = new HashSet()
+                    data[project.name] = []
                 }
                 data[project_name].add(build_flow_job.name)
                 cachefile.write(new JsonBuilder(data).toString(), 'UTF-8')
