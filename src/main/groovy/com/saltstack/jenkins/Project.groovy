@@ -460,36 +460,40 @@ class Project {
 
     def cleanOldPullRequests(manager, howOld=7) {
         def prs_folder = Jenkins.instance.getJob(this.name).getJob('pr')
-        prs_folder.getItems().find { folder ->
-            if ( folder.class.canonicalName == 'com.cloudbees.hudson.plugins.folder.Folder' ) {
-                manager.listener.logger.println "Processing ${folder.getFullDisplayName()}"
-                def folder_main_build = folder.getJob('main-build')
-                if ( folder_main_build.disabled ) {
-                    // We only delete folders with disabled jobs, which are closed/merged pull requests
-                    def last_build = folder_main_build.getLastBuild()
-                    if ( last_build != null ) {
-                        manager.listener.logger.println "Grabbing last build timestamp for ${folder_main_build.getFullDisplayName()}"
-                        def last_build_date = folder_main_build.getLastBuild().timestamp.clone()
-                        last_build_date.add(GregorianCalendar.DATE, howOld)
-                        def current_date = new GregorianCalendar();
-                        current_date.set(Calendar.HOUR_OF_DAY, 0);
-                        current_date.set(Calendar.MINUTE, 0);
-                        current_date.set(Calendar.SECOND, 0);
-                        if ( last_build_date < current_date ) {
-                            manager.listener.logger.println "Last build of ${this.repo} #${folder.name} is older than ${howOld} days. Deleting it..."
-                            folder.delete()
-                            folder.save()
-                        } else {
-                            manager.listener.logger.println "Last build for ${folder_main_build.getFullDisplayName()} is not old enough. Continuing..."
-                        }
-                    } else {
-                        manager.listener.logger.println "No last build for ${folder_main_build.getFullDisplayName()}"
-                    }
-                } else {
-                    manager.listener.logger.println "The ${folder_main_build.getFullDisplayName()} job is not disabled. Continuing..."
-                }
-            }
+        if ( prs_folder == null ) {
+            return
         }
+        for ( folder in prs_folder.getItems() ) {
+            if ( folder.class.canonicalName != 'com.cloudbees.hudson.plugins.folder.Folder' ) {
+                continue
+            }
+            manager.listener.logger.println "Processing ${folder.getFullDisplayName()}"
+            def folder_main_build = folder.getJob('main-build')
+            if ( ! folder_main_build.disabled ) {
+                manager.listener.logger.println "The ${folder_main_build.getFullDisplayName()} job is not disabled. Continuing..."
+                continue
+            }
+            // We only delete folders with disabled jobs, which are closed/merged pull requests
+            def last_build = folder_main_build.getLastBuild()
+            if ( last_build == null ) {
+                manager.listener.logger.println "No last build for ${folder_main_build.getFullDisplayName()}"
+                continue
+            }
+            manager.listener.logger.println "Grabbing last build timestamp for ${folder_main_build.getFullDisplayName()}"
+            def last_build_date = folder_main_build.getLastBuild().timestamp.clone()
+            last_build_date.add(GregorianCalendar.DATE, howOld)
+            def current_date = new GregorianCalendar();
+            current_date.set(Calendar.HOUR_OF_DAY, 0);
+            current_date.set(Calendar.MINUTE, 0);
+            current_date.set(Calendar.SECOND, 0);
+            if ( last_build_date < current_date ) {
+                manager.listener.logger.println "Last build of ${this.repo} #${folder.name} is older than ${howOld} days. Deleting it..."
+                folder.delete()
+                folder.save()
+            } else {
+                manager.listener.logger.println "Last build for ${folder_main_build.getFullDisplayName()} is not old enough. Continuing..."
+            }
+         }
     }
 
     def triggerPullRequestJobs(manager) {
