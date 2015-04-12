@@ -32,10 +32,11 @@ import java.text.SimpleDateFormat
 group = "com.saltstack"
 version = new SimpleDateFormat("yyyy.MM.dd").format(new Date()).toString()
 description = "SaltStack DSL Projects Helper Classes"
+def shortName = 'saltstack-dsl-helpers'
 
 jenkinsPlugin {
     coreVersion = '1.596.1'                                               // Version of Jenkins core this plugin depends on.
-    shortName = 'saltstack-dsl-helpers'
+    shortName = shortName
     compatibleSinceVersion = '1.596.1'
     displayName = 'SaltStack Job DSL Helpers'                           // Human-readable name of plugin.
     url = 'https://github.com/saltstack/jenkins-dsl-jobs'               // URL for plugin on Jenkins wiki or elsewhere.
@@ -50,6 +51,8 @@ jenkinsPlugin {
         }
     }
 }
+
+tasks.jpi.archiveName = "${shortName}-testing.hpi"
 
 uploadArchives {
     repositories {
