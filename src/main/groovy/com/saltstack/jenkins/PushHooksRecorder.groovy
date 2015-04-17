@@ -16,7 +16,7 @@ class PushHooksRecorder {
     def load() {
         try {
             return new JsonSlurper().parseText(this.cachefile.readToString()) as Set
-        } catch (Throwable e) {
+        catch (Throwable e) {
             return [] as Set
         }
     }
