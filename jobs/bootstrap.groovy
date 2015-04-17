@@ -1,7 +1,6 @@
 // bootstrap Jenkins jobs seed script
 import groovy.json.*
 import groovy.text.*
-import org.apache.commons.lang.RandomStringUtils
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -334,7 +333,6 @@ freeStyleJob("${project.name}/pr/jenkins-seed") {
     label('worker')
 
     configure {
-        it.appendNode('authToken').setValue(new RandomStringUtils().randomAlphanumeric(16))
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
@@ -394,6 +392,13 @@ freeStyleJob("${project.name}/pr/jenkins-seed") {
         '''.stripIndent().trim())
     }
 
+    triggers {
+        configure {
+            it.appendNode(
+                "com.saltstack.jenkins.github.webhooks.PullRequestsTrigger",
+                [plugin: 'github-webhooks-plugin@latest'])
+        }
+    }
 
     // Job Steps
     steps {
