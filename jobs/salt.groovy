@@ -316,7 +316,7 @@ project.branches.each { branch_name ->
                 }
 
                 configure {
-                    it.appendNode('authToken').setValue(new RandomStringUtils().randomAlphanumeric(32))
+                    it.appendNode('authToken').setValue(new RandomStringUtils().randomAlphanumeric(16))
                     it.appendNode('buildNeedsWorkspace').setValue(true)
                     job_publishers = it.get('publishers').get(0)
                     job_publishers.appendNode(
