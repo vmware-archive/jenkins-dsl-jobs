@@ -103,7 +103,6 @@ freeStyleJob('maintenance/jenkins-seed') {
         dsl {
             removeAction('DELETE')
             external('jobs/*.groovy')
-            additionalClasspath('src/main/groovy')
         }
     }
 
