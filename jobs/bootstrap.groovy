@@ -127,20 +127,9 @@ project.branches.each { job_branch ->
     }
 
     // Main Build Push Trigger
-    if ( project.setup_push_hooks ) {
-        cachefile = build.getWorkspace().child('push-hooks.cache')
-        def data;
-        try {
-            data = new JsonSlurper().parseText(cachefile.readToString())
-        } catch (Throwable e) {
-            data = [:]
-        }
-        if ( ! data.contains(project.name) ) {
-            data[project.name] = new HashSet()
-        }
-        data[project_name].add(build_flow_job.name)
-        cachefile.write(new JsonBuilder(data).toString(), 'UTF-8')
-    }
+    /*if ( project.setup_push_hooks ) {
+        new PushHooksRecorder(build).record(project.name, build_flow_job.name)
+    }*/
 
     // Clone Job
     freeStyleJob("bootstrap/${job_branch}/clone") {

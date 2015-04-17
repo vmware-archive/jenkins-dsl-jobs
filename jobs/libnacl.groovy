@@ -2,6 +2,7 @@
 import groovy.json.*
 import groovy.text.*
 import org.apache.commons.lang.RandomStringUtils
+import com.saltstack.jenkins.PushHooksRecorder
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -107,18 +108,7 @@ def build_flow_job = buildFlowJob("${project.name}/master-main-build") {
 
     // Job Triggers
     if ( project.setup_push_hooks ) {
-        cachefile = build.getWorkspace().child('push-hooks.cache')
-        def data;
-        try {
-            data = new JsonSlurper().parseText(cachefile.readToString())
-        } catch (Throwable e) {
-            data = [:]
-        }
-        if ( ! data.contains(project.name) ) {
-            data[project.name] = new HashSet()
-        }
-        data[project_name].add(build_flow_job.name)
-        cachefile.write(new JsonBuilder(data).toString(), 'UTF-8')
+        new PushHooksRecorder(build).record(project.name, build_flow_job.name)
     }
 
     buildFlow(
