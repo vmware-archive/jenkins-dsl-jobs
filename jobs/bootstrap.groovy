@@ -337,7 +337,7 @@ freeStyleJob("${project.name}/pr/jenkins-seed") {
         triggers.appendNode(
             "com.saltstack.jenkins.github.webhooks.PullRequestsTrigger",
             [plugin: 'github-webhooks-plugin@latest']
-        )
+        ).appendNode('spec').setValue(null)
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
