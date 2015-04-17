@@ -397,14 +397,6 @@ freeStyleJob("${project.name}/pr/jenkins-seed") {
         '''.stripIndent().trim())
     }
 
-    triggers {
-        configure {
-            it.appendNode(
-                "com.saltstack.jenkins.github.webhooks.PullRequestsTrigger",
-                [plugin: 'github-webhooks-plugin@latest'])
-        }
-    }
-
     // Job Steps
     steps {
         dsl {
