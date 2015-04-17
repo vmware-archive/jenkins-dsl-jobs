@@ -422,7 +422,48 @@ def master_unit_job = freeStyleJob('libnacl/master/unit') {
     }
 }
 
-freeStyleJob('libnacl/pr/jenkins-seed') {
+freeStyleJob("${project.name}/pr/jenkins-seed-trigger") {
+    displayName('PR Jenkins Seed Trigger')
+
+    concurrentBuild(allowConcurrentBuild = false)
+
+    description('PR Jenkins Seed Trigger')
+
+    label('worker')
+
+    // scm configuration
+    scm {
+        github(
+            project.repo,
+            branch = "*",
+            protocol = 'https'
+        )
+    }
+    checkoutRetryCount(3)
+
+    configure {
+        job_properties = it.get('properties').get(0)
+        github_project_property = job_properties.appendNode(
+            'com.coravy.hudson.plugins.github.GithubProjectProperty')
+        github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
+        auth_matrix = job_properties.appendNode('hudson.security.AuthorizationMatrixProperty')
+        auth_matrix.appendNode('blocksInheritance').setValue(true)
+    }
+
+    authorization {
+        for ( username in jenkins_perms.usernames ) {
+            for ( permname in jenkins_perms.project ) {
+                permission("${permname}:${username}")
+            }
+        }
+    }
+
+    publishers {
+        downstream("${project.name}/pr/jenkins-seed", 'FAILURE')
+    }
+}
+
+freeStyleJob("${project.name}/pr/jenkins-seed") {
     displayName('PR Jenkins Seed')
 
     concurrentBuild(allowConcurrentBuild = false)
