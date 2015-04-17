@@ -114,7 +114,7 @@ freeStyleJob('maintenance/jenkins-seed') {
 }
 
 freeStyleJob('maintenance/jenkins-salt-seed') {
-    displayName('Jenkins Jobs Seed')
+    displayName('Jenkins Salt Branches Seed')
 
     concurrentBuild(allowConcurrentBuild = true)
 
