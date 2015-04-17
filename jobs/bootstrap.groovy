@@ -127,7 +127,7 @@ project.branches.each { job_branch ->
         }
     }
 
-    // Main Build Push Trigger
+    // Main Build Job Triggers
     if ( project.setup_push_hooks ) {
         new PushHooksRecorder(build).record(build_flow_job.name)
     }

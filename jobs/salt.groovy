@@ -305,7 +305,8 @@ project.branches.each { branch_name ->
         def build_type_l = build_type.toLowerCase()
 
         if ( vm_names != [] ) {
-            def build_flow_job = buildFlowJob("salt/${branch_name.toLowerCase()}-${build_type_l}-main-build") {
+            def job_name = "salt/${branch_name.toLowerCase()}-${build_type_l}-main-build"
+            buildFlowJob(job_name) {
                 displayName("${branch_name.capitalize()} Branch ${build_type} Main Build")
                 description(project.description)
                 label('worker')
@@ -368,6 +369,11 @@ project.branches.each { branch_name ->
                     default_artifact_nr_of_jobs_to_keep
                 )
 
+                // Job Triggers
+                if ( project.setup_push_hooks ) {
+                    new PushHooksRecorder(build).record(job_name)
+                }
+
                 template_vm_data = []
                 vm_names.each { vm_name ->
                     def vm_name_nospc = vm_name.toLowerCase().replace(' ', '-')
@@ -407,11 +413,6 @@ project.branches.each { branch_name ->
                         '''.stripIndent()
                     )
                 }
-            }
-
-            // Main Build Push Trigger
-            if ( project.setup_push_hooks ) {
-                new PushHooksRecorder(build).record(build_flow_job.name)
             }
 
             if (build_type_l == 'cloud') {
