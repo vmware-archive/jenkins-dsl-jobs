@@ -117,7 +117,7 @@ project.branches.each { job_branch ->
             job_branch: job_branch,
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('maintenance/jenkins-seed', 'bootstrap/templates/branches-main-build-flow.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'projects/bootstrap/templates/branches-main-build-flow.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         buildFlow(
@@ -126,7 +126,7 @@ project.branches.each { job_branch ->
 
         publishers {
             groovyPostBuild(
-                readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'common/groovy/post-build-set-commit-status.groovy')
             )
         }
     }
@@ -199,7 +199,7 @@ project.branches.each { job_branch ->
             github_repo: project.repo,
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'common/templates/branches-envvars-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -210,14 +210,14 @@ project.branches.each { job_branch ->
         // Job Steps
         steps {
             // Compress the checked out workspace
-            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/compress-workspace.sh'))
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/compress-workspace.sh'))
         }
 
         publishers {
             archiveArtifacts('workspace.cpio.xz')
 
             script_template = template_engine.createTemplate(
-                readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'common/groovy/post-build-set-commit-status.groovy')
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
             groovyPostBuild(rendered_script_template.toString())
@@ -280,7 +280,7 @@ project.branches.each { job_branch ->
             sudo_salt_call: true
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'common/templates/branches-envvars-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -294,13 +294,13 @@ project.branches.each { job_branch ->
             copyArtifacts("${project.name}/${job_branch}/clone", 'workspace.cpio.xz') {
                 buildNumber('${CLONE_BUILD_ID}')
             }
-            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/decompress-workspace.sh'))
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/decompress-workspace.sh'))
 
             // Setup the required virtualenv
-            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/prepare-virtualenv.sh'))
 
             // Run Lint Code
-            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'bootstrap/scripts/run-lint.sh'))
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'projects/bootstrap/scripts/run-lint.sh'))
         }
 
         publishers {
@@ -310,7 +310,7 @@ project.branches.each { job_branch ->
             }
 
             script_template = template_engine.createTemplate(
-                readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'common/groovy/post-build-set-commit-status.groovy')
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
             groovyPostBuild(rendered_script_template.toString())
@@ -443,14 +443,14 @@ freeStyleJob("${project.name}/pr/jenkins-seed") {
         dsl {
             removeAction('DISABLE')
             text(
-                readFileFromWorkspace('maintenance/jenkins-seed', 'bootstrap/groovy/pr-dsl-job.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'projects/bootstrap/groovy/pr-dsl-job.groovy')
             )
         }
     }
 
     publishers {
         groovyPostBuild(
-            readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/pr-job-seed-post-build.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'common/groovy/pr-job-seed-post-build.groovy')
         )
     }
 }

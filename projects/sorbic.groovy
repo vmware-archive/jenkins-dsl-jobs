@@ -115,12 +115,12 @@ def master_main_job = buildFlowJob("${project.name}/master-main-build") {
     }
 
     buildFlow(
-        readFileFromWorkspace('maintenance/jenkins-seed', 'sorbic/groovy/master-main-build-flow.groovy')
+        readFileFromWorkspace('maintenance/jenkins-seed', 'projects/sorbic/groovy/master-main-build-flow.groovy')
     )
 
     publishers {
         groovyPostBuild(
-            readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'common/groovy/post-build-set-commit-status.groovy')
         )
     }
 }
@@ -196,7 +196,7 @@ def master_clone_job = freeStyleJob("${project.name}/master/clone") {
         virtualenv_setup_state_name: 'projects.clone'
     ]
     script_template = template_engine.createTemplate(
-        readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+        readFileFromWorkspace('maintenance/jenkins-seed', 'common/templates/branches-envvars-commit-status.groovy')
     )
     rendered_script_template = script_template.make(template_context.withDefault{ null })
     environmentVariables {
@@ -206,10 +206,10 @@ def master_clone_job = freeStyleJob("${project.name}/master/clone") {
     // Job Steps
     steps {
         // Setup the required virtualenv
-        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/prepare-virtualenv.sh'))
 
         // Compress the checked out workspace
-        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/compress-workspace.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/compress-workspace.sh'))
     }
 
     publishers {
@@ -219,7 +219,7 @@ def master_clone_job = freeStyleJob("${project.name}/master/clone") {
         }
 
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'common/groovy/post-build-set-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovyPostBuild(rendered_script_template.toString())
@@ -282,7 +282,7 @@ def master_lint_job = freeStyleJob("${project.name}/master/lint") {
         virtualenv_setup_state_name: 'projects.sorbic.lint'
     ]
     script_template = template_engine.createTemplate(
-        readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+        readFileFromWorkspace('maintenance/jenkins-seed', 'common/templates/branches-envvars-commit-status.groovy')
     )
     rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -293,16 +293,16 @@ def master_lint_job = freeStyleJob("${project.name}/master/lint") {
     // Job Steps
     steps {
         // Setup the required virtualenv
-        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/prepare-virtualenv.sh'))
 
         // Copy the workspace artifact
         copyArtifacts("${project.name}/master/clone", 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
         }
-        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/decompress-workspace.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/decompress-workspace.sh'))
 
         // Run Lint Code
-        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'sorbic/scripts/run-lint.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'projects/sorbic/scripts/run-lint.sh'))
     }
 
     publishers {
@@ -312,7 +312,7 @@ def master_lint_job = freeStyleJob("${project.name}/master/lint") {
         }
 
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'common/groovy/post-build-set-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -374,7 +374,7 @@ def master_unit_job = freeStyleJob("${project.name}/master/unit") {
         virtualenv_setup_state_name: 'projects.sorbic.unit'
     ]
     script_template = template_engine.createTemplate(
-        readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+        readFileFromWorkspace('maintenance/jenkins-seed', 'common/templates/branches-envvars-commit-status.groovy')
     )
     rendered_script_template = script_template.make(template_context.withDefault{ null })
     environmentVariables {
@@ -384,16 +384,16 @@ def master_unit_job = freeStyleJob("${project.name}/master/unit") {
     // Job Steps
     steps {
         // Setup the required virtualenv
-        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/prepare-virtualenv.sh'))
 
         // Copy the workspace artifact
         copyArtifacts("${project.name}/master/clone", 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
         }
-        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/decompress-workspace.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/decompress-workspace.sh'))
 
         // Run Unit Tests
-        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'sorbic/scripts/run-unit.sh'))
+        shell(readFileFromWorkspace('maintenance/jenkins-seed', 'projects/sorbic/scripts/run-unit.sh'))
     }
 
     publishers {
@@ -411,7 +411,7 @@ def master_unit_job = freeStyleJob("${project.name}/master/unit") {
         }
 
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'common/groovy/post-build-set-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         groovyPostBuild(rendered_script_template.toString())
@@ -547,14 +547,14 @@ freeStyleJob("${project.name}/pr/jenkins-seed") {
         dsl {
             removeAction('DISABLE')
             text(
-                readFileFromWorkspace('maintenance/jenkins-seed', 'sorbic/groovy/pr-dsl-job.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'projects/sorbic/groovy/pr-dsl-job.groovy')
             )
         }
     }
 
     publishers {
         groovyPostBuild(
-            readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/pr-job-seed-post-build.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'common/groovy/pr-job-seed-post-build.groovy')
         )
     }
 }
