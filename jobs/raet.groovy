@@ -2,7 +2,6 @@
 import groovy.json.*
 import groovy.text.*
 import org.apache.commons.lang.RandomStringUtils
-import com.saltstack.jenkins.PushHooksRecorder
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -41,8 +40,7 @@ folder("${project.name}/pr") {
 }
 
 // Main master branch job
-def job_name = "${project.name}/master-main-build"
-def master_main_job = buildFlowJob(job_name) {
+def master_main_job = buildFlowJob("${project.name}/master-main-build") {
     displayName('Master Branch Main Build')
     description(project.description)
     label('worker')
@@ -108,7 +106,9 @@ def master_main_job = buildFlowJob(job_name) {
 
     // Job Triggers
     if ( project.setup_push_hooks ) {
-        new PushHooksRecorder(build).record(job_name)
+        triggers {
+            githubPush()
+        }
     }
 
     buildFlow(

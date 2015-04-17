@@ -2,7 +2,6 @@
 import groovy.json.*
 import groovy.text.*
 import org.apache.commons.lang.RandomStringUtils
-import com.saltstack.jenkins.PushHooksRecorder
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -305,8 +304,7 @@ project.branches.each { branch_name ->
         def build_type_l = build_type.toLowerCase()
 
         if ( vm_names != [] ) {
-            def job_name = "salt/${branch_name.toLowerCase()}-${build_type_l}-main-build"
-            buildFlowJob(job_name) {
+            buildFlowJob("salt/${branch_name.toLowerCase()}-${build_type_l}-main-build") {
                 displayName("${branch_name.capitalize()} Branch ${build_type} Main Build")
                 description(project.description)
                 label('worker')
@@ -369,9 +367,11 @@ project.branches.each { branch_name ->
                 )
 
                 // Job Triggers
-                if ( project.setup_push_hooks ) {
-                    new PushHooksRecorder(build).record(job_name)
+                /* triggers disabled for now
+                triggers {
+                    githubPush()
                 }
+                */
 
                 template_vm_data = []
                 vm_names.each { vm_name ->

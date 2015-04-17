@@ -1,8 +1,7 @@
-// Bootstrap Jenkins jobs seed script
+// bootstrap Jenkins jobs seed script
 import groovy.json.*
 import groovy.text.*
 import org.apache.commons.lang.RandomStringUtils
-import com.saltstack.jenkins.PushHooksRecorder
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -44,8 +43,7 @@ folder("${project.name}/pr") {
 
 project.branches.each { job_branch ->
     // Branch Main Job
-    def job_name = "${project.name}/${job_branch}-main-build"
-    buildFlowJob(job_name) {
+    buildFlowJob("${project.name}/${job_branch}-main-build") {
         displayName("${job_branch.capitalize()} Branch Main Build")
         description(project.description)
         label('worker')
@@ -111,7 +109,9 @@ project.branches.each { job_branch ->
 
         // Job Triggers
         if ( project.setup_push_hooks ) {
-            new PushHooksRecorder(build).record(job_name)
+            triggers {
+                githubPush()
+            }
         }
 
         template_context = [
