@@ -417,7 +417,7 @@ project.branches.each { branch_name ->
                 } catch (Throwable e) {
                     data = [:]
                 }
-                if ( ! data.containsKey(project.name) ) {
+                if ( ! data.contains(project.name) ) {
                     data[project.name] = []
                 }
                 data[project_name].add(build_flow_job.name)

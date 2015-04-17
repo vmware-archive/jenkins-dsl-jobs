@@ -135,12 +135,10 @@ project.branches.each { job_branch ->
         } catch (Throwable e) {
             data = [:]
         }
-        if ( ! data.containsKey(project.name) ) {
+        if ( ! data.contains(project.name) ) {
             data[project.name] = []
         }
-        if ( ! data[project_name].contains(build_flow_job.name) ) {
-            data[project_name].add(build_flow_job.name)
-        }
+        data[project_name].add(build_flow_job.name)
         cachefile.write(new JsonBuilder(data).toString(), 'UTF-8')
     }
 
