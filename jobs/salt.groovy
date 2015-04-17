@@ -367,11 +367,11 @@ project.branches.each { branch_name ->
                 )
 
                 // Job Triggers
-                /* triggers disabled for now
-                triggers {
-                    githubPush()
+                if ( project.setup_push_hooks ) {
+                    triggers {
+                        githubPush()
+                    }
                 }
-                */
 
                 template_vm_data = []
                 vm_names.each { vm_name ->
