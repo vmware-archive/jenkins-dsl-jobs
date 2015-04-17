@@ -2,6 +2,7 @@
 import groovy.json.*
 import groovy.text.*
 import org.apache.commons.lang.RandomStringUtils
+import com.saltstack.jenkins.PushHooksRecorder
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -127,9 +128,9 @@ project.branches.each { job_branch ->
     }
 
     // Main Build Push Trigger
-    /*if ( project.setup_push_hooks ) {
+    if ( project.setup_push_hooks ) {
         new PushHooksRecorder(build).record(project.name, build_flow_job.name)
-    }*/
+    }
 
     // Clone Job
     freeStyleJob("bootstrap/${job_branch}/clone") {
