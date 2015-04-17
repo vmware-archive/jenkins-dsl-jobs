@@ -45,7 +45,7 @@ folder("${project.name}/pr") {
 project.branches.each { job_branch ->
     // Branch Main Job
     def job_name = "${project.name}/${job_branch}-main-build"
-    def build_flow_job = buildFlowJob(job_name) {
+    buildFlowJob(job_name) {
         displayName("${job_branch.capitalize()} Branch Main Build")
         description(project.description)
         label('worker')
@@ -132,8 +132,6 @@ project.branches.each { job_branch ->
             )
         }
     }
-
-    println build_flow_job.dump()
 
 
     // Clone Job
