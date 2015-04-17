@@ -49,7 +49,6 @@ def master_main_job = buildFlowJob(job_name) {
     concurrentBuild(allowConcurrentBuild = true)
 
     configure {
-        it.appendNode('authToken').setValue(new RandomStringUtils().randomAlphanumeric(16))
         it.appendNode('buildNeedsWorkspace').setValue(true)
         job_properties = it.get('properties').get(0)
         job_publishers = it.get('publishers').get(0)
