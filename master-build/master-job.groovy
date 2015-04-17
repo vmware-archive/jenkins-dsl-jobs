@@ -78,7 +78,7 @@ freeStyleJob('maintenance/jenkins-seed') {
     scm {
         github (
             github_repo,
-            branch = '*/master',
+            branch = '*/testing',
             protocol = 'https'
         )
     }
