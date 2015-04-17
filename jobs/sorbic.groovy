@@ -1,7 +1,6 @@
 // Sorbic Jenkins jobs seed script
 import groovy.json.*
 import groovy.text.*
-import org.apache.commons.lang.RandomStringUtils
 
 // get current thread / Executor
 def thr = Thread.currentThread()
@@ -434,7 +433,11 @@ freeStyleJob("${project.name}/pr/jenkins-seed") {
     label('worker')
 
     configure {
-        it.appendNode('authToken').setValue(new RandomStringUtils().randomAlphanumeric(16))
+        triggers = it.get('triggers').get(0)
+        triggers.appendNode(
+            "com.saltstack.jenkins.github.webhooks.PullRequestsTrigger",
+            [plugin: 'github-webhooks-plugin@latest']
+        ).appendNode('spec')
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
