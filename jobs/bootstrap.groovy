@@ -129,7 +129,7 @@ project.branches.each { job_branch ->
 
     // Main Build Push Trigger
     if ( project.setup_push_hooks ) {
-        new PushHooksRecorder(build).record(project.name, build_flow_job.name)
+        new PushHooksRecorder(build).record(build_flow_job.name)
     }
 
     // Clone Job

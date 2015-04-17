@@ -41,7 +41,8 @@ folder("${project.name}/pr") {
 }
 
 // Main master branch job
-def build_flow_job = buildFlowJob("${project.name}/master-main-build") {
+def job_name = "${project.name}/master-main-build"
+def master_main_job = buildFlowJob(job_name) {
     displayName('Master Branch Main Build')
     description(project.description)
     label('worker')
@@ -108,7 +109,7 @@ def build_flow_job = buildFlowJob("${project.name}/master-main-build") {
 
     // Job Triggers
     if ( project.setup_push_hooks ) {
-        new PushHooksRecorder(build).record(project.name, build_flow_job.name)
+        new PushHooksRecorder(build).record(job_name)
     }
 
     buildFlow(
