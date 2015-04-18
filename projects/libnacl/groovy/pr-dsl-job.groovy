@@ -123,7 +123,7 @@ project.pull_requests.each() { pr ->
             pr_number: pr.number
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('maintenance/jenkins-seed', 'templates/pr-main-build-flow.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'common/templates/pr-main-build-flow.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
         buildFlowJob(
@@ -141,12 +141,12 @@ project.pull_requests.each() { pr ->
                 )
                 configure { node ->
                     node.appendNode('presendScript').setValue(
-                        readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/inject-submitter-email-address.groovy')
+                        readFileFromWorkspace('maintenance/jenkins-seed', 'common/groovy/inject-submitter-email-address.groovy')
                     )
                 }
             }
             groovyPostBuild(
-                readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'common/groovy/post-build-set-commit-status.groovy')
             )
         }
     }
@@ -233,7 +233,7 @@ project.pull_requests.each() { pr ->
             virtualenv_setup_state_name: 'projects.clone'
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'common/templates/branches-envvars-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -244,10 +244,10 @@ project.pull_requests.each() { pr ->
         // Job Steps
         steps {
             // Setup the required virtualenv
-            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/prepare-virtualenv.sh'))
 
             // Compress the checked out workspace
-            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/compress-workspace.sh'))
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/compress-workspace.sh'))
         }
 
         publishers {
@@ -257,7 +257,7 @@ project.pull_requests.each() { pr ->
             }
 
             script_template = template_engine.createTemplate(
-                readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'common/groovy/post-build-set-commit-status.groovy')
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -324,7 +324,7 @@ project.pull_requests.each() { pr ->
             virtualenv_setup_state_name: 'projects.libnacl.lint'
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'common/templates/branches-envvars-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -335,16 +335,16 @@ project.pull_requests.each() { pr ->
         // Job Steps
         steps {
             // Setup the required virtualenv
-            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/prepare-virtualenv.sh'))
 
             // Copy the workspace artifact
             copyArtifacts("${project.name}/pr/${pr.number}/clone", 'workspace.cpio.xz') {
                 buildNumber('${CLONE_BUILD_ID}')
             }
-            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/decompress-workspace.sh'))
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/decompress-workspace.sh'))
 
             // Run Lint Code
-            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'libnacl/scripts/run-lint.sh'))
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'projects/libnacl/scripts/run-lint.sh'))
         }
 
         publishers {
@@ -354,7 +354,7 @@ project.pull_requests.each() { pr ->
             }
 
             script_template = template_engine.createTemplate(
-                readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'common/groovy/post-build-set-commit-status.groovy')
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -416,7 +416,7 @@ project.pull_requests.each() { pr ->
             virtualenv_setup_state_name: 'projects.libnacl.unit'
         ]
         script_template = template_engine.createTemplate(
-            readFileFromWorkspace('maintenance/jenkins-seed', 'templates/branches-envvars-commit-status.groovy')
+            readFileFromWorkspace('maintenance/jenkins-seed', 'common/templates/branches-envvars-commit-status.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
 
@@ -427,16 +427,16 @@ project.pull_requests.each() { pr ->
         // Job Steps
         steps {
             // Setup the required virtualenv
-            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/prepare-virtualenv.sh'))
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/prepare-virtualenv.sh'))
 
             // Copy the workspace artifact
             copyArtifacts("${project.name}/pr/${pr.number}/clone", 'workspace.cpio.xz') {
                 buildNumber('${CLONE_BUILD_ID}')
             }
-            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'scripts/decompress-workspace.sh'))
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/decompress-workspace.sh'))
 
             // Run Unit Tests
-            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'libnacl/scripts/run-unit.sh'))
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'projects/libnacl/scripts/run-unit.sh'))
         }
 
         publishers {
@@ -454,7 +454,7 @@ project.pull_requests.each() { pr ->
             }
 
             script_template = template_engine.createTemplate(
-                readFileFromWorkspace('maintenance/jenkins-seed', 'groovy/post-build-set-commit-status.groovy')
+                readFileFromWorkspace('maintenance/jenkins-seed', 'common/groovy/post-build-set-commit-status.groovy')
             )
             rendered_script_template = script_template.make(template_context.withDefault{ null })
 
