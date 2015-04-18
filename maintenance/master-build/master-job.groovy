@@ -193,7 +193,7 @@ projects.each { project_name, project ->
 
         publishers {
             groovyPostBuild(
-                readFileFromWorkspace('maintenance/jenkins-master-seed', 'master-build/templates/job-seed-post-build.groovy')
+                readFileFromWorkspace('maintenance/jenkins-master-seed', 'maintenance/master-build/templates/job-seed-post-build.groovy')
             )
         }
     }
