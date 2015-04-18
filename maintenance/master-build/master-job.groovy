@@ -187,7 +187,7 @@ projects.each { project_name, project ->
         steps {
             dsl {
                 removeAction('DELETE')
-                external("projects/${project.name}.groovy')
+                external("projects/${project.name}.groovy")
             }
         }
 
