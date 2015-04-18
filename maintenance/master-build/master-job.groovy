@@ -120,8 +120,8 @@ freeStyleJob('maintenance/jenkins-seed') {
 
 projects.each { project_name, project ->
 
-    freeStyleJob("maintenance/jenkins-${project.name}-seed') {
-        displayName("Jenkins ${project.display_name} Seed')
+    freeStyleJob("maintenance/jenkins-${project.name}-seed") {
+        displayName("Jenkins ${project.display_name} Seed")
 
         concurrentBuild(allowConcurrentBuild = false)
 
