@@ -106,7 +106,7 @@ def master_main_job = buildFlowJob("${project.name}/master-main-build") {
     // Job Triggers
     triggers {
         // Make sure it runs once every Sunday to get coverage reports
-        cron('H * * * 0')
+        scm('H * * * 0')
         if ( project.setup_push_hooks ) {
             triggers {
                 githubPush()
