@@ -345,6 +345,109 @@ project.branches.each { branch_name ->
        }
     }
 
+    // Documentation Job
+    freeStyleJob("salt/${branch_name_l}/docs") {
+        displayName('Documentation')
+        concurrentBuild(allowConcurrentBuild = true)
+        description(project.description + ' - Documentation')
+        label('worker')
+
+        // Parameters Definition
+        parameters {
+            stringParam('CLONE_BUILD_ID')
+        }
+
+        configure {
+            job_properties = it.get('properties').get(0)
+            github_project_property = job_properties.appendNode(
+                'com.coravy.hudson.plugins.github.GithubProjectProperty')
+            github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
+        }
+
+        wrappers {
+            // Cleanup the workspace before starting
+            preBuildCleanup()
+
+            // Add timestamps to console log
+            timestamps()
+
+            // Color Support to console log
+            colorizeOutput('xterm')
+
+            // Build Timeout
+            timeout {
+                elastic(
+                    percentage = default_timeout_percent,
+                    numberOfBuilds = default_timeout_builds,
+                    minutesDefault= default_timeout_minutes
+                )
+                writeDescription('Build failed due to timeout after {0} minutes')
+            }
+        }
+
+        // Delete old jobs
+        logRotator(
+            default_days_to_keep,
+            default_nr_of_jobs_to_keep,
+            default_artifact_days_to_keep,
+            default_artifact_nr_of_jobs_to_keep
+        )
+
+        template_context = [
+            commit_status_context: 'ci/docs',
+            github_repo: project.repo,
+            sudo_salt_call: true,
+            branch_name: branch_name,
+            branch_name_l: branch_name_l,
+            virtualenv_name: "salt-${branch_name_l}-docs",
+            virtualenv_setup_state_name: "projects.salt.${branch_name_l}.docs"
+        ]
+        script_template = template_engine.createTemplate(
+            readFileFromWorkspace('maintenance/jenkins-seed', 'common/templates/branches-envvars-commit-status.groovy')
+        )
+        rendered_script_template = script_template.make(template_context.withDefault{ null })
+
+        environmentVariables {
+            groovy(rendered_script_template.toString())
+        }
+
+        // Job Steps
+        steps {
+            // Setup the required virtualenv
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/prepare-virtualenv.sh'))
+
+            // Copy the workspace artifact
+            copyArtifacts("salt/${branch_name_l}/clone", 'workspace.cpio.xz') {
+                buildNumber('${CLONE_BUILD_ID}')
+            }
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/decompress-workspace.sh'))
+
+            // Run Lint Code
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'projects/salt/scripts/run-lint.sh'))
+
+            // Build Documentation
+            shell('make clean SPHINXOPTS="-q"')
+            ['html', 'latexpdf', 'xetexpdf', 'epub'].each { format ->
+                shell("make ${format } SPHINXOPTS='-q' LATEXOPTS='-interaction=nonstopmode')
+            }
+        }
+
+        publishers {
+
+            script_template = template_engine.createTemplate(
+                readFileFromWorkspace('maintenance/jenkins-seed', 'common/groovy/post-build-set-commit-status.groovy')
+            )
+            rendered_script_template = script_template.make(template_context.withDefault{ null })
+
+            groovyPostBuild(rendered_script_template.toString())
+
+            archiveArtifacts {
+                pattern('*.log')
+                allowEmpty(true)
+            }
+       }
+    }
+
     salt_build_types.each { build_type, vm_names ->
 
         def build_type_l = build_type.toLowerCase()
