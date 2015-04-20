@@ -15,6 +15,7 @@ if [ "${VIRTUALENV_NAME}" != "" ]; then
         --retcode-passthrough \
         --log-file="${WORKSPACE:-.}/salt-call.log" \
         --log-file-level=trace \
+        --master=localhost \
         state.sls "${VIRTUALENV_SETUP_STATE_NAME}" \
         queue=true \
         pillar="{virtualenv_name: ${VIRTUALENV_NAME}, system_site_packages: ${SYSTEM_SITE_PACKAGES:-false}}"
@@ -23,6 +24,7 @@ else
         --retcode-passthrough \
         --log-file="${WORKSPACE:-.}/salt-call.log" \
         --log-file-level=trace \
+        --master=localhost \
         state.sls "${VIRTUALENV_SETUP_STATE_NAME}" \
         queue=true
 fi
