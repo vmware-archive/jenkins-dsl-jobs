@@ -347,7 +347,7 @@ project.branches.each { branch_name ->
 
     // Documentation Job
     freeStyleJob("salt/${branch_name_l}/docs") {
-        displayName('Documentation')
+        displayName('Build Documentation')
         concurrentBuild(allowConcurrentBuild = true)
         description(project.description + ' - Documentation')
         label('worker')
@@ -423,10 +423,7 @@ project.branches.each { branch_name ->
             shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/decompress-workspace.sh'))
 
             // Build Documentation
-            shell("""make clean SPHINXOPTS='-q'""")
-            ['html', 'latexpdf', 'xetexpdf', 'epub'].each { format ->
-                shell("""make ${format} SPHINXOPTS='-q' LATEXOPTS='-interaction=nonstopmode'""")
-            }
+            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'projects/salt/scripts/build-docs.sh'))
         }
 
         publishers {
