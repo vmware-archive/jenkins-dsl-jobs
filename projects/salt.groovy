@@ -422,9 +422,6 @@ project.branches.each { branch_name ->
             }
             shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/decompress-workspace.sh'))
 
-            // Run Lint Code
-            shell(readFileFromWorkspace('maintenance/jenkins-seed', 'projects/salt/scripts/run-lint.sh'))
-
             // Build Documentation
             shell("""make clean SPHINXOPTS='-q'""")
             ['html', 'latexpdf', 'xetexpdf', 'epub'].each { format ->
