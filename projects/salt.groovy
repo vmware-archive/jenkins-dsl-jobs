@@ -426,9 +426,9 @@ project.branches.each { branch_name ->
             shell(readFileFromWorkspace('maintenance/jenkins-seed', 'projects/salt/scripts/run-lint.sh'))
 
             // Build Documentation
-            shell('make clean SPHINXOPTS="-q"')
+            shell("""make clean SPHINXOPTS='-q'""")
             ['html', 'latexpdf', 'xetexpdf', 'epub'].each { format ->
-                shell("make ${format } SPHINXOPTS='-q' LATEXOPTS='-interaction=nonstopmode')
+                shell("""make ${format} SPHINXOPTS='-q' LATEXOPTS='-interaction=nonstopmode'""")
             }
         }
 
@@ -442,7 +442,7 @@ project.branches.each { branch_name ->
             groovyPostBuild(rendered_script_template.toString())
 
             archiveArtifacts {
-                pattern('*.log')
+                pattern('_build/html')
                 allowEmpty(true)
             }
        }
