@@ -436,8 +436,12 @@ project.branches.each { branch_name ->
             groovyPostBuild(rendered_script_template.toString())
 
             archiveArtifacts {
-                pattern('_build/html')
+                pattern('doc/_build/epub/Salt.epub')
                 allowEmpty(true)
+            }
+
+            publishHtml {
+                report('doc/_build/html', 'Built HTML Documetation')
             }
        }
     }
