@@ -1,14 +1,25 @@
-. /srv/virtualenvs/${VIRTUALENV_NAME}/bin/activate > /dev/null 2>&1
+#!/bin/bash
+. "/srv/virtualenvs/${VIRTUALENV_NAME}/bin/activate" > /dev/null 2>&1
+
+echo '>>>>>>>>>>>>>> PyLint Version >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+pylint --version
+echo '<<<<<<<<<<<<<< PyLint Version <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
 
 EC1=-1
 EC2=-1
 
-pylint --rcfile=${WORKSPACE}/.testing.pylintrc ${WORKSPACE}/salt/ | tee ${WORKSPACE}/pylint-report.xml; EC1=${PIPESTATUS[0]}
-pylint --rcfile=${WORKSPACE}/.testing.pylintrc --disable=W0232,E1002 ${WORKSPACE}/tests/ | tee ${WORKSPACE}/pylint-report-tests.xml; EC2=${PIPESTATUS[0]}
+echo '>>>>>>>>>>>>>> PyLint Salt >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+pylint --rcfile="${WORKSPACE}/.testing.pylintrc" "${WORKSPACE}/salt/" | tee "${WORKSPACE}/pylint-report.xml"; EC1=${PIPESTATUS[0]}
+echo '<<<<<<<<<<<<<< PyLint Salt <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
 
-if [ $EC1 -ne 0 ]; then
+echo '>>>>>>>>>>>>>> PyLint Tests >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+pylint --rcfile="${WORKSPACE}/.testing.pylintrc" --disable=W0232,E1002 "${WORKSPACE}/tests/" | tee "${WORKSPACE}/pylint-report-tests.xml"; EC2=${PIPESTATUS[0]}
+echo '<<<<<<<<<<<<<< PyLint Tests <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
+
+# shellcheck disable=SC2086
+if [ "$EC1" -ne 0 ]; then
     exit $EC1
-elif [ $EC2 -ne 0 ]; then
+elif [ "$EC2" -ne 0 ]; then
     exit $EC2
 else
     exit 0
