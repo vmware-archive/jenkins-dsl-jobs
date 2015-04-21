@@ -1,11 +1,18 @@
-. /srv/virtualenvs/${VIRTUALENV_NAME}/bin/activate > /dev/null 2>&1
+#!/bin/sh
+. "/srv/virtualenvs/${VIRTUALENV_NAME}/bin/activate" > /dev/null 2>&1
 
 cd doc/
 
 make clean || true
 
-for format in $(echo "html latexpdf xetexpdf epud"); do
-    make ${format} SPHINXOPTS='-q' LATEXOPTS='-interaction=nonstopmode'
+build_formats="html latexpdf xetexpdf epub"
+
+for format in $build_formats; do
+    if [ "$format" = "latexpdf" ] || [ "$format" = "xetexpdf" ]; then
+        # We're having issues building PDF's. Skip it for now.
+        continue
+    fi
+    make "${format}" SPHINXOPTS='-q' LATEXOPTS='-interaction=nonstopmode'
 done
 
 cd ..
