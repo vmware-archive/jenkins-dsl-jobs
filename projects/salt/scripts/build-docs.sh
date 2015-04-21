@@ -2,7 +2,7 @@
 
 cd doc/
 
-make clean
+make clean || true
 
 for format in $(echo "html latexpdf xetexpdf epud"); do
     make ${format} SPHINXOPTS='-q' LATEXOPTS='-interaction=nonstopmode'
