@@ -441,7 +441,7 @@ project.branches.each { branch_name ->
             }
 
             publishHtml {
-                report('doc/_build/html', 'Built HTML Documetation')
+                report('doc/_build/html', 'Built HTML Documentation')
             }
        }
     }
