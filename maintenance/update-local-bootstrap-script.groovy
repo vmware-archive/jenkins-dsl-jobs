@@ -44,9 +44,9 @@ freeStyleJob('maintenance/update-bootstrap') {
             def result = manager.build.getResult()
             if (result.isBetterOrEqualTo(Result.SUCCESS)) {
                 def process = "sh /etc/salt/cloud.deploy.d/bootstrap-salt.sh -v".execute()
-                def bootstrap_version = process.text.split(' -- ')[-1]
+                def bootstrap_version = process.text.split(' -- ')[-1].split()[-1]
                 manager.addShortText(
-                    "${bootstrap_version} from ${manager.envVars['BRANCH']}@${manager.envVars['REPOSITORY']}",
+                    "v${bootstrap_version} from ${manager.envVars['BRANCH']}@${manager.envVars['REPOSITORY']}",
                     "grey", "white", "0px", "white"
                 )
             }
