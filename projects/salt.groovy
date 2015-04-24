@@ -553,7 +553,7 @@ project.branches.each { branch_name ->
                         rendered_script_template.toString() +
                         '''
                         manager.addBadge(
-                            "/plugin/dsl-helpers/images/16x16/${manager.build.buildVariables['PROVIDER'].toLowerCase()}.png",
+                            "/plugin/saltstack-dsl-helpers/images/16x16/${manager.build.buildVariables['PROVIDER'].toLowerCase()}.png",
                             "${manager.build.buildVariables['PROVIDER']} build"
                         )
                         '''.stripIndent()
