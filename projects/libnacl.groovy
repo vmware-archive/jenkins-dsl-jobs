@@ -442,6 +442,11 @@ freeStyleJob("${project.name}/pr/jenkins-seed-trigger") {
     checkoutRetryCount(3)
 
     configure {
+        triggers = it.get('triggers').get(0)
+        triggers.appendNode(
+            "com.saltstack.jenkins.github.webhooks.PullRequestsTrigger",
+            [plugin: 'github-webhooks-plugin@latest']
+        ).appendNode('spec')
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
@@ -473,11 +478,6 @@ freeStyleJob("${project.name}/pr/jenkins-seed") {
     label('worker')
 
     configure {
-        triggers = it.get('triggers').get(0)
-        triggers.appendNode(
-            "com.saltstack.jenkins.github.webhooks.PullRequestsTrigger",
-            [plugin: 'github-webhooks-plugin@latest']
-        ).appendNode('spec')
         job_properties = it.get('properties').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
