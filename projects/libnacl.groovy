@@ -1,4 +1,4 @@
-// libnacl Jenkins jobs seed script
+// LibNACL Jenkins jobs seed script
 import groovy.json.*
 import groovy.text.*
 
@@ -25,21 +25,21 @@ def default_timeout_minutes = 15
 def template_engine = new SimpleTemplateEngine()
 
 // Define the folder structure
-folder('libnacl') {
+folder(project.name) {
     displayName(project.display_name)
     description = project.description
 }
-folder('libnacl/master') {
+folder("${project.name}/master") {
     displayName('Master Branch')
     description = project.description
 }
-folder('libnacl/pr') {
+folder("${project.name}/pr") {
     displayName('Pull Requests')
     description = project.description
 }
 
 // Main master branch job
-def master_main_job = buildFlowJob('libnacl/master-main-build') {
+buildFlowJob("${project.name}/master-main-build") {
     displayName('Master Branch Main Build')
     description(project.description)
     label('worker')
@@ -48,7 +48,6 @@ def master_main_job = buildFlowJob('libnacl/master-main-build') {
     configure {
         it.appendNode('buildNeedsWorkspace').setValue(true)
         job_properties = it.get('properties').get(0)
-        job_publishers = it.get('publishers').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
         github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
@@ -61,6 +60,11 @@ def master_main_job = buildFlowJob('libnacl/master-main-build') {
         slack_notifications.appendNode('notifyNotBuilt').setValue(true)
         slack_notifications.appendNode('notifyFailure').setValue(true)
         slack_notifications.appendNode('notifyBackToNormal').setValue(true)
+        job_publishers = it.get('publishers').get(0)
+        job_publishers.appendNode(
+            'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
+            [plugin: 'build-flow-test-aggregator@latest']
+        )
         job_publishers.appendNode(
             'jenkins.plugins.slack.SlackNotifier',
             [plugin: 'slack@latest']
@@ -122,7 +126,7 @@ def master_main_job = buildFlowJob('libnacl/master-main-build') {
 }
 
 // Clone Master Job
-def master_clone_job = freeStyleJob('libnacl/master/clone') {
+freeStyleJob("${project.name}/master/clone") {
     displayName('Clone Repository')
 
     concurrentBuild(allowConcurrentBuild = true)
@@ -225,7 +229,7 @@ def master_clone_job = freeStyleJob('libnacl/master/clone') {
 }
 
 // Lint Master Job
-def master_lint_job = freeStyleJob('libnacl/master/lint') {
+freeStyleJob("${project.name}/master/lint") {
     displayName('Lint')
     concurrentBuild(allowConcurrentBuild = true)
     description(project.description + ' - Code Lint')
@@ -294,7 +298,7 @@ def master_lint_job = freeStyleJob('libnacl/master/lint') {
         shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/prepare-virtualenv.sh'))
 
         // Copy the workspace artifact
-        copyArtifacts('libnacl/master/clone', 'workspace.cpio.xz') {
+        copyArtifacts("${project.name}/master/clone", 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
         }
         shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/decompress-workspace.sh'))
@@ -324,7 +328,7 @@ def master_lint_job = freeStyleJob('libnacl/master/lint') {
 }
 
 // Master Unit Tests
-def master_unit_job = freeStyleJob('libnacl/master/unit') {
+freeStyleJob("${project.name}/master/unit") {
     displayName('Unit')
     concurrentBuild(allowConcurrentBuild = true)
     description(project.description + ' - Unit Tests')
@@ -385,7 +389,7 @@ def master_unit_job = freeStyleJob('libnacl/master/unit') {
         shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/prepare-virtualenv.sh'))
 
         // Copy the workspace artifact
-        copyArtifacts('libnacl/master/clone', 'workspace.cpio.xz') {
+        copyArtifacts("${project.name}/master/clone", 'workspace.cpio.xz') {
             buildNumber('${CLONE_BUILD_ID}')
         }
         shell(readFileFromWorkspace('maintenance/jenkins-seed', 'common/scripts/decompress-workspace.sh'))

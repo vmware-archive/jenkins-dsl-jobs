@@ -59,7 +59,6 @@ project.pull_requests.each() { pr ->
 
         configure {
             it.appendNode('buildNeedsWorkspace').setValue(true)
-            job_publishers = it.get('publishers').get(0)
             job_properties = it.get('properties').get(0)
             github_project_property = job_properties.appendNode(
                 'com.coravy.hudson.plugins.github.GithubProjectProperty')
@@ -73,6 +72,11 @@ project.pull_requests.each() { pr ->
             slack_notifications.appendNode('notifyNotBuilt').setValue(true)
             slack_notifications.appendNode('notifyFailure').setValue(true)
             slack_notifications.appendNode('notifyBackToNormal').setValue(true)
+            job_publishers = it.get('publishers').get(0)
+            job_publishers.appendNode(
+                'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
+                [plugin: 'build-flow-test-aggregator@latest']
+            )
             job_publishers.appendNode(
                 'jenkins.plugins.slack.SlackNotifier',
                 [plugin: 'slack@latest']
