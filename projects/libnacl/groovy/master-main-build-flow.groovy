@@ -37,13 +37,4 @@ guard {
      def clone_changelog = new FilePath(clone.getRootDir()).child('changelog.xml')
      def build_changelog = new FilePath(build.getRootDir()).child('changelog.xml')
      build_changelog.copyFrom(clone_changelog)
-
-    // Slurp artifacts
-    //toolbox.slurpArtifacts(lint)
-    //toolbox.slurpArtifacts(unit)
-
-    // Delete the child workspaces directory
-    //lint.workspace.deleteRecursive()
-    //unit.workspace.deleteRecursive()
-    //clone.workspace.deleteRecursive()
 }

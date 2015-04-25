@@ -45,10 +45,4 @@ guard {
     def clone_changelog = new FilePath(clone.getRootDir()).child('changelog.xml')
     def build_changelog = new FilePath(build.getRootDir()).child('changelog.xml')
     build_changelog.copyFrom(clone_changelog)
-
-    // Delete the child workspaces directory
-    //lint.workspace.deleteRecursive()
-
-    <% vm_names.each { name, job_name -> %>
-    //${name}.workspace.deleteRecursive()<% } %>
 }
