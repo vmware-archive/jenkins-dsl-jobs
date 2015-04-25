@@ -128,7 +128,7 @@ project.pull_requests.each() { pr ->
             readFileFromWorkspace('maintenance/jenkins-seed', 'common/templates/pr-main-build-flow.groovy')
         )
         rendered_script_template = script_template.make(template_context.withDefault{ null })
-        buildFlowJob(
+        buildFlow(
             rendered_script_template.toString()
         )
 
