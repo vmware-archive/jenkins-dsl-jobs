@@ -389,6 +389,28 @@ project.pull_requests.each() { pr ->
             github_project_property = job_properties.appendNode(
                 'com.coravy.hudson.plugins.github.GithubProjectProperty')
             github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
+            job_publishers = it.get('publishers').get(0)
+            performance_plugin = job_publishers.appendNode(
+                'hudson.plugins.performance.PerformancePublisher',
+                [plugin: "performance@latest"]
+            )
+            performance_plugin.appendNode('errorFailedThreshold').setValue(0)
+            performance_plugin.appendNode('errorUnstableThreshold').setValue(0)
+            performance_plugin.appendNode('errorUnstableResponseTimeThreshold')
+            performance_plugin.appendNode('relativeFailedThresholdPositive').setValue(0.0)
+            performance_plugin.appendNode('relativeFailedThresholdNegative').setValue(0.0)
+            performance_plugin.appendNode('relativeUnstableThresholdPositive').setValue(0.0)
+            performance_plugin.appendNode('relativeUnstableThresholdNegative').setValue(0.0)
+            performance_plugin.appendNode('nthBuildNumber').setValue(0)
+            performance_plugin.appendNode('modeRelativeThresholds').setValue(false)
+            performance_plugin.appendNode('configType').setValue('ART')
+            performance_plugin.appendNode('modeOfThreshold').setValue(false)
+            performance_plugin.appendNode('compareBuildPrevious').setValue(true)
+            performance_plugin.appendNode('xml')
+            performance_plugin_parsers = performance_plugin.appendNode('parsers')
+            junit_parser = performance_plugin_parsers.appendNode('hudson.plugins.performance.JUnitParser')
+            junit_parser.appendNode('glob').setValue('nosetests.xml')
+            performance_plugin.appendNode('modeThroughput').setValue(true)
         }
 
         wrappers {
