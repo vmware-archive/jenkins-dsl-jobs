@@ -39,7 +39,7 @@ folder("${project.name}/pr") {
 }
 
 // Main master branch job
-def master_main_job = buildFlowJob("${project.name}/master-main-build") {
+buildFlowJob("${project.name}/master-main-build") {
     displayName('Master Branch Main Build')
     description(project.description)
     label('worker')
@@ -48,7 +48,6 @@ def master_main_job = buildFlowJob("${project.name}/master-main-build") {
     configure {
         it.appendNode('buildNeedsWorkspace').setValue(true)
         job_properties = it.get('properties').get(0)
-        job_publishers = it.get('publishers').get(0)
         github_project_property = job_properties.appendNode(
             'com.coravy.hudson.plugins.github.GithubProjectProperty')
         github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
@@ -61,6 +60,11 @@ def master_main_job = buildFlowJob("${project.name}/master-main-build") {
         slack_notifications.appendNode('notifyNotBuilt').setValue(true)
         slack_notifications.appendNode('notifyFailure').setValue(true)
         slack_notifications.appendNode('notifyBackToNormal').setValue(true)
+        job_publishers = it.get('publishers').get(0)
+        job_publishers.appendNode(
+            'org.zeroturnaround.jenkins.flowbuildtestaggregator.FlowTestAggregator',
+            [plugin: 'build-flow-test-aggregator@latest']
+        )
         job_publishers.appendNode(
             'jenkins.plugins.slack.SlackNotifier',
             [plugin: 'slack@latest']
