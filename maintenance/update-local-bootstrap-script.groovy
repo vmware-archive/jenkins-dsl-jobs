@@ -24,6 +24,12 @@ freeStyleJob('maintenance/update-bootstrap') {
         choiceParam('REPOSITORY', ['saltstack', 's0undt3ch'])
     }
 
+    configure {
+        job_properties = it.get('properties').get(0)
+        auth_matrix = job_properties.appendNode('hudson.security.AuthorizationMatrixProperty')
+        auth_matrix.appendNode('blocksInheritance').setValue(true)
+    }
+
     authorization {
         for ( username in jenkins_perms.usernames ) {
             for ( permname in jenkins_perms.project ) {
