@@ -33,7 +33,6 @@ def salt_build_types = [
         'Debian 7',
         'Fedora 20',
         'Fedora 21',
-        'openSUSE 13.1',
         'openSUSE 13.2',
         'Ubuntu 12.04',
         'Ubuntu 14.04',
