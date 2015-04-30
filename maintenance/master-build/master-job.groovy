@@ -129,7 +129,7 @@ projects.each { project_name, project ->
             job_properties = it.get('properties').get(0)
             github_project_property = job_properties.appendNode(
                 'com.coravy.hudson.plugins.github.GithubProjectProperty')
-            github_project_property.appendNode('projectUrl').setValue("https://github.com/${github_repo}")
+            github_project_property.appendNode('projectUrl').setValue("https://github.com/${project.repo}")
             auth_matrix = job_properties.appendNode('hudson.security.AuthorizationMatrixProperty')
             auth_matrix.appendNode('blocksInheritance').setValue(true)
         }
