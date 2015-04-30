@@ -51,9 +51,9 @@ freeStyleJob('maintenance/update-bootstrap') {
             if (result.isBetterOrEqualTo(Result.SUCCESS)) {
                 def process = "sh /etc/salt/cloud.deploy.d/bootstrap-salt.sh -v".execute()
                 def bootstrap_version = process.text.split(' -- ')[-1].split()[-1]
-                manager.addShortText(
-                    "v${bootstrap_version} from ${manager.envVars['BRANCH']}@${manager.envVars['REPOSITORY']}",
-                    "grey", "white", "0px", "white"
+                manager.addBadge(
+                    "/plugin/saltstack-dsl-helpers/images/16x16/info.png",
+                    "v${bootstrap_version} from ${manager.envVars['BRANCH']}@${manager.envVars['REPOSITORY']}"
                 )
             }
         '''.stripIndent())
