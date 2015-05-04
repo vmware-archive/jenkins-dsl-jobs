@@ -36,7 +36,7 @@ def salt_build_types = [
         'openSUSE 13.2',
         'Ubuntu 12.04',
         'Ubuntu 14.04',
-        'Ubuntu 14.10'
+        'Ubuntu 15.04'
     ],
     'KVM': [
     ]
